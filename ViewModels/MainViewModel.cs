@@ -136,6 +136,26 @@ namespace DataTransferApp.Net.ViewModels
             {
                 FileList.Clear();
             }
+
+            // Notify commands to re-evaluate when selected folder changes
+            AuditFolderCommand.NotifyCanExecuteChanged();
+            TransferFolderCommand.NotifyCanExecuteChanged();
+            TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnSelectedDriveChanged(RemovableDrive? value)
+        {
+            // Notify transfer commands to re-evaluate when selected drive changes
+            TransferFolderCommand.NotifyCanExecuteChanged();
+            TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnIsProcessingChanged(bool value)
+        {
+            // Notify all commands to re-evaluate when processing state changes
+            AuditFolderCommand.NotifyCanExecuteChanged();
+            TransferFolderCommand.NotifyCanExecuteChanged();
+            TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
