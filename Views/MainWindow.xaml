@@ -53,7 +53,7 @@
                         Margin="0,0,10,0"
                         VerticalAlignment="Center">
                     <Button.Content>
-                        <Path Data="{StaticResource ClockIconGeometry}" Fill="White" Stretch="Uniform" Height="24" Width="24"/>
+                        <Path Data="{StaticResource ClockIconGeometry}" Fill="White" Stretch="Uniform" Height="20" Width="20"/>
                     </Button.Content>
                     <Button.Style>
                         <Style TargetType="Button">
@@ -91,7 +91,7 @@
                         Padding="8"
                         VerticalAlignment="Center">
                     <Button.Content>
-                        <Path Data="{StaticResource SettingsIconGeometry}" Fill="White" Stretch="Uniform" Height="24" Width="24"/>
+                        <Path Data="{StaticResource SettingsIconGeometry}" Fill="White" Stretch="Uniform" Height="20" Width="20"/>
                     </Button.Content>
                     <Button.Style>
                         <Style TargetType="Button">
@@ -276,12 +276,21 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
+                            <!-- Destination Label -->
                             <TextBlock Text="Destination:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <!-- Select Drive -->
                             <ComboBox ItemsSource="{Binding RemovableDrives}"  SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0"/>
+                            <!-- Refresh Drives -->
                             <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="10,0,10,0" ToolTip="Detect Drives">
                                  <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Stretch="Uniform" Width="14" Height="14"/>
                             </Button>
-                            <Button Content="🗑 Clear Drive"  Command="{Binding ClearDriveCommand}"  Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0"/>
+                            <!-- Clear Drive -->
+                            <Button Command="{Binding ClearDriveCommand}"  Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource DeleteIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Clear Drive" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -345,17 +354,19 @@
         <Border Grid.Row="3" Background="{StaticResource SecondaryBrush}" Padding="10,5">
             <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center"/>
         </Border>
-        
-        <!-- Snackbar Notification -->
-        <Border Grid.Row="3" 
+
+        <!-- Snackbar Notification Overlay - Non-disruptive -->
+        <Border Grid.RowSpan="4"
+                Panel.ZIndex="999"
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Bottom" 
-                Margin="0,0,0,60"
+                Margin="0,0,0,50"
                 Background="{Binding SnackbarBackground}"
                 CornerRadius="4"
-                Padding="20,12"
+                Padding="20,5"
                 MinWidth="300"
                 MaxWidth="600"
+                IsHitTestVisible="False"
                 Visibility="{Binding IsSnackbarVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.5" Color="Black"/>
