@@ -21,5 +21,9 @@
     <PackageReference Include="SharpCompress" Version="0.44.0" />
   </ItemGroup>
 
-</Project>
+  <ItemGroup>
+    <Resource Include="app.ico" />
+    <Resource Include="app.png" />
+  </ItemGroup>
 
+</Project>
