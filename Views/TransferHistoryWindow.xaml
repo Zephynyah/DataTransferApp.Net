@@ -1,0 +1,234 @@
+<Window x:Class="DataTransferApp.Net.Views.TransferHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataTransferApp.Net.Views"
+        xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
+        mc:Ignorable="d"
+        Title="Transfer History" 
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Window.Resources>
+        <helpers:FileSizeConverter x:Key="FileSizeConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">
+            <StackPanel>
+                <TextBlock Text="Transfer History" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="View all transferred folders and files" FontSize="12" Foreground="{StaticResource LightBrush}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Statistics -->
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1" Padding="15,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Total Transfers: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding TotalTransfers}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Today: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding TodayTransfers}" Foreground="{StaticResource SuccessBrush}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="This Week: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding ThisWeekTransfers}" Foreground="{StaticResource InfoBrush}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <TextBlock Text="Total Files: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding TotalFiles}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Search Bar -->
+        <Border Grid.Row="2" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1" Padding="15,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" 
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                         Padding="10,8"
+                         FontSize="12"
+                         VerticalContentAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding SearchTransfersCommand}" Key="Return"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <Button Grid.Column="1" 
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding SearchTransfersCommand}"
+                        Width="100"
+                        Margin="5,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource SearchIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <TextBlock Text="Search" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="2" 
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding LoadTransfersCommand}"
+                        Width="100"
+                        Margin="5,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="3" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Transfer List -->
+            <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Margin="0,0,5,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="{StaticResource LightBackgroundBrush}" Padding="10" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Transfer Records" FontWeight="SemiBold" FontSize="14"/>
+                    </Border>
+
+                    <DataGrid Grid.Row="1" 
+                              ItemsSource="{Binding Transfers}"
+                              SelectedItem="{Binding SelectedTransfer}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Date" Width="120" Binding="{Binding TransferInfo.Date, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}"/>
+                            <DataGridTextColumn Header="DTA" Width="80" Binding="{Binding TransferInfo.DTA}"/>
+                            <DataGridTextColumn Header="Folder" Width="*" Binding="{Binding TransferInfo.FolderName}"/>
+                            <DataGridTextColumn Header="Employee" Width="120" Binding="{Binding TransferInfo.Employee}"/>
+                            <DataGridTextColumn Header="Origin" Width="100" Binding="{Binding TransferInfo.Origin}"/>
+                            <DataGridTextColumn Header="Destination" Width="100" Binding="{Binding TransferInfo.Destination}"/>
+                            <DataGridTextColumn Header="Files" Width="60" Binding="{Binding Summary.TotalFiles}"/>
+                            <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Summary.Status}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Transfer Details -->
+            <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Margin="5,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="{StaticResource LightBackgroundBrush}" Padding="10" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Transfer Details" FontWeight="SemiBold" FontSize="14"/>
+                    </Border>
+
+                    <!-- Details Info -->
+                    <StackPanel Grid.Row="1" Margin="10" DataContext="{Binding SelectedTransfer}">
+                        <TextBlock FontWeight="SemiBold" Margin="0,5,0,2">
+                            <Run Text="Folder: "/>
+                            <Run Text="{Binding TransferInfo.FolderName, Mode=OneWay}" Foreground="{StaticResource PrimaryBrush}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="DTA: "/>
+                            <Run Text="{Binding TransferInfo.DTA, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Employee: "/>
+                            <Run Text="{Binding TransferInfo.Employee, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Date: "/>
+                            <Run Text="{Binding TransferInfo.Date, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}', Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Origin: "/>
+                            <Run Text="{Binding TransferInfo.Origin, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Destination: "/>
+                            <Run Text="{Binding TransferInfo.Destination, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Total Files: "/>
+                            <Run Text="{Binding Summary.TotalFiles, Mode=OneWay}" FontWeight="Bold"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Total Size: "/>
+                            <Run Text="{Binding Summary.TotalSize, Converter={StaticResource FileSizeConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                        </TextBlock>
+                        <TextBlock Margin="0,2">
+                            <Run Text="Status: "/>
+                            <Run Text="{Binding Summary.Status, Mode=OneWay}" Foreground="{StaticResource SuccessBrush}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Files List -->
+                    <Border Grid.Row="2" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,1,0,0" Margin="10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Files" FontWeight="SemiBold" Margin="0,10,0,5"/>
+                            
+                            <ListBox Grid.Row="1" 
+                                     ItemsSource="{Binding TransferFiles}"
+                                     BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,5">
+                                            <TextBlock Text="{Binding FileName}" FontWeight="SemiBold"/>
+                                            <TextBlock FontSize="10" Foreground="{StaticResource SecondaryBrush}">
+                                                <Run Text="{Binding Extension}"/>
+                                                <Run Text=" • "/>
+                                                <Run Text="{Binding Size, Converter={StaticResource FileSizeConverter}}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

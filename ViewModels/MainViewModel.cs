@@ -543,6 +543,21 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
+        [RelayCommand]
+        private void ViewTransferHistory()
+        {
+            try
+            {
+                var historyWindow = new TransferHistoryWindow(_settings.TransferLogsDirectory);
+                historyWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                ShowSnackbar($"Error opening transfer history: {ex.Message}", "error");
+                LoggingService.Error("Error opening transfer history", ex);
+            }
+        }
+
         private void UpdateStatistics()
         {
             TotalFolders = FolderList.Count;
