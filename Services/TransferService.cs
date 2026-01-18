@@ -141,27 +141,62 @@ namespace DataTransferApp.Net.Services
             return drives;
         }
 
-        public async Task ClearDriveAsync(string drivePath, IProgress<string>? progress = null)
+        public async Task ClearDriveAsync(string drivePath, IProgress<TransferProgress>? progress = null)
         {
             await Task.Run(() =>
             {
                 try
                 {
-                    progress?.Report($"Clearing drive: {drivePath}");
-
                     var directories = Directory.GetDirectories(drivePath);
+                    var files = Directory.GetFiles(drivePath);
+                    var totalItems = directories.Length + files.Length;
+                    var completedItems = 0;
+
+                    progress?.Report(new TransferProgress
+                    {
+                        CurrentFile = "Scanning drive...",
+                        CompletedFiles = 0,
+                        TotalFiles = totalItems,
+                        PercentComplete = 0
+                    });
+
                     foreach (var dir in directories)
                     {
-                        progress?.Report($"Deleting: {Path.GetFileName(dir)}");
+                        var dirName = Path.GetFileName(dir);
+                        progress?.Report(new TransferProgress
+                        {
+                            CurrentFile = $"Deleting folder: {dirName}",
+                            CompletedFiles = completedItems,
+                            TotalFiles = totalItems,
+                            PercentComplete = (int)((completedItems / (double)totalItems) * 100)
+                        });
+
                         Directory.Delete(dir, true);
+                        completedItems++;
                     }
 
-                    var files = Directory.GetFiles(drivePath);
                     foreach (var file in files)
                     {
-                        progress?.Report($"Deleting: {Path.GetFileName(file)}");
+                        var fileName = Path.GetFileName(file);
+                        progress?.Report(new TransferProgress
+                        {
+                            CurrentFile = $"Deleting file: {fileName}",
+                            CompletedFiles = completedItems,
+                            TotalFiles = totalItems,
+                            PercentComplete = (int)((completedItems / (double)totalItems) * 100)
+                        });
+
                         File.Delete(file);
+                        completedItems++;
                     }
+
+                    progress?.Report(new TransferProgress
+                    {
+                        CurrentFile = "Complete",
+                        CompletedFiles = totalItems,
+                        TotalFiles = totalItems,
+                        PercentComplete = 100
+                    });
 
                     LoggingService.Success($"Drive cleared: {drivePath}");
                 }

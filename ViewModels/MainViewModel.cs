@@ -473,22 +473,34 @@ namespace DataTransferApp.Net.ViewModels
             if (result != MessageBoxResult.Yes) return;
 
             IsProcessing = true;
+            ProgressPercent = 0;
             StatusMessage = $"Clearing drive {SelectedDrive.DriveLetter}...";
 
             try
             {
-                var progress = new Progress<string>(msg => StatusMessage = msg);
+                var progress = new Progress<TransferProgress>(p =>
+                {
+                    ProgressText = $"Clearing Drive: {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
+                    ProgressPercent = p.PercentComplete;
+                    StatusMessage = $"Clearing: {p.CurrentFile}";
+                });
+
                 await _transferService.ClearDriveAsync(SelectedDrive.DriveLetter, progress);
+                
                 StatusMessage = $"Drive cleared: {SelectedDrive.DriveLetter}";
+                ShowSnackbar($"Drive cleared successfully: {SelectedDrive.DriveLetter}", "success");
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error clearing drive: {ex.Message}";
+                ShowSnackbar($"Error clearing drive: {ex.Message}", "error");
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
                 IsProcessing = false;
+                ProgressPercent = 0;
+                ProgressText = "Ready";
             }
         }
 
