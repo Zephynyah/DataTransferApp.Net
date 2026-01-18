@@ -181,7 +181,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Path Data="{StaticResource DropboxIconGeometry}" Width="14" Height="14" Grid.Column="0"  Stretch="Uniform" Margin="0,0,10,0" Fill="{StaticResource SecondaryBrush}"/>
+                            <Path Data="{StaticResource DropboxIconGeometry}" Width="16" Height="16" Grid.Column="0"  Stretch="Uniform" Margin="0,0,10,0" Fill="{StaticResource SecondaryBrush}"/>
                             <TextBlock Text="Dropbox Folders" FontWeight="SemiBold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0"/>
                             <Button Style="{StaticResource IconButtonStyle}" Grid.Column="2"  Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh List">
                                 <Path Data="{StaticResource RefreshIconGeometry}" Fill="{StaticResource SecondaryBrush}" Width="14" Height="14" Stretch="Uniform"/>
@@ -242,7 +242,6 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SelectedFolder.FolderName, TargetNullValue='No folder selected'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,20,0"/>
                                 <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold"/>
-                                
                             </StackPanel>
                         </StackPanel>
                         
@@ -254,22 +253,22 @@
                         </StackPanel>
                         -->
                         
-                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,10,0,0">
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right">
                             <Button Command="{Binding AuditFolderCommand}"  Style="{StaticResource ButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource SearchIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                                    <Path Data="{StaticResource SearchIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0"/>
                                     <TextBlock Text="Audit" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding TransferFolderCommand}"  Style="{StaticResource SuccessButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource TransferIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                                    <Path Data="{StaticResource TransferIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0"/>
                                     <TextBlock Text="Transfer" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding TransferFolderWithOverrideCommand}"  Style="{StaticResource WarningButtonStyle}" ToolTip="Force transfer even if audit failed">
                                 <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource WarningIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                                    <Path Data="{StaticResource WarningIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0"/>
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
