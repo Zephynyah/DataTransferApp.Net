@@ -80,14 +80,33 @@ namespace DataTransferApp.Net.Services
 
         private string GetSequencedPath(string destinationDrive, string folderName)
         {
-            var basePath = Path.Combine(destinationDrive, folderName);
-            var sequence = 1;
-            var newPath = basePath;
+            // Check if folder name already has a sequence (e.g., X50135_20260116_JTH_2)
+            var parts = folderName.Split('_');
+            string baseFolderName;
+            int currentSequence = 0;
 
+            // If there are 4 parts and the last part is numeric, it's already sequenced
+            if (parts.Length == 4 && int.TryParse(parts[3], out int existingSeq))
+            {
+                // Remove the existing sequence number
+                baseFolderName = string.Join("_", parts.Take(3));
+                currentSequence = existingSeq;
+            }
+            else
+            {
+                baseFolderName = folderName;
+                currentSequence = 0;
+            }
+
+            // Start from the next sequence number
+            var sequence = currentSequence + 1;
+            var newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
+
+            // Keep incrementing until we find a non-existing path
             while (Directory.Exists(newPath))
             {
-                newPath = Path.Combine(destinationDrive, $"{folderName}_{sequence:D3}");
                 sequence++;
+                newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
             }
 
             LoggingService.Info($"Conflict resolved: {folderName} -> {Path.GetFileName(newPath)}");
@@ -360,10 +379,19 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                using var sha256 = SHA256.Create();
-                using var stream = File.OpenRead(filePath);
-                var hash = await Task.Run(() => sha256.ComputeHash(stream), cancellationToken);
-                return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                HashAlgorithm hashAlgorithm = _settings.HashAlgorithm.ToUpper() switch
+                {
+                    "SHA512" => SHA512.Create(),
+                    "MD5" => MD5.Create(),
+                    _ => SHA256.Create()
+                };
+
+                using (hashAlgorithm)
+                using (var stream = File.OpenRead(filePath))
+                {
+                    var hash = await Task.Run(() => hashAlgorithm.ComputeHash(stream), cancellationToken);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                }
             }
             catch (Exception ex)
             {

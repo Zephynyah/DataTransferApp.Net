@@ -47,15 +47,24 @@ namespace DataTransferApp.Net.Models
         public double MinimumFreeSpaceGB { get; set; } = 1.0;
         public List<string> ExcludeDrives { get; set; } = new() { "A:", "B:" };
         
-        // Logging
+        // Application Logging
         public bool EnableFileLogging { get; set; } = true;
         public string LogLevel { get; set; } = "Info"; // Debug, Info, Warning, Error
         public string LogFormat { get; set; } = "JSON"; // JSON, CSV, TXT
         public int MaxLogSizeMB { get; set; } = 10;
         public int KeepLogFiles { get; set; } = 5;
         
+        // Transfer Logging
+        public bool EnableTransferLogs { get; set; } = true;
+        public bool LogTransferDetails { get; set; } = true;
+        public bool SaveTransferSummary { get; set; } = true;
+        public string TransferLogFormat { get; set; } = "JSON"; // JSON, CSV, TXT
+        public bool IncludeFileHashes { get; set; } = true;
+        public int KeepTransferLogs { get; set; } = 30; // Days
+        
         // Transfer Settings
         public bool CalculateFileHashes { get; set; } = true;
+        public string HashAlgorithm { get; set; } = "SHA256"; // SHA256, SHA512, MD5
         public bool EnableCompression { get; set; } = false;
         public int MaxConcurrentTransfers { get; set; } = 1;
         public bool AutoHandleConflicts { get; set; } = true;

@@ -4,7 +4,7 @@
         Title="File Viewer" 
         Height="600" Width="900"
         WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
+        Background="{StaticResource BackgroundBrush}">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -14,11 +14,13 @@
         </Grid.RowDefinitions>
         
         <!-- Header -->
-        <Border Grid.Row="0" Background="#2C3E50" Padding="15,10">
+        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">
             <StackPanel>
-                <TextBlock Text="📄 File Contents" FontSize="20" FontWeight="Bold" Foreground="White"/>
-                <TextBlock x:Name="FileNameText" FontSize="12" Foreground="#BDC3C7" Margin="0,5,0,0"/>
-                <TextBlock x:Name="FilePathText" FontSize="10" Foreground="#95A5A6" Margin="0,2,0,0"/>
+                <TextBlock FontSize="20" FontWeight="Bold" Foreground="White">
+                    <Run Text="📄 File Contents"/>
+                </TextBlock>
+                <TextBlock x:Name="FileNameText" FontSize="12" Foreground="{StaticResource LightBrush}" Margin="0,5,0,0"/>
+                <TextBlock x:Name="FilePathText" FontSize="10" Foreground="{StaticResource LightBrush}" Margin="0,2,0,0"/>
             </StackPanel>
         </Border>
         
@@ -36,8 +38,13 @@
         </Border>
         
         <!-- Footer -->
-        <Border Grid.Row="2" Background="#ECF0F1" Padding="15,10">
-            <Button Content="Close" Click="CloseButton_Click" Padding="20,8" Background="#7F8C8D" Foreground="White" HorizontalAlignment="Right"/>
+        <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" Padding="15,10">
+            <Button Click="CloseButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <Path Data="{StaticResource CloseIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                    <TextBlock Text="Close" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </Border>
     </Grid>
 </Window>
