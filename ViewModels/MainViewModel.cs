@@ -290,10 +290,38 @@ namespace DataTransferApp.Net.ViewModels
                 return;
             }
 
+            // Check drive contents if no transfers yet
+            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            {
+                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
+                var result = MessageBox.Show(
+                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
+                    "Do you want to APPEND to existing contents?\n\n" +
+                    "YES = Append/Add to existing\n" +
+                    "NO = Clear drive first\n" +
+                    "CANCEL = Abort transfer",
+                    "Drive Contains Data",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    // Clear drive first
+                    await ClearDriveAsync();
+                    if (IsProcessing) return; // If clear failed or is still running
+                }
+                // If Yes, continue with transfer
+            }
+
             IsProcessing = true;
             var total = passedFolders.Count;
             var completed = 0;
             var failed = 0;
+            var skipped = 0;
 
             try
             {
@@ -315,6 +343,12 @@ namespace DataTransferApp.Net.ViewModels
 
                     if (result.Success)
                     {
+                        if (result.ErrorMessage == "Skipped - folder already exists")
+                        {
+                            skipped++;
+                            LoggingService.Info($"Skipped existing folder: {folder.FolderName}");
+                        }
+                        
                         TransferredList.Add(folder);
                         FolderList.Remove(folder);
                     }
@@ -327,8 +361,8 @@ namespace DataTransferApp.Net.ViewModels
 
                 UpdateStatistics();
                 var successCount = completed - failed;
-                StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed";
-                ShowSnackbar($"Transferred {successCount} of {total} folders", failed > 0 ? "warning" : "success");
+                StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed, {skipped} skipped";
+                ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
             }
             catch (Exception ex)
             {
@@ -348,6 +382,33 @@ namespace DataTransferApp.Net.ViewModels
         private async Task TransferFolderAsync()
         {
             if (SelectedFolder == null || SelectedDrive == null) return;
+
+            // Check drive contents if no transfers yet
+            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            {
+                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
+                var result = MessageBox.Show(
+                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
+                    "Do you want to APPEND to existing contents?\n\n" +
+                    "YES = Append/Add to existing\n" +
+                    "NO = Clear drive first\n" +
+                    "CANCEL = Abort transfer",
+                    "Drive Contains Data",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    // Clear drive first
+                    await ClearDriveAsync();
+                    if (IsProcessing) return; // If clear failed or is still running
+                }
+                // If Yes, continue with transfer
+            }
 
             IsProcessing = true;
             ProgressPercent = 0;
@@ -370,17 +431,25 @@ namespace DataTransferApp.Net.ViewModels
                     TransferredList.Add(SelectedFolder);
                     FolderList.Remove(SelectedFolder);
                     UpdateStatistics();
-                    StatusMessage = $"Transfer complete: {SelectedFolder.FolderName}";
+                    
+                    var message = result.ErrorMessage == "Skipped - folder already exists" 
+                        ? $"Skipped (already exists): {SelectedFolder.FolderName}" 
+                        : $"Transfer complete: {SelectedFolder.FolderName}";
+                    
+                    StatusMessage = message;
+                    ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
                 }
                 else
                 {
                     StatusMessage = $"Transfer failed: {result.ErrorMessage}";
+                    ShowSnackbar($"Transfer failed: {result.ErrorMessage}", "error");
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Transfer error: {ex.Message}";
                 LoggingService.Error("Transfer error", ex);
+                ShowSnackbar($"Transfer error: {ex.Message}", "error");
             }
             finally
             {

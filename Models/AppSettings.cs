@@ -58,6 +58,9 @@ namespace DataTransferApp.Net.Models
         public bool CalculateFileHashes { get; set; } = true;
         public bool EnableCompression { get; set; } = false;
         public int MaxConcurrentTransfers { get; set; } = 1;
+        public bool AutoHandleConflicts { get; set; } = true;
+        public string ConflictResolution { get; set; } = "AppendSequence"; // AppendSequence, Skip, Overwrite
+        public bool PromptBeforeOverwrite { get; set; } = true;
         
         // UI Settings
         public double WindowWidth { get; set; } = 1400;

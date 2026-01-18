@@ -21,6 +21,79 @@ namespace DataTransferApp.Net.Services
             _archiveService = new ArchiveService();
         }
 
+        public bool DriveHasContents(string drivePath)
+        {
+            try
+            {
+                var directories = Directory.GetDirectories(drivePath);
+                var files = Directory.GetFiles(drivePath);
+                return directories.Length > 0 || files.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public int GetTransferredFolderCount(string drivePath)
+        {
+            try
+            {
+                return Directory.GetDirectories(drivePath).Length;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        private string ResolveDestinationPath(string destinationDrive, string folderName)
+        {
+            var basePath = Path.Combine(destinationDrive, folderName);
+            
+            if (!Directory.Exists(basePath))
+            {
+                return basePath;
+            }
+
+            // Folder exists - check if contents are different
+            if (_settings.AutoHandleConflicts)
+            {
+                if (_settings.ConflictResolution == "Skip")
+                {
+                    LoggingService.Info($"Skipping existing folder: {folderName}");
+                    return basePath; // Return existing path, will skip in transfer
+                }
+                else if (_settings.ConflictResolution == "Overwrite")
+                {
+                    LoggingService.Info($"Overwriting existing folder: {folderName}");
+                    return basePath;
+                }
+                else // AppendSequence
+                {
+                    return GetSequencedPath(destinationDrive, folderName);
+                }
+            }
+
+            return basePath;
+        }
+
+        private string GetSequencedPath(string destinationDrive, string folderName)
+        {
+            var basePath = Path.Combine(destinationDrive, folderName);
+            var sequence = 1;
+            var newPath = basePath;
+
+            while (Directory.Exists(newPath))
+            {
+                newPath = Path.Combine(destinationDrive, $"{folderName}_{sequence:D3}");
+                sequence++;
+            }
+
+            LoggingService.Info($"Conflict resolved: {folderName} -> {Path.GetFileName(newPath)}");
+            return newPath;
+        }
+
         public async Task<TransferResult> TransferFolderAsync(
             FolderData folder,
             string destinationDrive,
@@ -35,9 +108,22 @@ namespace DataTransferApp.Net.Services
 
             try
             {
-                var destinationPath = Path.Combine(destinationDrive, folder.FolderName);
+                var destinationPath = ResolveDestinationPath(destinationDrive, folder.FolderName);
                 
                 LoggingService.Info($"Starting transfer: {folder.FolderName} -> {destinationPath}");
+
+                // Check if skipping due to conflict resolution
+                if (_settings.AutoHandleConflicts && 
+                    _settings.ConflictResolution == "Skip" && 
+                    Directory.Exists(destinationPath))
+                {
+                    result.Success = true;
+                    result.EndTime = DateTime.Now;
+                    result.DestinationPath = destinationPath;
+                    result.ErrorMessage = "Skipped - folder already exists";
+                    LoggingService.Info($"Skipped transfer (already exists): {folder.FolderName}");
+                    return result;
+                }
 
                 // Create destination directory
                 Directory.CreateDirectory(destinationPath);
