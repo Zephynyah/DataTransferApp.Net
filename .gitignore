@@ -1,0 +1,111 @@
+# Data Transfer Application - .NET WPF
+
+# Application-specific ignores
+TransferLogs/
+TransferStaging/
+test-data/
+dev/
+versions/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+bld/
+
+# Visual Studio cache/options
+.vs/
+*.cache
+!*.[Cc]ache/
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+
+# Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archives
+*.zip
+*.7z
+*.tar.gz
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Sensitive data
+*.log
+*.pfx
+*.cer
+*.key
+*.pem
+credentials.txt
+passwords.txt
+secrets.txt
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+~$*
+
+# Database files
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# JetBrains Rider
+*.sln.iml
+
+# Local History for Visual Studio
+.localhistory
+
+# MSBuild Binary and Structured Log
+*.binlog
+
+# NVidia Nsight GPU debugger
+*.nvuser

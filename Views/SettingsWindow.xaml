@@ -1,0 +1,147 @@
+<Window x:Class="DataTransferApp.Net.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
+        Title="Application Settings" 
+        Height="700" Width="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
+        
+        <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="#BDC3C7"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,5,0,2"/>
+        </Style>
+        
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15,10">
+            <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="White"/>
+        </Border>
+        
+        <!-- Settings Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                
+                <!-- Directory Paths -->
+                <GroupBox Header="Directory Paths" Style="{StaticResource GroupBoxStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Staging Directory:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding StagingDirectory}" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Retention Directory:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding RetentionDirectory}" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Transfer Logs Directory:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding TransferLogsDirectory}"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Validation Settings -->
+                <GroupBox Header="Validation Rules" Style="{StaticResource GroupBoxStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Folder Name Regex Pattern:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding FolderNameRegex}" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Blacklisted File Extensions (comma-separated):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding BlacklistedExtensions, Converter={StaticResource ListToStringConverter}}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        
+                        <TextBlock Text="Whitelisted Datasets (comma-separated):" Style="{StaticResource LabelStyle}" Margin="0,10,0,2"/>
+                        <TextBox Text="{Binding WhiteListDatasets, Converter={StaticResource ListToStringConverter}}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Logging Settings -->
+                <GroupBox Header="Logging Configuration" Style="{StaticResource GroupBoxStyle}">
+                    <StackPanel>
+                        <CheckBox Content="Enable File Logging" IsChecked="{Binding EnableFileLogging}" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Log Level:" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox SelectedItem="{Binding LogLevel}" Margin="0,0,0,10">
+                            <ComboBoxItem Content="Debug"/>
+                            <ComboBoxItem Content="Info"/>
+                            <ComboBoxItem Content="Warning"/>
+                            <ComboBoxItem Content="Error"/>
+                        </ComboBox>
+                        
+                        <TextBlock Text="Log Format:" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox SelectedItem="{Binding LogFormat}" Margin="0,0,0,10">
+                            <ComboBoxItem Content="JSON"/>
+                            <ComboBoxItem Content="CSV"/>
+                            <ComboBoxItem Content="TXT"/>
+                        </ComboBox>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Max Log Size (MB):" Style="{StaticResource LabelStyle}"/>
+                                <TextBox Text="{Binding MaxLogSizeMB}"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Keep Log Files:" Style="{StaticResource LabelStyle}"/>
+                                <TextBox Text="{Binding KeepLogFiles}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Transfer Settings -->
+                <GroupBox Header="Transfer Options" Style="{StaticResource GroupBoxStyle}">
+                    <StackPanel>
+                        <CheckBox Content="Calculate File Hashes (SHA256)" IsChecked="{Binding CalculateFileHashes}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Enable Compression" IsChecked="{Binding EnableCompression}" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Text="Minimum Free Space on Drive (GB):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Text="{Binding MinimumFreeSpaceGB}"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- UI Settings -->
+                <GroupBox Header="User Interface" Style="{StaticResource GroupBoxStyle}">
+                    <StackPanel>
+                        <CheckBox Content="Show Success Notifications" IsChecked="{Binding ShowSuccessNotifications}"/>
+                    </StackPanel>
+                </GroupBox>
+                
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" Background="#ECF0F1" Padding="15,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="ResetButton" Content="Reset to Defaults" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="#95A5A6"/>
+                <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Style="{StaticResource ButtonStyle}" Background="#7F8C8D"/>
+                <Button x:Name="SaveButton" Content="Save Settings" Click="SaveButton_Click" Style="{StaticResource ButtonStyle}" Background="#27AE60"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
