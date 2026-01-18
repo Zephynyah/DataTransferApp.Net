@@ -143,8 +143,8 @@
 
                             <Path Data="{StaticResource DropboxIconGeometry}" Width="14" Height="14" Grid.Column="0"  Stretch="Uniform" Margin="0,0,10,0" Fill="{StaticResource SecondaryBrush}"/>
                             <TextBlock Text="Dropbox Folders" FontWeight="SemiBold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" />
-                            <Button Style="{StaticResource IconButtonStyle}" Grid.Column="2"  Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh" Margin="0,0,0,0" >
-                                <Path Data="{StaticResource RefreshIconGeometry}" Fill="Black" Width="14" Height="14" Stretch="Uniform"/>
+                            <Button Style="{StaticResource ButtonStyle}" Grid.Column="2"  Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh" Margin="0,0,0,0" >
+                                <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform"/>
                             </Button>
                         </Grid>
                     </Border>
@@ -238,8 +238,8 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
                             <TextBlock Text="Destination:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             <ComboBox ItemsSource="{Binding RemovableDrives}"  SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0"/>
-                            <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Padding="8" Margin="0,0,10,0" ToolTip="Detect Drives">
-                                 <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Stretch="Uniform" Width="16" Height="16"/>
+                            <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="10,0,10,0" ToolTip="Detect Drives">
+                                 <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Stretch="Uniform" Width="14" Height="14"/>
                             </Button>
                             <Button Content="🗑 Clear Drive"  Command="{Binding ClearDriveCommand}"  Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0"/>
                         </StackPanel>
