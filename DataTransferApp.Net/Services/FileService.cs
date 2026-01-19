@@ -10,6 +10,7 @@ namespace DataTransferApp.Net.Services
     public class FileService
     {
         private readonly ArchiveService _archiveService;
+        
         private static readonly string[] ViewableExtensions = {
             ".txt", ".log", ".csv", ".xml", ".json", ".ps1", ".psm1", ".psd1",
             ".md", ".html", ".htm", ".css", ".js", ".ini", ".conf", ".config",
@@ -40,11 +41,25 @@ namespace DataTransferApp.Net.Services
                 }
 
                 var directories = Directory.GetDirectories(stagingPath);
+                
+                // Get excluded folder names (case-insensitive)
+                var excludedFolders = App.Settings?.ExcludedFolders?
+                    .Select(f => f.ToLowerInvariant())
+                    .ToHashSet() ?? new HashSet<string>();
 
                 foreach (var dir in directories)
                 {
                     try
                     {
+                        var folderName = Path.GetFileName(dir);
+                        
+                        // Skip if folder is in exclusion list (case-insensitive)
+                        if (excludedFolders.Contains(folderName.ToLowerInvariant()))
+                        {
+                            LoggingService.Info($"Skipping excluded folder: {folderName}");
+                            continue;
+                        }
+                        
                         var folderData = CreateFolderData(dir);
                         folders.Add(folderData);
                     }

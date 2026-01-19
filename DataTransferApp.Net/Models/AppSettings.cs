@@ -48,6 +48,9 @@ namespace DataTransferApp.Net.Models
         public double MinimumFreeSpaceGB { get; set; } = 1.0;
         public List<string> ExcludeDrives { get; set; } = new() { "A:", "B:" };
         
+        // Folder Exclusion
+        public List<string> ExcludedFolders { get; set; } = new();
+        
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;
         public string LogLevel { get; set; } = "Info"; // Debug, Info, Warning, Error

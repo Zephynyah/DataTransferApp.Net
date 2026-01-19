@@ -61,5 +61,44 @@ namespace DataTransferApp.Net.Views
                 MessageBox.Show("Settings reset to defaults.", "Reset Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
+        private void AddExcludedFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            var inputDialog = new InputDialog("Add Excluded Folder", "Enter folder name to exclude:");
+            if (inputDialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(inputDialog.InputText))
+            {
+                var folderName = inputDialog.InputText.Trim();
+                
+                // Check if already exists (case-insensitive)
+                if (_settings.ExcludedFolders.Exists(f => f.Equals(folderName, System.StringComparison.OrdinalIgnoreCase)))
+                {
+                    MessageBox.Show($"'{folderName}' is already in the exclusion list.", "Duplicate", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                
+                _settings.ExcludedFolders.Add(folderName);
+                ExcludedFoldersListBox.Items.Refresh();
+                LoggingService.Info($"Added excluded folder: {folderName}");
+            }
+        }
+
+        private void RemoveExcludedFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ExcludedFoldersListBox.SelectedItem is string selectedFolder)
+            {
+                var result = MessageBox.Show(
+                    $"Remove '{selectedFolder}' from excluded folders?",
+                    "Confirm Remove",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _settings.ExcludedFolders.Remove(selectedFolder);
+                    ExcludedFoldersListBox.Items.Refresh();
+                    LoggingService.Info($"Removed excluded folder: {selectedFolder}");
+                }
+            }
+        }
     }
 }

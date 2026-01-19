@@ -10,6 +10,7 @@
     
     <Window.Resources>
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
+        <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -60,6 +61,60 @@
                         
                         <TextBlock Text="Whitelisted Datasets (comma-separated):" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,2"/>
                         <TextBox Text="{Binding WhiteListDatasets, Converter={StaticResource ListToStringConverter}}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Excluded Folders -->
+                <GroupBox Header="Excluded Folders">
+                    <StackPanel>
+                        <TextBlock Text="Folders to exclude from staging directory scan:" 
+                                   Style="{StaticResource SubHeaderTextStyle}" 
+                                   Margin="0,0,0,5"/>
+                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,5"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <ListBox x:Name="ExcludedFoldersListBox" 
+                                     Grid.Column="0"
+                                     ItemsSource="{Binding ExcludedFolders}" 
+                                     Height="100" 
+                                     Margin="0,0,5,0"/>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <Button x:Name="AddExcludedFolderButton" 
+                                        Click="AddExcludedFolderButton_Click"
+                                        Width="80" 
+                                        Margin="0,0,0,5"
+                                        Background="{StaticResource SuccessBrush}"
+                                        Foreground="White"
+                                        Padding="10,5">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="+" FontSize="16" FontWeight="Bold" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Add" Margin="0,0,5,0"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="RemoveExcludedFolderButton" 
+                                        Click="RemoveExcludedFolderButton_Click"
+                                        Width="80"
+                                        Background="{StaticResource DangerBrush}"
+                                        Foreground="White"
+                                        Padding="10,5"
+                                        IsEnabled="{Binding SelectedItem, ElementName=ExcludedFoldersListBox, Converter={StaticResource NullToBoolConverter}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="−" FontSize="16" FontWeight="Bold" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Remove" Margin="0,0,5,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
                 
