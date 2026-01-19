@@ -200,7 +200,7 @@
                              DisplayMemberPath="FolderName"
                              BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1"/>
                     
-                    <StackPanel Grid.Row="2" Margin="10">
+                    <StackPanel Grid.Row="2" Margin="10,5">
 
                         <Button Style="{StaticResource ButtonStyle}" 
                                 Command="{Binding AuditAllFoldersCommand}"
@@ -246,7 +246,7 @@
                         <StackPanel Grid.Row="0" Grid.Column="0">
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SelectedFolder.FolderName, TargetNullValue='No folder selected'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold" Background="{Binding SelectedFolder.AuditStatus, Converter={StaticResource StatusToColorConverter}}"/>
+                                <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource StatusToColorConverter}}"/>
                             </StackPanel>
                         </StackPanel>
                         
