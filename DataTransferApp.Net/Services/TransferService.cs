@@ -195,6 +195,9 @@ namespace DataTransferApp.Net.Services
                 result.TransferLog = transferLog;
 
                 LoggingService.Success($"Transfer completed: {folder.FolderName}");
+                
+                // Move original folder to retention directory
+                await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
             }
             catch (OperationCanceledException)
             {
@@ -210,6 +213,34 @@ namespace DataTransferApp.Net.Services
             return result;
         }
 
+        private async Task MoveToRetentionAsync(string sourcePath, string folderName)
+        {
+            try
+            {
+                var retentionPath = Path.Combine(_settings.RetentionDirectory, folderName);
+                
+                // Create retention directory if it doesn't exist
+                Directory.CreateDirectory(_settings.RetentionDirectory);
+                
+                // Handle existing folder in retention
+                if (Directory.Exists(retentionPath))
+                {
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    retentionPath = Path.Combine(_settings.RetentionDirectory, $"{folderName}_{timestamp}");
+                }
+                
+                // Move folder to retention
+                await Task.Run(() => Directory.Move(sourcePath, retentionPath));
+                
+                LoggingService.Info($"Moved to retention: {folderName} -> {retentionPath}");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error($"Failed to move folder to retention: {folderName}", ex);
+                // Don't throw - transfer was successful, this is just cleanup
+            }
+        }
+        
         public List<RemovableDrive> GetRemovableDrives()
         {
             var drives = new List<RemovableDrive>();
@@ -246,6 +277,56 @@ namespace DataTransferApp.Net.Services
             return drives;
         }
 
+        public async Task CleanupRetentionAsync()
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    if (!Directory.Exists(_settings.RetentionDirectory))
+                    {
+                        LoggingService.Info("Retention directory does not exist, skipping cleanup");
+                        return;
+                    }
+                    
+                    var cutoffDate = DateTime.Now.AddDays(-_settings.RetentionDays);
+                    var folders = Directory.GetDirectories(_settings.RetentionDirectory);
+                    var deletedCount = 0;
+                    
+                    foreach (var folder in folders)
+                    {
+                        var folderInfo = new DirectoryInfo(folder);
+                        if (folderInfo.CreationTime < cutoffDate)
+                        {
+                            try
+                            {
+                                Directory.Delete(folder, true);
+                                deletedCount++;
+                                LoggingService.Info($"Deleted old retention folder: {folderInfo.Name} (Created: {folderInfo.CreationTime:yyyy-MM-dd})");
+                            }
+                            catch (Exception ex)
+                            {
+                                LoggingService.Error($"Failed to delete retention folder: {folderInfo.Name}", ex);
+                            }
+                        }
+                    }
+                    
+                    if (deletedCount > 0)
+                    {
+                        LoggingService.Success($"Retention cleanup completed: {deletedCount} folder(s) removed");
+                    }
+                    else
+                    {
+                        LoggingService.Info("Retention cleanup completed: No folders to remove");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Error("Error during retention cleanup", ex);
+                }
+            });
+        }
+        
         public async Task ClearDriveAsync(string drivePath, IProgress<TransferProgress>? progress = null)
         {
             await Task.Run(() =>

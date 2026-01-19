@@ -668,7 +668,7 @@
                             </Button>
                             <Button Command="{Binding TransferFolderWithOverrideCommand}"  Style="{StaticResource WarningButtonStyle}" ToolTip="Force transfer even if audit failed">
                                 <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource WarningIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0"/>
+                                    <Path Data="{StaticResource WarningIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0"/>
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>

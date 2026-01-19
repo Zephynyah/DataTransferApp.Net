@@ -17,6 +17,7 @@ namespace DataTransferApp.Net.Models
         public string StagingDirectory { get; set; } = @"D:\TransferStaging";
         public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
         public string TransferLogsDirectory { get; set; } = @"D:\TransferLogs";
+        public int RetentionDays { get; set; } = 30;
         
         // Folder Naming
         public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{3}(_\d+)?$";

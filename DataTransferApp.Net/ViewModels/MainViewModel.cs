@@ -524,6 +524,8 @@ namespace DataTransferApp.Net.ViewModels
         {
             if (SelectedFolder == null || SelectedDrive == null) return;
 
+            var folderName = SelectedFolder.FolderName; // Store name before folder is removed
+            
             // Check drive contents if no transfers yet
             if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
             {
@@ -574,8 +576,8 @@ namespace DataTransferApp.Net.ViewModels
                     UpdateStatistics();
                     
                     var message = result.ErrorMessage == "Skipped - folder already exists" 
-                        ? $"Skipped (already exists): {SelectedFolder.FolderName}" 
-                        : $"Transfer complete: {SelectedFolder.FolderName}";
+                        ? $"Skipped (already exists): {folderName}" 
+                        : $"Transfer complete: {folderName}";
                     
                     StatusMessage = message;
                     ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
@@ -611,8 +613,10 @@ namespace DataTransferApp.Net.ViewModels
         {
             if (SelectedFolder == null || SelectedDrive == null) return;
 
+            var folderName = SelectedFolder.FolderName; // Store name before folder is removed
+            
             var result = MessageBox.Show(
-                $"This folder has failed audit. Are you sure you want to transfer '{SelectedFolder.FolderName}' anyway?\n\nAudit Status: {SelectedFolder.AuditStatus}",
+                $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {SelectedFolder.AuditStatus}",
                 "Override Audit - Confirm Transfer",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -640,7 +644,7 @@ namespace DataTransferApp.Net.ViewModels
                     TransferredList.Add(SelectedFolder);
                     FolderList.Remove(SelectedFolder);
                     UpdateStatistics();
-                    StatusMessage = $"Transfer complete (Override): {SelectedFolder.FolderName}";
+                    StatusMessage = $"Transfer complete (Override): {folderName}";
                     ShowSnackbar($"Override transfer completed", "warning");
                 }
                 else

@@ -34,11 +34,18 @@
                         <TextBlock Text="Staging Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding StagingDirectory}" Margin="0,0,0,10"/>
                         
+                        <TextBlock Text="Transfer Logs Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding TransferLogsDirectory}" Margin="0,0,0,10"/>
+
                         <TextBlock Text="Retention Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding RetentionDirectory}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Transfer Logs Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferLogsDirectory}"/>
+                        <TextBlock Text="Retention Period (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding RetentionDays}" Margin="0,0,0,5"/>
+                        <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"/>
                     </StackPanel>
                 </GroupBox>
                 
@@ -67,6 +74,21 @@
                                    Foreground="#7f8c8d"
                                    TextWrapping="Wrap"
                                    Margin="20,0,0,0"/>
+
+                                                           
+                        <TextBlock Text="Window Startup Mode" FontWeight="SemiBold" Margin="0,5,0,5"/>
+                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}" 
+                                  SelectedValuePath="Content" 
+                                  Margin="0,0,0,5">
+                            <ComboBoxItem Content="Normal" />
+                            <ComboBoxItem Content="Maximized" />
+                            <ComboBoxItem Content="Fullscreen" />
+                        </ComboBox>
+                        <TextBlock Text="Choose how the application window opens. Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="20,0,0,10"/>
                     </StackPanel>
                 </GroupBox>
                 
@@ -90,20 +112,7 @@
                                    Foreground="#7f8c8d"
                                    TextWrapping="Wrap"
                                    Margin="20,0,0,10"/>
-                        
-                        <TextBlock Text="Window Startup Mode" FontWeight="SemiBold" Margin="0,5,0,5"/>
-                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}" 
-                                  SelectedValuePath="Content" 
-                                  Margin="0,0,0,5">
-                            <ComboBoxItem Content="Normal" />
-                            <ComboBoxItem Content="Maximized" />
-                            <ComboBoxItem Content="Fullscreen" />
-                        </ComboBox>
-                        <TextBlock Text="Choose how the application window opens. Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="20,0,0,10"/>
+
                         
                         <CheckBox Content="Show success notifications" 
                                   IsChecked="{Binding ShowSuccessNotifications}" 
