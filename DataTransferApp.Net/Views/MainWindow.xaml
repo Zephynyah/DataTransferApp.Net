@@ -201,25 +201,83 @@
                              ItemsSource="{Binding FolderList}" 
                              SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"
                              BorderBrush="{StaticResource LightBrush}" 
-                             BorderThickness="0,0,0,1">
+                             BorderThickness="0,0,0,1"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource LightBlueBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <!-- Status Indicator Bar -->
-                                    <Border Grid.Column="0" 
-                                            Background="{Binding AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"
-                                            Margin="0,0,5,0"/>
-                                    
-                                    <!-- Folder Name -->
-                                    <TextBlock Grid.Column="1" 
-                                               Text="{Binding FolderName}" 
-                                               TextWrapping="Wrap"/>
-                                </Grid>
+                                <Border Padding="8,6" Margin="0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <!-- Background color based on audit status -->
+                                                <DataTrigger Binding="{Binding AuditStatus}" Value="Passed">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <SolidColorBrush Color="#2ECC71" Opacity="0.15"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding AuditStatus}" Value="Failed">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <SolidColorBrush Color="#E74C3C" Opacity="0.15"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="4"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Status Indicator Bar -->
+                                        <Border Grid.Column="0" 
+                                                Background="{Binding AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"
+                                                CornerRadius="2"
+                                                Margin="0,0,8,0"/>
+                                        
+                                        <!-- Folder Info -->
+                                        <StackPanel Grid.Column="1">
+                                            <!-- Folder Name -->
+                                            <TextBlock Text="{Binding FolderName}" 
+                                                       TextWrapping="Wrap"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="12"/>
+                                            
+                                            <!-- Stats: Size | File Count -->
+                                            <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                                <TextBlock Text="{Binding SizeFormatted}" 
+                                                           FontSize="10"
+                                                           Foreground="#7f8c8d"/>
+                                                <TextBlock Text=" | " 
+                                                           FontSize="10"
+                                                           Foreground="#bdc3c7"
+                                                           Margin="3,0"/>
+                                                <TextBlock FontSize="10" Foreground="#7f8c8d">
+                                                    <Run Text="{Binding FileCount, Mode=OneWay}"/>
+                                                    <Run Text=" files"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
