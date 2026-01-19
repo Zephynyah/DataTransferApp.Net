@@ -270,7 +270,7 @@
                         <StackPanel Grid.Row="0" Grid.Column="0">
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SelectedFolder.FolderName, TargetNullValue='No folder selected'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource StatusToColorConverter}}"/>
+                                <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
                             </StackPanel>
                         </StackPanel>
                         
@@ -282,8 +282,15 @@
                                     Padding="8,4" 
                                     Margin="0,0,10,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="📋 Naming: " Foreground="White" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold"/>
+                                    <Path Data="{StaticResource ChecklistIconGeometry}" 
+                                          Fill="White" 
+                                          Width="14" 
+                                          Height="14" 
+                                          Stretch="Uniform" 
+                                          Margin="0,0,5,0"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Naming: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Border>
                             
@@ -293,11 +300,19 @@
                                     Padding="8,4" 
                                     Margin="0,0,10,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="🚫 Blacklist: " Foreground="White" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" Foreground="White" FontWeight="Bold"/>
+                                    <Path Data="{StaticResource BlockIconGeometry}" 
+                                          Fill="White" 
+                                          Width="14" 
+                                          Height="14" 
+                                          Stretch="Uniform" 
+                                          Margin="0,0,5,0"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Blacklist: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0})'}" 
                                                Foreground="White" 
                                                FontWeight="Bold"
+                                               VerticalAlignment="Center"
                                                Visibility="{Binding SelectedFolder.BlacklistViolationCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </StackPanel>
                             </Border>
@@ -307,11 +322,19 @@
                                     CornerRadius="3" 
                                     Padding="8,4">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="📦 Compressed: " Foreground="White" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" Foreground="White" FontWeight="Bold"/>
+                                    <Path Data="{StaticResource PackageIconGeometry}" 
+                                          Fill="White" 
+                                          Width="14" 
+                                          Height="14" 
+                                          Stretch="Uniform" 
+                                          Margin="0,0,5,0"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Compressed: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0})'}" 
                                                Foreground="White" 
                                                FontWeight="Bold"
+                                               VerticalAlignment="Center"
                                                Visibility="{Binding SelectedFolder.CompressedFileCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </StackPanel>
                             </Border>
@@ -365,24 +388,35 @@
                               IsReadOnly="True"
                               CanUserSortColumns="True"
                               GridLinesVisibility="Horizontal"
-                              AlternationCount="2"
-                              AlternatingRowBackground="{StaticResource LightBackgroundBrush}">
+                              AlternationCount="2">
                         <DataGrid.RowStyle>
-                            <Style TargetType="DataGridRow">
-                                <Setter Property="Background" Value="{Binding Converter={StaticResource FileRowBackgroundConverter}}"/>
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                                <!-- Default: white background -->
+                                <Setter Property="Background" Value="White"/>
                                 <Style.Triggers>
-                                    <!-- Override AlternatingRowBackground when file is blacklisted or compressed -->
+                                    <!-- Alternating row - only applies if no other conditions are met -->
+                                    <Trigger Property="AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="#ECF0F1"/>
+                                    </Trigger>
+                                    
+                                    <!-- Compressed files override alternating rows -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsCompressed}" Value="True"/>
+                                            <Condition Binding="{Binding IsBlacklisted}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="#F1C40F" Opacity="0.25"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiDataTrigger>
+                                    
+                                    <!-- Blacklisted files get highest priority - override everything -->
                                     <DataTrigger Binding="{Binding IsBlacklisted}" Value="True">
                                         <Setter Property="Background">
                                             <Setter.Value>
-                                                <SolidColorBrush Color="#FFE74C3C" Opacity="0.4"/>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsCompressed}" Value="True">
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="#FFF1C40F" Opacity="0.3"/>
+                                                <SolidColorBrush Color="#E74C3C" Opacity="0.35"/>
                                             </Setter.Value>
                                         </Setter>
                                     </DataTrigger>
