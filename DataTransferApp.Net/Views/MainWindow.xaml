@@ -1,7 +1,6 @@
 ﻿<Window x:Class="DataTransferApp.Net.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:materialDesign="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataTransferApp.Net"
@@ -37,6 +36,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -87,7 +87,7 @@
                     </Button.Style>
                 </Button>
                 
-                <Button Grid.Column="4" 
+                <Button Grid.Column="3" 
                         Command="{Binding OpenSettingsCommand}"
                         ToolTip="Settings"
                         Background="Transparent" 
@@ -119,6 +119,53 @@
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- Exit Button (Only visible in fullscreen) -->
+                <Button Grid.Column="4" 
+                        Click="ExitButton_Click"
+                        ToolTip="Exit Fullscreen Mode (F11)"
+                        Background="Transparent" 
+                        BorderBrush="#E74C3C" 
+                        BorderThickness="1"
+                        Width="40"
+                        Height="40"
+                        Cursor="Hand"
+                        Padding="8"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        x:Name="ExitButton">
+                    <Button.Content>
+                        <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" 
+                              Fill="#E74C3C" Stretch="Uniform" Height="20" Width="20"/>
+                    </Button.Content>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ExitButton, Path=Tag}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E74C3C"/>
+                                    <Setter Property="BorderBrush" Value="#E74C3C"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -427,42 +474,137 @@
                         </StackPanel>
                         
                         <!-- Audit Summary with Color-Coded Status -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
-                            <!-- Naming Audit -->
-                            <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                    CornerRadius="3" 
-                                    Padding="8,4" 
-                                    Margin="0,0,10,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource ChecklistIconGeometry}" 
-                                          Fill="White" 
-                                          Width="14" 
-                                          Height="14" 
-                                          Stretch="Uniform" 
-                                          Margin="0,0,5,0"
-                                          VerticalAlignment="Center"/>
-                                    <TextBlock Text="Naming: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,30,0,0">
+                            <!-- Card Style (Badges) -->
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding ShowAuditSummaryAsCards, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <!-- Naming Audit Card -->
+                                <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                        CornerRadius="3" 
+                                        Padding="8,4" 
+                                        Margin="0,0,10,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource ChecklistIconGeometry}" 
+                                              Fill="White" 
+                                              Width="14" 
+                                              Height="14" 
+                                              Stretch="Uniform" 
+                                              Margin="0,0,5,0"
+                                              VerticalAlignment="Center"/>
+                                        <TextBlock Text="Folder Name: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- Blacklist Audit Card -->
+                                <Border Background="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                        CornerRadius="3" 
+                                        Padding="8,4" 
+                                        Margin="0,0,10,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource BlockIconGeometry}" 
+                                              Fill="White" 
+                                              Width="14" 
+                                              Height="14" 
+                                              Stretch="Uniform" 
+                                              Margin="0,0,5,0"
+                                              VerticalAlignment="Center"/>
+                                        <TextBlock Text="Blacklist: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0} violations)'}"
+                                                   Foreground="White" 
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedFolder.BlacklistViolationCount}" Value="0">
+                                                            <Setter Property="Text" Value=" (0)"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- Compressed Files Audit Card -->
+                                <Border Background="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                        CornerRadius="3" 
+                                        Padding="8,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource PackageIconGeometry}" 
+                                              Fill="White" 
+                                              Width="14" 
+                                              Height="14" 
+                                              Stretch="Uniform" 
+                                              Margin="0,0,5,0"
+                                              VerticalAlignment="Center"/>
+                                        <TextBlock Text="Compressed: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0} files)'}"
+                                                   Foreground="White" 
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedFolder.CompressedFileCount}" Value="0">
+                                                            <Setter Property="Text" Value=" (0)"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                             
-                            <!-- Blacklist Audit -->
-                            <Border Background="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                    CornerRadius="3" 
-                                    Padding="8,4" 
-                                    Margin="0,0,10,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <Path Data="{StaticResource BlockIconGeometry}" 
-                                          Fill="White" 
-                                          Width="14" 
-                                          Height="14" 
+                            <!-- Simple Text Style with Icons -->
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShowAuditSummaryAsCards}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <!-- Naming Audit Text -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
+                                    <Path Data="{StaticResource ChecklistIconGeometry}" 
+                                          Fill="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                          Width="16" 
+                                          Height="16" 
                                           Stretch="Uniform" 
-                                          Margin="0,0,5,0"
+                                          Margin="0,0,6,0"
                                           VerticalAlignment="Center"/>
-                                    <TextBlock Text="Blacklist: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0} violations)'}" 
-                                               Foreground="White" 
+                                    <TextBlock Text="Folder Name: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" 
+                                               Foreground="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                               FontWeight="Bold" 
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <!-- Blacklist Audit Text -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
+                                    <Path Data="{StaticResource BlockIconGeometry}" 
+                                          Fill="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                          Width="16" 
+                                          Height="16" 
+                                          Stretch="Uniform" 
+                                          Margin="0,0,6,0"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Blacklist: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" 
+                                               Foreground="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                               FontWeight="Bold" 
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0} violations)'}"
+                                               Foreground="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
                                                FontWeight="Bold"
                                                VerticalAlignment="Center">
                                         <TextBlock.Style>
@@ -477,24 +619,23 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
-                            </Border>
-                            
-                            <!-- Compressed Files Audit -->
-                            <Border Background="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                    CornerRadius="3" 
-                                    Padding="8,4">
+                                
+                                <!-- Compressed Files Audit Text -->
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource PackageIconGeometry}" 
-                                          Fill="White" 
-                                          Width="14" 
-                                          Height="14" 
+                                          Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                          Width="16" 
+                                          Height="16" 
                                           Stretch="Uniform" 
-                                          Margin="0,0,5,0"
+                                          Margin="0,0,6,0"
                                           VerticalAlignment="Center"/>
-                                    <TextBlock Text="Compressed: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0} files)'}" 
-                                               Foreground="White" 
+                                    <TextBlock Text="Compressed: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" 
+                                               Foreground="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                               FontWeight="Bold" 
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0} files)'}"
+                                               Foreground="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
                                                FontWeight="Bold"
                                                VerticalAlignment="Center">
                                         <TextBlock.Style>
@@ -509,7 +650,7 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
-                            </Border>
+                            </StackPanel>
                         </StackPanel>
                         
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right">

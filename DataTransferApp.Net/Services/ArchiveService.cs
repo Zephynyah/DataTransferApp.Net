@@ -1,4 +1,6 @@
 using SharpCompress.Archives;
+using SharpCompress.Archives.Tar;
+using SharpCompress.Readers;
 using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
@@ -9,10 +11,21 @@ namespace DataTransferApp.Net.Services
 {
     public class ArchiveService
     {
-        private static readonly string[] ArchiveExtensions = { ".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz" };
+        private static readonly string[] ArchiveExtensions = { ".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
 
         public bool IsArchive(string filePath)
         {
+            var fileName = filePath.ToLower();
+            
+            // Check for compound extensions first (.tar.gz, .tar.xz, etc.)
+            if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
+                fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
+                fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+            {
+                return true;
+            }
+            
+            // Then check single extensions
             var ext = Path.GetExtension(filePath).ToLower();
             return ArchiveExtensions.Contains(ext);
         }

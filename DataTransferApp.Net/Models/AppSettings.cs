@@ -77,6 +77,8 @@ namespace DataTransferApp.Net.Models
         public bool ShowSuccessNotifications { get; set; } = true;
         public bool AutoAuditOnStartup { get; set; } = false;
         public bool ShowFolderAuditDetailsIcon { get; set; } = true;
+        public bool ShowAuditSummaryAsCards { get; set; } = true;
+        public string WindowStartupMode { get; set; } = "Normal"; // Normal, Maximized, Fullscreen
         
         // Last Updated
         public DateTime LastModified { get; set; } = DateTime.Now;

@@ -19,5 +19,59 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        
+        // Apply window startup mode based on setting
+        var startupMode = App.Settings?.WindowStartupMode ?? "Normal";
+        switch (startupMode)
+        {
+            case "Maximized":
+                WindowState = WindowState.Maximized;
+                break;
+            case "Fullscreen":
+                WindowState = WindowState.Maximized;
+                WindowStyle = WindowStyle.None;
+                UpdateFullScreenUI(true);
+                break;
+            case "Normal":
+            default:
+                // Use default window size from XAML
+                break;
+        }
+    }
+    
+    private void UpdateFullScreenUI(bool isFullScreen)
+    {
+        // Update exit button visibility
+        ExitButton.Tag = isFullScreen;
+    }
+    
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        
+        // Toggle fullscreen with F11
+        if (e.Key == Key.F11)
+        {
+            if (WindowStyle == WindowStyle.None)
+            {
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                WindowState = WindowState.Normal;
+                UpdateFullScreenUI(false);
+            }
+            else
+            {
+                WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Maximized;
+                UpdateFullScreenUI(true);
+            }
+        }
+    }
+    
+    private void ExitButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Exit fullscreen mode
+        WindowStyle = WindowStyle.SingleBorderWindow;
+        WindowState = WindowState.Normal;
+        UpdateFullScreenUI(false);
     }
 }

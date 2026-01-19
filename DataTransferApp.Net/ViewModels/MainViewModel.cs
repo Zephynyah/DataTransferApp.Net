@@ -79,6 +79,9 @@ namespace DataTransferApp.Net.ViewModels
         
         [ObservableProperty]
         private bool _showFolderAuditDetailsIcon = true;
+        
+        [ObservableProperty]
+        private bool _showAuditSummaryAsCards = true;
 
         public MainViewModel(AppSettings settings)
         {
@@ -90,6 +93,7 @@ namespace DataTransferApp.Net.ViewModels
             
             // Initialize settings-based properties
             ShowFolderAuditDetailsIcon = _settings.ShowFolderAuditDetailsIcon;
+            ShowAuditSummaryAsCards = _settings.ShowAuditSummaryAsCards;
 
             // Initialize drive detection timer (check every 3 seconds)
             _driveDetectionTimer = new DispatcherTimer
@@ -259,8 +263,12 @@ namespace DataTransferApp.Net.ViewModels
                 SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
                 
                 // Count compressed files
-                var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz" };
-                var compressedCount = SelectedFolder.Files.Count(f => compressedExtensions.Contains(f.Extension.ToLower()));
+                var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+                var compressedCount = SelectedFolder.Files.Count(f => 
+                    compressedExtensions.Contains(f.Extension.ToLower()) || 
+                    f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
+                    f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
+                    f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                 SelectedFolder.CompressedFileCount = compressedCount;
                 SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
@@ -290,7 +298,11 @@ namespace DataTransferApp.Net.ViewModels
                 // Mark compressed files
                 foreach (var file in SelectedFolder.Files)
                 {
-                    if (compressedExtensions.Contains(file.Extension.ToLower()))
+                    var fileName = file.FileName.ToLower();
+                    if (compressedExtensions.Contains(file.Extension.ToLower()) ||
+                        fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
+                        fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
+                        fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
                     {
                         file.IsCompressed = true;
                         if (file.Status == "Ready")
@@ -340,8 +352,12 @@ namespace DataTransferApp.Net.ViewModels
                     folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
                     
                     // Count compressed files
-                    var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz" };
-                    var compressedCount = folder.Files.Count(f => compressedExtensions.Contains(f.Extension.ToLower()));
+                    var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+                    var compressedCount = folder.Files.Count(f => 
+                        compressedExtensions.Contains(f.Extension.ToLower()) || 
+                        f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
+                        f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
+                        f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                     folder.CompressedFileCount = compressedCount;
                     folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
                     
@@ -370,7 +386,11 @@ namespace DataTransferApp.Net.ViewModels
                     // Mark compressed files
                     foreach (var file in folder.Files)
                     {
-                        if (compressedExtensions.Contains(file.Extension.ToLower()))
+                        var fileName = file.FileName.ToLower();
+                        if (compressedExtensions.Contains(file.Extension.ToLower()) ||
+                            fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
+                            fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
+                            fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
                         {
                             file.IsCompressed = true;
                             if (file.Status == "Ready")
@@ -737,10 +757,12 @@ namespace DataTransferApp.Net.ViewModels
                     
                     // Update observable properties from reloaded settings
                     ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
+                    ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
                     
                     // Copy updated settings back to the _settings reference
                     _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
+                    _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
                     
                     StatusMessage = "Settings updated successfully";
                     ShowSnackbar("Settings saved successfully!", "success");
