@@ -26,7 +26,7 @@
         
         <!-- Content -->
         <Border Grid.Row="1" Background="White" Margin="10">
-            <DataGrid x:Name="ArchiveDataGrid"
+            <DataGrid x:Name="ArchiveDataGrid" RowHeight="28"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserSortColumns="True"
@@ -49,7 +49,7 @@
                 <TextBlock x:Name="StatusText" VerticalAlignment="Center"/>
                 <Button Click="CloseButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="{StaticResource CloseIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <Path Data="{StaticResource CloseIconGeometry}" Fill="White" Width="12" Height="12" Stretch="Uniform" Margin="0,0,5,0"/>
                         <TextBlock Text="Close" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>

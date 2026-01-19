@@ -697,6 +697,7 @@
                 <!-- Files Grid -->
                 <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1">
                     <DataGrid ItemsSource="{Binding FileList}" 
+                              RowHeight="28"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               CanUserSortColumns="True"
