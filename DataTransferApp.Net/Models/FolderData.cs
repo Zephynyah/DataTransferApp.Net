@@ -36,9 +36,24 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private AuditResult? _auditResult;
         
+        // Individual audit statuses
+        [ObservableProperty]
+        private string _namingAuditStatus = "Not Audited";
+        
+        [ObservableProperty]
+        private string _blacklistAuditStatus = "Not Audited";
+        
+        [ObservableProperty]
+        private string _compressedAuditStatus = "Not Audited";
+        
+        [ObservableProperty]
+        private int _blacklistViolationCount = 0;
+        
+        [ObservableProperty]
+        private int _compressedFileCount = 0;
+        
         public bool CanTransfer => AuditStatus == "Passed";
         
-        // Parsed from folder name
         [ObservableProperty]
         private string? _employeeId;
         

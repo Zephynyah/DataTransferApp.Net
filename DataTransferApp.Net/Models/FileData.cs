@@ -1,21 +1,50 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
 namespace DataTransferApp.Net.Models
 {
-    public class FileData
+    public partial class FileData : ObservableObject
     {
-        public string FileName { get; set; } = string.Empty;
-        public string DirectoryPath { get; set; } = string.Empty;
-        public string Extension { get; set; } = string.Empty;
-        public long Size { get; set; }
+        [ObservableProperty]
+        private string _fileName = string.Empty;
+        
+        [ObservableProperty]
+        private string _directoryPath = string.Empty;
+        
+        [ObservableProperty]
+        private string _extension = string.Empty;
+        
+        [ObservableProperty]
+        private long _size;
+        
         public string SizeFormatted => FormatFileSize(Size);
-        public DateTime Modified { get; set; }
-        public string FullPath { get; set; } = string.Empty;
-        public string RelativePath { get; set; } = string.Empty;
-        public string Status { get; set; } = "Ready";
-        public string? Hash { get; set; }
-        public bool IsViewable { get; set; }
-        public bool IsArchive { get; set; }
+        
+        [ObservableProperty]
+        private DateTime _modified;
+        
+        [ObservableProperty]
+        private string _fullPath = string.Empty;
+        
+        [ObservableProperty]
+        private string _relativePath = string.Empty;
+        
+        [ObservableProperty]
+        private string _status = "Ready";
+        
+        [ObservableProperty]
+        private string? _hash;
+        
+        [ObservableProperty]
+        private bool _isViewable;
+        
+        [ObservableProperty]
+        private bool _isArchive;
+        
+        [ObservableProperty]
+        private bool _isCompressed;
+        
+        [ObservableProperty]
+        private bool _isBlacklisted;
         
         private static string FormatFileSize(long bytes)
         {

@@ -231,8 +231,28 @@ namespace DataTransferApp.Net.ViewModels
 
                 SelectedFolder.AuditResult = result;
                 SelectedFolder.AuditStatus = result.OverallStatus;
+                
+                // Update individual audit statuses
+                SelectedFolder.NamingAuditStatus = result.NameValidation?.IsValid == true ? "Passed" : "Failed";
+                SelectedFolder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
+                SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
+                
+                // Count compressed files
+                var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz" };
+                var compressedCount = SelectedFolder.Files.Count(f => compressedExtensions.Contains(f.Extension.ToLower()));
+                SelectedFolder.CompressedFileCount = compressedCount;
+                SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
-                // Update file statuses based on audit
+                // Update file statuses and flags
+                // Reset all files first
+                foreach (var file in SelectedFolder.Files)
+                {
+                    file.IsBlacklisted = false;
+                    file.IsCompressed = false;
+                    file.Status = "Ready";
+                }
+                
+                // Mark blacklisted files
                 if (result.ExtensionValidation?.Violations.Count > 0)
                 {
                     foreach (var violation in result.ExtensionValidation.Violations)
@@ -241,6 +261,20 @@ namespace DataTransferApp.Net.ViewModels
                         if (file != null)
                         {
                             file.Status = "Blacklisted";
+                            file.IsBlacklisted = true;
+                        }
+                    }
+                }
+                
+                // Mark compressed files
+                foreach (var file in SelectedFolder.Files)
+                {
+                    if (compressedExtensions.Contains(file.Extension.ToLower()))
+                    {
+                        file.IsCompressed = true;
+                        if (file.Status == "Ready")
+                        {
+                            file.Status = "Compressed";
                         }
                     }
                 }
@@ -278,6 +312,52 @@ namespace DataTransferApp.Net.ViewModels
                     var result = await _auditService.AuditFolderAsync(folder.FolderPath, folder.FolderName);
                     folder.AuditResult = result;
                     folder.AuditStatus = result.OverallStatus;
+                    
+                    // Update individual audit statuses
+                    folder.NamingAuditStatus = result.NameValidation?.IsValid == true ? "Passed" : "Failed";
+                    folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
+                    folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
+                    
+                    // Count compressed files
+                    var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz" };
+                    var compressedCount = folder.Files.Count(f => compressedExtensions.Contains(f.Extension.ToLower()));
+                    folder.CompressedFileCount = compressedCount;
+                    folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+                    
+                    // Update file flags
+                    foreach (var file in folder.Files)
+                    {
+                        file.IsBlacklisted = false;
+                        file.IsCompressed = false;
+                        file.Status = "Ready";
+                    }
+                    
+                    // Mark blacklisted files
+                    if (result.ExtensionValidation?.Violations.Count > 0)
+                    {
+                        foreach (var violation in result.ExtensionValidation.Violations)
+                        {
+                            var file = folder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
+                            if (file != null)
+                            {
+                                file.Status = "Blacklisted";
+                                file.IsBlacklisted = true;
+                            }
+                        }
+                    }
+                    
+                    // Mark compressed files
+                    foreach (var file in folder.Files)
+                    {
+                        if (compressedExtensions.Contains(file.Extension.ToLower()))
+                        {
+                            file.IsCompressed = true;
+                            if (file.Status == "Ready")
+                            {
+                                file.Status = "Compressed";
+                            }
+                        }
+                    }
                 }
 
                 UpdateStatistics();
