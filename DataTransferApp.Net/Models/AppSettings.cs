@@ -75,6 +75,7 @@ namespace DataTransferApp.Net.Models
         public double WindowWidth { get; set; } = 1400;
         public double WindowHeight { get; set; } = 1000;
         public bool ShowSuccessNotifications { get; set; } = true;
+        public bool AutoAuditOnStartup { get; set; } = false;
         
         // Last Updated
         public DateTime LastModified { get; set; } = DateTime.Now;

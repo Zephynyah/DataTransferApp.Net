@@ -168,8 +168,22 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var folders = await _fileService.ScanStagingDirectoryAsync(_settings.StagingDirectory);
                 FolderList = new ObservableCollection<FolderData>(folders);
+                
+                // Auto-select first folder if available
+                if (FolderList.Count > 0)
+                {
+                    SelectedFolder = FolderList[0];
+                }
+                
                 UpdateStatistics();
                 StatusMessage = $"Loaded {folders.Count} folder(s)";
+                
+                // Run audit all if enabled in settings
+                if (_settings.AutoAuditOnStartup && FolderList.Count > 0)
+                {
+                    LoggingService.Info("Auto-audit on startup enabled, running audit all...");
+                    await AuditAllFoldersAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -196,6 +210,7 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     RemovableDrives = new ObservableCollection<RemovableDrive>(drives);
                     
+                    // Auto-select first drive if none selected or if drives changed
                     if (drives.Count > 0 && SelectedDrive == null)
                     {
                         SelectedDrive = drives[0];

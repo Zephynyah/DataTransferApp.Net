@@ -56,6 +56,20 @@
                     </StackPanel>
                 </GroupBox>
                 
+                <!-- Startup Behavior -->
+                <GroupBox Header="Startup Behavior">
+                    <StackPanel>
+                        <CheckBox Content="Automatically run audit on all folders at startup" 
+                                  IsChecked="{Binding AutoAuditOnStartup}" 
+                                  Margin="0,0,0,5"/>
+                        <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="20,0,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+                
                 <!-- Application Logging -->
                 <GroupBox Header="Application Logging">
                     <StackPanel>
