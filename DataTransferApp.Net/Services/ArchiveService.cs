@@ -36,18 +36,47 @@ namespace DataTransferApp.Net.Services
 
             try
             {
-                using var archive = ArchiveFactory.Open(archiveFilePath);
+                var fileName = archiveFilePath.ToLower();
                 
-                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                // For compound archives like .tar.gz, .tar.xz, use Reader approach
+                if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
+                    fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
+                    fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
                 {
-                    entries.Add(new ArchiveEntry
+                    using var stream = File.OpenRead(archiveFilePath);
+                    using var reader = ReaderFactory.Open(stream);
+                    
+                    while (reader.MoveToNextEntry())
                     {
-                        Name = Path.GetFileName(entry.Key) ?? string.Empty,
-                        Path = entry.Key ?? string.Empty,
-                        Size = entry.Size,
-                        CompressedSize = entry.CompressedSize,
-                        Modified = entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Unknown"
-                    });
+                        if (!reader.Entry.IsDirectory)
+                        {
+                            entries.Add(new ArchiveEntry
+                            {
+                                Name = Path.GetFileName(reader.Entry.Key) ?? string.Empty,
+                                Path = reader.Entry.Key ?? string.Empty,
+                                Size = reader.Entry.Size,
+                                CompressedSize = reader.Entry.CompressedSize,
+                                Modified = reader.Entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Unknown"
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    // For regular archives, use ArchiveFactory
+                    using var archive = ArchiveFactory.Open(archiveFilePath);
+                    
+                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                    {
+                        entries.Add(new ArchiveEntry
+                        {
+                            Name = Path.GetFileName(entry.Key) ?? string.Empty,
+                            Path = entry.Key ?? string.Empty,
+                            Size = entry.Size,
+                            CompressedSize = entry.CompressedSize,
+                            Modified = entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Unknown"
+                        });
+                    }
                 }
 
                 LoggingService.Info($"Retrieved {entries.Count} entries from archive: {Path.GetFileName(archiveFilePath)}");
@@ -67,15 +96,41 @@ namespace DataTransferApp.Net.Services
             {
                 Directory.CreateDirectory(destinationPath);
 
-                using var archive = ArchiveFactory.Open(archiveFilePath);
+                var fileName = archiveFilePath.ToLower();
                 
-                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                // For compound archives like .tar.gz, .tar.xz, use Reader approach
+                if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
+                    fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
+                    fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
                 {
-                    entry.WriteToDirectory(destinationPath, new ExtractionOptions
+                    using var stream = File.OpenRead(archiveFilePath);
+                    using var reader = ReaderFactory.Open(stream);
+                    
+                    while (reader.MoveToNextEntry())
                     {
-                        ExtractFullPath = true,
-                        Overwrite = true
-                    });
+                        if (!reader.Entry.IsDirectory)
+                        {
+                            reader.WriteEntryToDirectory(destinationPath, new ExtractionOptions
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    // For regular archives, use ArchiveFactory
+                    using var archive = ArchiveFactory.Open(archiveFilePath);
+                    
+                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                    {
+                        entry.WriteToDirectory(destinationPath, new ExtractionOptions
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true
+                        });
+                    }
                 }
 
                 LoggingService.Success($"Extracted archive to: {destinationPath}");
