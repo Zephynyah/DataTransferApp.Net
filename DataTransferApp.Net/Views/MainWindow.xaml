@@ -286,10 +286,11 @@
                                                 <Style TargetType="Border">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                     <Style.Triggers>
-                                                        <!-- Show icon when folder is audited and has violations -->
+                                                        <!-- Show icon when folder is audited and has violations AND setting is enabled -->
                                                         <MultiDataTrigger>
                                                             <MultiDataTrigger.Conditions>
                                                                 <Condition Binding="{Binding AuditStatus}" Value="Failed"/>
+                                                                <Condition Binding="{Binding DataContext.ShowFolderAuditDetailsIcon, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
                                                             </MultiDataTrigger.Conditions>
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </MultiDataTrigger>
@@ -460,11 +461,21 @@
                                           VerticalAlignment="Center"/>
                                     <TextBlock Text="Blacklist: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0})'}" 
+                                    <TextBlock Text="{Binding SelectedFolder.BlacklistViolationCount, StringFormat=' ({0} violations)'}" 
                                                Foreground="White" 
                                                FontWeight="Bold"
-                                               VerticalAlignment="Center"
-                                               Visibility="{Binding SelectedFolder.BlacklistViolationCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedFolder.BlacklistViolationCount}" Value="0">
+                                                        <Setter Property="Text" Value=" (0)"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                             
@@ -482,11 +493,21 @@
                                           VerticalAlignment="Center"/>
                                     <TextBlock Text="Compressed: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0})'}" 
+                                    <TextBlock Text="{Binding SelectedFolder.CompressedFileCount, StringFormat=' ({0} files)'}" 
                                                Foreground="White" 
                                                FontWeight="Bold"
-                                               VerticalAlignment="Center"
-                                               Visibility="{Binding SelectedFolder.CompressedFileCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedFolder.CompressedFileCount}" Value="0">
+                                                        <Setter Property="Text" Value=" (0)"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

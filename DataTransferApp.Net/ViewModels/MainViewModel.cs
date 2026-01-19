@@ -76,6 +76,9 @@ namespace DataTransferApp.Net.ViewModels
 
         [ObservableProperty]
         private string _snackbarBackground = "#2ECC71";
+        
+        [ObservableProperty]
+        private bool _showFolderAuditDetailsIcon = true;
 
         public MainViewModel(AppSettings settings)
         {
@@ -84,6 +87,9 @@ namespace DataTransferApp.Net.ViewModels
             _auditService = new AuditService(settings);
             _transferService = new TransferService(settings);
             _archiveService = new ArchiveService();
+            
+            // Initialize settings-based properties
+            ShowFolderAuditDetailsIcon = _settings.ShowFolderAuditDetailsIcon;
 
             // Initialize drive detection timer (check every 3 seconds)
             _driveDetectionTimer = new DispatcherTimer
@@ -726,7 +732,16 @@ namespace DataTransferApp.Net.ViewModels
                 
                 if (settingsWindow.ShowDialog() == true)
                 {
-                    // Reload settings if they were saved
+                    // Reload settings from database
+                    var updatedSettings = App.SettingsService!.GetSettings();
+                    
+                    // Update observable properties from reloaded settings
+                    ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
+                    
+                    // Copy updated settings back to the _settings reference
+                    _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
+                    _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
+                    
                     StatusMessage = "Settings updated successfully";
                     ShowSnackbar("Settings saved successfully!", "success");
                     LoggingService.Info("Settings updated successfully");

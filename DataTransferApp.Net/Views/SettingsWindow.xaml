@@ -70,6 +70,29 @@
                     </StackPanel>
                 </GroupBox>
                 
+                <!-- UI Display Options -->
+                <GroupBox Header="Display Options">
+                    <StackPanel>
+                        <CheckBox Content="Show audit details icon in folder list" 
+                                  IsChecked="{Binding ShowFolderAuditDetailsIcon}" 
+                                  Margin="0,0,0,5"/>
+                        <TextBlock Text="When enabled, folders with audit failures will display an information icon showing detailed audit statistics."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="20,0,0,10"/>
+                        
+                        <CheckBox Content="Show success notifications" 
+                                  IsChecked="{Binding ShowSuccessNotifications}" 
+                                  Margin="0,0,0,5"/>
+                        <TextBlock Text="When enabled, the application will show notification messages for successful operations."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="20,0,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+                
                 <!-- Application Logging -->
                 <GroupBox Header="Application Logging">
                     <StackPanel>
