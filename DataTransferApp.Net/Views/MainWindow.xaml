@@ -186,28 +186,28 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0"  Orientation="Horizontal">
-                    <TextBlock Text="Total: " FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding TotalFolders}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="Total: "  Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding TotalFolders}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Text="Ready: " FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding ReadyFolders}" Foreground="{StaticResource SuccessBrush}" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="Ready: "  Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding ReadyFolders}" Foreground="{StaticResource SuccessBrush}"  Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Text="Failed: " FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding FailedFolders}" Foreground="{StaticResource DangerBrush}" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="Failed: " Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding FailedFolders}" Foreground="{StaticResource DangerBrush}"  Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="3" Orientation="Horizontal">
-                    <TextBlock Text="Transferred: " FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding TransferredCount}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="Transferred: " Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding TransferredCount}" Foreground="{StaticResource PrimaryBrush}"  Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="4" Orientation="Horizontal"> 
-                    <TextBlock Text="Size: " FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding TotalSize}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
+                    <TextBlock Text="Size: " Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding TotalSize}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -399,12 +399,15 @@
                                                                            Foreground="{Binding CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
                                                                 <TextBlock Text="{Binding CompressedFileCount, StringFormat=' ({0} files)'}" 
                                                                            FontSize="11"
-                                                                           Foreground="#f39c12">
+                                                                           Foreground="{Binding CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}">
                                                                     <TextBlock.Style>
                                                                         <Style TargetType="TextBlock">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                             <Style.Triggers>
                                                                                 <DataTrigger Binding="{Binding CompressedAuditStatus}" Value="Caution">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding CompressedAuditStatus}" Value="Failed">
                                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                                 </DataTrigger>
                                                                             </Style.Triggers>
@@ -454,7 +457,7 @@
                 </Grid.RowDefinitions>
                 
                 <!-- Folder Details -->
-                <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15" Margin="0,0,0,10">
+                <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15,5" Margin="0,0,0,10">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -474,34 +477,16 @@
                         </StackPanel>
                         
                         <!-- Audit Summary with Color-Coded Status -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,30,0,0">
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
                             <!-- Card Style (Badges) -->
                             <StackPanel Orientation="Horizontal" Visibility="{Binding ShowAuditSummaryAsCards, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <!-- Naming Audit Card -->
-                                <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                        CornerRadius="3" 
-                                        Padding="8,4" 
-                                        Margin="0,0,10,0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource ChecklistIconGeometry}" 
-                                              Fill="White" 
-                                              Width="14" 
-                                              Height="14" 
-                                              Stretch="Uniform" 
-                                              Margin="0,0,5,0"
-                                              VerticalAlignment="Center"/>
-                                        <TextBlock Text="Folder Name: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Border>
-                                
                                 <!-- Blacklist Audit Card -->
                                 <Border Background="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
                                         CornerRadius="3" 
                                         Padding="8,4" 
                                         Margin="0,0,10,0">
                                     <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource BlockIconGeometry}" 
+                                        <Path Data="{StaticResource ApplicationGeometry}" 
                                               Fill="White" 
                                               Width="14" 
                                               Height="14" 
@@ -531,7 +516,8 @@
                                 <!-- Compressed Files Audit Card -->
                                 <Border Background="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
                                         CornerRadius="3" 
-                                        Padding="8,4">
+                                        Padding="8,4"
+                                        Margin="0,0,10,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="{StaticResource PackageIconGeometry}" 
                                               Fill="White" 
@@ -560,6 +546,27 @@
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
+
+                            <!-- Naming Audit Card -->
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding ShowAuditSummaryAsCards, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                        CornerRadius="3" 
+                                        Padding="8,4" 
+                                        Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource ChecklistIconGeometry}" 
+                                                Fill="White" 
+                                                Width="14" 
+                                                Height="14" 
+                                                Stretch="Uniform" 
+                                                Margin="0,0,5,0"
+                                                VerticalAlignment="Center"/>
+                                        <TextBlock Text="Folder Name: " Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="Why it failed" Margin="10,10,0,0" />
+                            </StackPanel>
                             
                             <!-- Simple Text Style with Icons -->
                             <StackPanel Orientation="Horizontal">
@@ -572,23 +579,7 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </StackPanel.Style>
-                                <!-- Naming Audit Text -->
-                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
-                                    <Path Data="{StaticResource ChecklistIconGeometry}" 
-                                          Fill="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                          Width="16" 
-                                          Height="16" 
-                                          Stretch="Uniform" 
-                                          Margin="0,0,6,0"
-                                          VerticalAlignment="Center"/>
-                                    <TextBlock Text="Folder Name: " FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" 
-                                               Foreground="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                               FontWeight="Bold" 
-                                               VerticalAlignment="Center"/>
-                                </StackPanel>
-                                
+                                </StackPanel.Style> 
                                 <!-- Blacklist Audit Text -->
                                 <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                                     <Path Data="{StaticResource BlockIconGeometry}" 
@@ -596,7 +587,7 @@
                                           Width="16" 
                                           Height="16" 
                                           Stretch="Uniform" 
-                                          Margin="0,0,6,0"
+                                          Margin="0,0,5,0"
                                           VerticalAlignment="Center"/>
                                     <TextBlock Text="Blacklist: " FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.BlacklistAuditStatus}" 
@@ -621,13 +612,13 @@
                                 </StackPanel>
                                 
                                 <!-- Compressed Files Audit Text -->
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
                                     <Path Data="{StaticResource PackageIconGeometry}" 
                                           Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
                                           Width="16" 
                                           Height="16" 
                                           Stretch="Uniform" 
-                                          Margin="0,0,6,0"
+                                          Margin="0,0,5,0"
                                           VerticalAlignment="Center"/>
                                     <TextBlock Text="Compressed: " FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding SelectedFolder.CompressedAuditStatus}" 
@@ -650,6 +641,34 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
+
+                            </StackPanel>
+
+                            <!-- Naming Audit Text -->
+                            <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShowAuditSummaryAsCards}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Path Data="{StaticResource ChecklistIconGeometry}" 
+                                        Fill="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                        Width="16" 
+                                        Height="16" 
+                                        Stretch="Uniform" 
+                                        Margin="0,0,6,0"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Text="Folder Name: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" 
+                                            Foreground="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                            FontWeight="Bold" 
+                                            VerticalAlignment="Center"/>
+                                <TextBlock Text="Why it failed" Margin="10,0,0,0" />
                             </StackPanel>
                         </StackPanel>
                         
@@ -806,12 +825,22 @@
                         <ProgressBar Grid.Row="1" Height="20" Value="{Binding ProgressPercent}" Minimum="0" Maximum="100" Margin="0,5,0,0"/>
                     </Grid>
                 </Border>
+            
             </Grid>
         </Grid>
         
          <!-- Status Bar -->
         <Border Grid.Row="3" Background="{StaticResource SecondaryBrush}" Padding="10,5">
-            <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center"/>
+            <!-- Main Content -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" Grid.Column="0"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" Grid.Column="2"/>
+            </Grid>
         </Border>
 
         <!-- Snackbar Notification Overlay - Non-disruptive -->
