@@ -91,28 +91,39 @@
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <Button x:Name="AddExcludedFolderButton" 
                                         Click="AddExcludedFolderButton_Click"
-                                        Width="80" 
+                                        Width="100" 
                                         Margin="0,0,0,5"
                                         Background="{StaticResource SuccessBrush}"
                                         Foreground="White"
                                         Padding="10,5">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="+" FontSize="16" FontWeight="Bold" Margin="0,0,5,0"/>
+                                        <Path Data="{StaticResource PlusFolderGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
                                         <TextBlock Text="Add" Margin="0,0,5,0"/>
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="RemoveExcludedFolderButton" 
                                         Click="RemoveExcludedFolderButton_Click"
-                                        Width="80"
+                                        Width="100"
                                         Background="{StaticResource DangerBrush}"
                                         Foreground="White"
-                                        Padding="10,5"
-                                        IsEnabled="{Binding SelectedItem, ElementName=ExcludedFoldersListBox, Converter={StaticResource NullToBoolConverter}}">
+                                        Padding="10,5">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ExcludedFoldersListBox}" Value="{x:Null}">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="−" FontSize="16" FontWeight="Bold" Margin="0,0,5,0"/>
+                                        <Path Data="{StaticResource MinusFolderGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
                                         <TextBlock Text="Remove" Margin="0,0,5,0"/>
                                     </StackPanel>
                                 </Button>
+
+                                
                             </StackPanel>
                         </Grid>
                     </StackPanel>

@@ -82,6 +82,20 @@ namespace DataTransferApp.Net.ViewModels
         
         [ObservableProperty]
         private bool _showAuditSummaryAsCards = true;
+        
+        [ObservableProperty]
+        private string _currentUser = $"{Environment.MachineName}\\{Environment.UserName}";
+        
+        [ObservableProperty]
+        private string _appTitle = "Data Transfer Application";
+
+        [ObservableProperty]
+        private string _appDescription = "Collateral L2H Data Transfer Application";
+        
+        [ObservableProperty]
+        private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
+        
+        private readonly DispatcherTimer _timeUpdateTimer;
 
         public MainViewModel(AppSettings settings)
         {
@@ -102,6 +116,14 @@ namespace DataTransferApp.Net.ViewModels
             };
             _driveDetectionTimer.Tick += (s, e) => DetectDrives();
             _driveDetectionTimer.Start();
+            
+            // Initialize time update timer (update every second)
+            _timeUpdateTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timeUpdateTimer.Tick += (s, e) => CurrentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
+            _timeUpdateTimer.Start();
 
             // Load initial data
             _ = LoadDataAsync();

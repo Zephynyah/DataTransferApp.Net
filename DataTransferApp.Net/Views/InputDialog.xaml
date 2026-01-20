@@ -29,7 +29,8 @@
             </Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click" IsCancel="True" 
                     Background="{StaticResource SecondaryBrush}" 
-                    Foreground="White" 
+                    Foreground="White"
+                    Margin="0,0,10,0" 
                     Padding="20,8">
                 <TextBlock Text="Cancel"/>
             </Button>

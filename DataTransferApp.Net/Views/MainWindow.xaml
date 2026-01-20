@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="Data Transfer Application" 
         Height="1000" Width="1400"
+        MinHeight="1000" MinWidth="1400"
         WindowStartupLocation="CenterScreen"
         Icon="/app.png"
         Background="{StaticResource BackgroundBrush}">
@@ -44,52 +45,19 @@
                 <Image Source="/app.png" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Column="0"/>
                 
                 <StackPanel Grid.Column="1">
-                    <TextBlock Text="Data Transfer Application" FontSize="24" FontWeight="Bold" Foreground="White"/>
-                    <TextBlock Text=".NET WPF v2.0" FontSize="12" Foreground="{StaticResource LightBrush}"/>
+                    <TextBlock Text="{Binding AppTitle}"  FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="{Binding AppDescription}" FontSize="12" Foreground="{StaticResource LightBrush}"/>
                 </StackPanel>
 
-                <Button Grid.Column="2" 
-                        Command="{Binding ViewTransferHistoryCommand}"
-                        ToolTip="View Transfer History"
-                        Background="Transparent" 
-                        BorderBrush="{StaticResource SecondaryBrush}" 
-                        BorderThickness="1"
-                        Width="40"
-                        Height="40"
-                        Cursor="Hand"
-                        Padding="8"
-                        Margin="0,0,10,0"
-                        VerticalAlignment="Center">
-                    <Button.Content>
-                        <Path Data="{StaticResource ClockIconGeometry}" Fill="White" Stretch="Uniform" Height="20" Width="20"/>
-                    </Button.Content>
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" 
-                                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                                BorderThickness="{TemplateBinding BorderThickness}"
-                                                CornerRadius="4">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                
+                <!-- User Info -->
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,15,0">
+                    <TextBlock Text="{Binding CurrentUser}" FontSize="14" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding CurrentDateTime}" FontSize="12" Foreground="{StaticResource LightBrush}" HorizontalAlignment="Right"/>
+                </StackPanel>
+
+                <!-- Menu Button with Dropdown -->
                 <Button Grid.Column="3" 
-                        Command="{Binding OpenSettingsCommand}"
-                        ToolTip="Settings"
+                        x:Name="MenuButton"
                         Background="Transparent" 
                         BorderBrush="{StaticResource SecondaryBrush}" 
                         BorderThickness="1"
@@ -97,9 +65,10 @@
                         Height="40"
                         Cursor="Hand"
                         Padding="8"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Click="MenuButton_Click">
                     <Button.Content>
-                        <Path Data="{StaticResource SettingsIconGeometry}" Fill="White" Stretch="Uniform" Height="20" Width="20"/>
+                        <Path Data="{StaticResource MenuIconGeometry}" Fill="White" Stretch="Uniform" Height="20" Width="20"/>
                     </Button.Content>
                     <Button.Style>
                         <Style TargetType="Button">
@@ -123,6 +92,28 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+                    <Button.ContextMenu>
+                        <ContextMenu x:Name="MenuDropdown" Placement="Bottom">
+                            <MenuItem Header="Transfer History" Command="{Binding ViewTransferHistoryCommand}">
+                                <MenuItem.Icon>
+                                    <Path Data="{StaticResource ClockIconGeometry}" 
+                                          Fill="{StaticResource SecondaryBrush}" 
+                                          Width="16" 
+                                          Height="16" 
+                                          Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}">
+                                <MenuItem.Icon>
+                                    <Path Data="{StaticResource SettingsIconGeometry}" 
+                                          Fill="{StaticResource SecondaryBrush}" 
+                                          Width="16" 
+                                          Height="16" 
+                                          Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
                 
                 <!-- Exit Button (Only visible in fullscreen) -->
@@ -135,7 +126,7 @@
                         Width="40"
                         Height="40"
                         Cursor="Hand"
-                        Padding="8"
+                        Padding="6"
                         Margin="10,0,0,0"
                         VerticalAlignment="Center"
                         x:Name="ExitButton">
@@ -472,7 +463,25 @@
                         <StackPanel Grid.Row="0" Grid.Column="0">
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SelectedFolder.FolderName, TargetNullValue='No folder selected'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" FontWeight="SemiBold" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
+                                <!-- Stats: Size | File Count -->
+                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                    <StackPanel.Resources>
+                                        <!-- Implicit Style: Automatically applies to all TextBlocks in this StackPanel -->
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
+                                    <TextBlock Text=" | "  Margin="3,0"/>
+                                    <TextBlock Text="{Binding SelectedFolder.SizeFormatted}" />
+                                    <TextBlock Text=" | "  Margin="3,0"/>
+                                    <TextBlock>
+                                        <Run Text="{Binding SelectedFolder.FileCount, Mode=OneWay}"/>
+                                        <Run Text=" files"/>
+                                    </TextBlock>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                         
@@ -692,9 +701,11 @@
                                             </Style.Triggers>
                                         </Style>
                                     </StackPanel.Style>
-                                    <TextBlock Text="(" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" />
-                                    <TextBlock Text="{Binding SelectedFolder.NamingFailureReason}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" MaxWidth="800" />
-                                    <TextBlock Text=")" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" />
+                                    <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}">
+                                        <Run Text="(" />
+                                        <Run Text="{Binding SelectedFolder.NamingFailureReason}" />
+                                        <Run Text=")" />
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

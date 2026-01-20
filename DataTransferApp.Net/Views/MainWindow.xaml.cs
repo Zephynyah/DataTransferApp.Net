@@ -74,4 +74,14 @@ public partial class MainWindow : Window
         WindowState = WindowState.Normal;
         UpdateFullScreenUI(false);
     }
+    
+    private void MenuButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Open the context menu dropdown
+        if (sender is Button button && button.ContextMenu != null)
+        {
+            button.ContextMenu.PlacementTarget = button;
+            button.ContextMenu.IsOpen = true;
+        }
+    }
 }
