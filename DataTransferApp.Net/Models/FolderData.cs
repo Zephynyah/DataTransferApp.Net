@@ -47,10 +47,19 @@ namespace DataTransferApp.Net.Models
         private string _compressedAuditStatus = "Not Audited";
         
         [ObservableProperty]
+        private string _datasetAuditStatus = "Not Audited";
+        
+        [ObservableProperty]
         private int _blacklistViolationCount = 0;
         
         [ObservableProperty]
         private int _compressedFileCount = 0;
+        
+        [ObservableProperty]
+        private string _namingFailureReason = string.Empty;
+        
+        [ObservableProperty]
+        private string _datasetFailureReason = string.Empty;
         
         public bool CanTransfer => AuditStatus == "Passed";
         

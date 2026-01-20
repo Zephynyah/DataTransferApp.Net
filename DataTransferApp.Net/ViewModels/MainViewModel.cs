@@ -258,7 +258,20 @@ namespace DataTransferApp.Net.ViewModels
                 SelectedFolder.AuditStatus = result.OverallStatus;
                 
                 // Update individual audit statuses
-                SelectedFolder.NamingAuditStatus = result.NameValidation?.IsValid == true ? "Passed" : "Failed";
+                // Combine naming and dataset validation into naming status
+                bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
+                SelectedFolder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
+                
+                // Combine failure reasons
+                var namingReasons = new List<string>();
+                if (result.NameValidation?.IsValid == false)
+                    namingReasons.Add(result.NameValidation.Message);
+                if (result.DatasetValidation?.IsValid == false)
+                    namingReasons.Add(result.DatasetValidation.Message);
+                SelectedFolder.NamingFailureReason = string.Join(". ", namingReasons);
+                
+                SelectedFolder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
+                SelectedFolder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
                 SelectedFolder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
                 SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
                 
@@ -347,7 +360,20 @@ namespace DataTransferApp.Net.ViewModels
                     folder.AuditStatus = result.OverallStatus;
                     
                     // Update individual audit statuses
-                    folder.NamingAuditStatus = result.NameValidation?.IsValid == true ? "Passed" : "Failed";
+                    // Combine naming and dataset validation into naming status
+                    bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
+                    folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
+                    
+                    // Combine failure reasons
+                    var namingReasons = new List<string>();
+                    if (result.NameValidation?.IsValid == false)
+                        namingReasons.Add(result.NameValidation.Message);
+                    if (result.DatasetValidation?.IsValid == false)
+                        namingReasons.Add(result.DatasetValidation.Message);
+                    folder.NamingFailureReason = string.Join(". ", namingReasons);
+                    
+                    folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
+                    folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
                     folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
                     folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
                     

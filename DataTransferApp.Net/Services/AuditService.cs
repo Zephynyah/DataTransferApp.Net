@@ -160,7 +160,7 @@ namespace DataTransferApp.Net.Services
                     Dataset = nameValidation.Dataset,
                     Message = isWhitelisted
                         ? $"Dataset '{nameValidation.Dataset}' is whitelisted"
-                        : $"Dataset '{nameValidation.Dataset}' is not in whitelist"
+                        : $"Dataset '{nameValidation.Dataset}' is not in the whitelist. Allowed: {string.Join(", ", _settings.WhiteListDatasets)}"
                 };
             }
             else
