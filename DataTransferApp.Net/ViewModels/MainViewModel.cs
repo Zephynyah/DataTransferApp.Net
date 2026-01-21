@@ -87,6 +87,9 @@ namespace DataTransferApp.Net.ViewModels
         private string _currentUser = $"{Environment.MachineName}\\{Environment.UserName}";
         
         [ObservableProperty]
+        private string _appVersion = "1.2.0";
+        
+        [ObservableProperty]
         private string _appTitle = "Data Transfer Application";
 
         [ObservableProperty]
@@ -833,8 +836,8 @@ namespace DataTransferApp.Net.ViewModels
         {
             try
             {
-                // var aboutWindow = new AboutWindow();
-                // aboutWindow.ShowDialog();
+                var aboutWindow = new AboutViewWindow(this);
+                aboutWindow.ShowDialog();
 
             }
             catch (Exception ex)
