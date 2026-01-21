@@ -231,42 +231,6 @@
                     </StackPanel>
                 </GroupBox>
                 
-                <!-- Transfer Logging -->
-                <GroupBox Header="Transfer History Database">
-                    <StackPanel>
-                        <TextBlock Text="Database Storage Location:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferHistoryDatabasePath}" Margin="0,0,0,5" 
-                                 ToolTip="Leave empty to use automatic location (shared or local)"/>
-                        <TextBlock Text="Leave empty to automatically select shared or local location based on permissions."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
-                        
-                        <CheckBox Content="Use Shared Database Location (All Users)" 
-                                  IsChecked="{Binding UseSharedDatabaseLocation}" 
-                                  Margin="0,0,0,5"
-                                  ToolTip="Stores database in ProgramData for all users to access"/>
-                        <TextBlock Text="When enabled, database stores all transfer history in a central location accessible by all users."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
-                        
-                        <TextBlock Text="Keep Transfer Records (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding KeepTransferRecords}" Margin="0,0,0,5"/>
-                        <TextBlock Text="Automatically clean up database records older than specified days."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
-                        
-                        <TextBlock FontSize="10" Foreground="#3498db" TextWrapping="Wrap">
-                            💡 Database provides 50-200x faster queries than file-based systems and supports multi-user access.
-                        </TextBlock>
-                    </StackPanel>
-                </GroupBox>
-                
                 <!-- Transfer History Database -->
                 <GroupBox Header="Transfer History Database">
                     <StackPanel>
