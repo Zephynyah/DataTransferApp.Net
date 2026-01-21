@@ -43,9 +43,9 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _statusMessage = "Ready";
 
-        public TransferHistoryViewModel(string transferLogsDirectory)
+        public TransferHistoryViewModel(string TransferRecordsDirectory)
         {
-            _historyService = new TransferHistoryService(transferLogsDirectory);
+            _historyService = new TransferHistoryService(TransferRecordsDirectory);
             _ = LoadTransfersAsync();
         }
 

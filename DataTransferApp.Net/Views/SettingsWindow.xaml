@@ -36,8 +36,8 @@
                         <TextBlock Text="Staging Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding StagingDirectory}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Transfer Logs Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferLogsDirectory}" Margin="0,0,0,10"/>
+                        <TextBlock Text="Transfer Records Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding TransferRecordsDirectory}" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Retention Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding RetentionDirectory}" Margin="0,0,0,10"/>
@@ -234,20 +234,20 @@
                 <!-- Transfer Logging -->
                 <GroupBox Header="Transfer Logging">
                     <StackPanel>
-                        <CheckBox Content="Enable Transfer Logs" IsChecked="{Binding EnableTransferLogs}" Margin="0,0,0,10"/>
-                        <CheckBox Content="Log Transfer Details (File List)" IsChecked="{Binding LogTransferDetails}" IsEnabled="{Binding EnableTransferLogs}" Margin="0,0,0,10"/>
-                        <CheckBox Content="Save Transfer Summary" IsChecked="{Binding SaveTransferSummary}" IsEnabled="{Binding EnableTransferLogs}" Margin="0,0,0,10"/>
-                        <CheckBox Content="Include File Hashes in Transfer Logs" IsChecked="{Binding IncludeFileHashes}" IsEnabled="{Binding EnableTransferLogs}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Enable Transfer Records" IsChecked="{Binding EnableTransferRecords}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Log Transfer Details (File List)" IsChecked="{Binding LogTransferDetails}" IsEnabled="{Binding EnableTransferRecords}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Save Transfer Summary" IsChecked="{Binding SaveTransferSummary}" IsEnabled="{Binding EnableTransferRecords}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Include File Hashes in Transfer Records" IsChecked="{Binding IncludeFileHashes}" IsEnabled="{Binding EnableTransferRecords}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Transfer Log Format:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding TransferLogFormat}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding EnableTransferLogs}">
+                        <ComboBox SelectedValue="{Binding TransferLogFormat}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding EnableTransferRecords}">
                             <ComboBoxItem Content="JSON"/>
                             <ComboBoxItem Content="CSV"/>
                             <ComboBoxItem Content="TXT"/>
                         </ComboBox>
                         
-                        <TextBlock Text="Keep Transfer Logs (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding KeepTransferLogs}" IsEnabled="{Binding EnableTransferLogs}"/>
+                        <TextBlock Text="Keep Transfer Records (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding KeepTransferRecords}" IsEnabled="{Binding EnableTransferRecords}"/>
                     </StackPanel>
                 </GroupBox>
                 

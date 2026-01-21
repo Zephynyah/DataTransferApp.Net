@@ -10,11 +10,11 @@ namespace DataTransferApp.Net.Services
 {
     public class TransferHistoryService
     {
-        private readonly string _transferLogsDirectory;
+        private readonly string _TransferRecordsDirectory;
 
-        public TransferHistoryService(string transferLogsDirectory)
+        public TransferHistoryService(string TransferRecordsDirectory)
         {
-            _transferLogsDirectory = transferLogsDirectory;
+            _TransferRecordsDirectory = TransferRecordsDirectory;
         }
 
         public async Task<List<TransferLog>> GetAllTransfersAsync()
@@ -23,12 +23,12 @@ namespace DataTransferApp.Net.Services
 
             try
             {
-                if (!Directory.Exists(_transferLogsDirectory))
+                if (!Directory.Exists(_TransferRecordsDirectory))
                 {
                     return transfers;
                 }
 
-                var logFiles = Directory.GetFiles(_transferLogsDirectory, "*.json")
+                var logFiles = Directory.GetFiles(_TransferRecordsDirectory, "*.json")
                     .OrderByDescending(f => File.GetCreationTime(f))
                     .ToList();
 

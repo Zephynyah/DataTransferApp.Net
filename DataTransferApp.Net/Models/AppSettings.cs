@@ -16,10 +16,10 @@ namespace DataTransferApp.Net.Models
         // Directory Paths
         // public string StagingDirectory { get; set; } = @"D:\TransferStaging";
         // public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
-        // public string TransferLogsDirectory { get; set; } = @"D:\TransferLogs";
+        // public string TransferRecordsDirectory { get; set; } = @"D:\TransferRecords";
         public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
         public string RetentionDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
-        public string TransferLogsDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferLogs";
+        public string TransferRecordsDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRecords";
         public int RetentionDays { get; set; } = 7;
         
         // Folder Naming
@@ -60,12 +60,12 @@ namespace DataTransferApp.Net.Models
         public int KeepLogFiles { get; set; } = 5;
         
         // Transfer Logging
-        public bool EnableTransferLogs { get; set; } = true;
+        public bool EnableTransferRecords { get; set; } = true;
         public bool LogTransferDetails { get; set; } = true;
         public bool SaveTransferSummary { get; set; } = true;
         public string TransferLogFormat { get; set; } = "CSV"; // JSON, CSV, TXT
         public bool IncludeFileHashes { get; set; } = true;
-        public int KeepTransferLogs { get; set; } = 365; // Days
+        public int KeepTransferRecords { get; set; } = 365; // Days
         
         // Transfer Settings
         public bool CalculateFileHashes { get; set; } = true;

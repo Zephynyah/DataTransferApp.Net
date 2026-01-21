@@ -434,7 +434,7 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                var logDir = _settings.TransferLogsDirectory;
+                var logDir = _settings.TransferRecordsDirectory;
                 Directory.CreateDirectory(logDir);
 
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");

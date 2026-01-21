@@ -857,7 +857,7 @@ namespace DataTransferApp.Net.ViewModels
         {
             try
             {
-                var historyWindow = new TransferHistoryWindow(_settings.TransferLogsDirectory);
+                var historyWindow = new TransferHistoryWindow(_settings.TransferRecordsDirectory);
                 historyWindow.ShowDialog();
             }
             catch (Exception ex)
