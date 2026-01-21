@@ -51,14 +51,10 @@ param(
     [switch]$SelfContained,
     
     [Parameter(Mandatory=$false)]
-    [switch]$Trimmed = $false
+    [switch]$Trimmed
 )
 
 $ErrorActionPreference = "Stop"
-
-$SelfContained = $true
-$SingleFile = $true
-$Trimmed = $true
 
 # Script paths
 $ScriptRoot = $PSScriptRoot
