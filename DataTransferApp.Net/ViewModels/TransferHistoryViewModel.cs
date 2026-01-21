@@ -67,6 +67,12 @@ namespace DataTransferApp.Net.ViewModels
                 TotalFiles = stats["TotalFiles"];
 
                 StatusMessage = $"Loaded {TotalTransfers} transfers";
+
+                // Automatically select the first item if any exist
+                if (Transfers.Count > 0)
+                {
+                    SelectedTransfer = Transfers[0];
+                }
             }
             catch (Exception ex)
             {

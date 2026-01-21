@@ -14,9 +14,12 @@ namespace DataTransferApp.Net.Models
         public string ApplicationVersion { get; set; } = "1.2.0";
         
         // Directory Paths
-        public string StagingDirectory { get; set; } = @"D:\TransferStaging";
-        public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
-        public string TransferLogsDirectory { get; set; } = @"D:\TransferLogs";
+        // public string StagingDirectory { get; set; } = @"D:\TransferStaging";
+        // public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
+        // public string TransferLogsDirectory { get; set; } = @"D:\TransferLogs";
+        public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
+        public string RetentionDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
+        public string TransferLogsDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferLogs";
         public int RetentionDays { get; set; } = 7;
         
         // Folder Naming
@@ -31,7 +34,7 @@ namespace DataTransferApp.Net.Models
         // Dataset Whitelist
         public List<string> WhiteListDatasets { get; set; } = new()
         {
-            "HYG", "FAN", "PGH", "JTH", "CAN", "XAN", "RAN", "YAN", "BAN", "MAN", "SAN", "FRT"
+            "UG", "PAN", "PGP"
         };
         
         // Audit Strategy

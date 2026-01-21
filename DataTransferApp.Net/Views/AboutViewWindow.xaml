@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
-        Title="About" Height="620" Width="600"
+        Title="About" Height="600" Width="600"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="White">
@@ -46,7 +46,6 @@
 
             <StackPanel Margin="20,0,0,0">
                 <TextBlock Text="• Windows 10 or later" FontSize="14" Margin="0,2"/>
-                <TextBlock Text="• .NET 8.0 Runtime" FontSize="14" Margin="0,2"/>
                 <TextBlock Text="• Minimum 4GB RAM" FontSize="14" Margin="0,2"/>
             </StackPanel>
         </StackPanel>

@@ -219,6 +219,11 @@ namespace DataTransferApp.Net.ViewModels
                     LoggingService.Info("Auto-audit on startup enabled, running audit all...");
                     await AuditAllFoldersAsync();
                 }
+                else
+                {
+                    LoggingService.Info("Auto-audit on startup not enabled or no folders to audit.");
+                }   
+
             }
             catch (Exception ex)
             {

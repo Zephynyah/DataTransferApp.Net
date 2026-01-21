@@ -478,7 +478,7 @@
                                     <StackPanel.Resources>
                                         <!-- Implicit Style: Automatically applies to all TextBlocks in this StackPanel -->
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
                                             <Setter Property="FontSize" Value="12"/>
                                             <Setter Property="HorizontalAlignment" Value="Center"/>
                                         </Style>
@@ -618,6 +618,7 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                                     <Path Data="{StaticResource BlockIconGeometry}" 
                                           Fill="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                          StrokeThickness ="0"
                                           Width="16" 
                                           Height="16" 
                                           Stretch="Uniform" 
@@ -649,7 +650,7 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
                                     <Path Data="{StaticResource PackageIcon2Geometry}" 
                                           Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"
-                                          Stroke="Black" 
+                                          Stroke="#4D3D36" 
                                           Width="14" 
                                           Height="14" 
                                           Stretch="Uniform" 
@@ -814,8 +815,8 @@
                                     <DataTemplate>
                                         <Path Data="{Binding Converter={StaticResource FileIconConverter}}" 
                                               Stroke="Black" 
-                                              Width="15" 
-                                              Height="15" 
+                                              Width="14" 
+                                              Height="14" 
                                               Stretch="Uniform" 
                                               HorizontalAlignment="Center">
                                             <Path.Style>

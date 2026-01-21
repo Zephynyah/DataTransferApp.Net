@@ -143,7 +143,7 @@ namespace DataTransferApp.Net.Services
                 return new NameValidation
                 {
                     IsValid = false,
-                    Message = "Folder name does not match required pattern: employeeid_yyyymmdd_dataset[_sequence]"
+                    Message = "Required pattern: employeeid_yyyymmdd_dataset[_sequence]"
                 };
             }
         }
@@ -169,7 +169,7 @@ namespace DataTransferApp.Net.Services
                 {
                     IsValid = false,
                     Dataset = null,
-                    Message = "Cannot validate dataset - folder name is invalid"
+                    Message = "Cannot validate dataset"
                 };
             }
         }
