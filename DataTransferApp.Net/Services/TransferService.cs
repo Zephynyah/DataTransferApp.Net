@@ -14,11 +14,34 @@ namespace DataTransferApp.Net.Services
     {
         private readonly AppSettings _settings;
         private readonly ArchiveService _archiveService;
+        private readonly TransferDatabaseService? _databaseService;
+        private readonly ComplianceRecordService? _complianceService;
 
         public TransferService(AppSettings settings)
         {
             _settings = settings;
             _archiveService = new ArchiveService();
+            
+            // Initialize database service
+            try
+            {
+                var dbPath = string.IsNullOrWhiteSpace(_settings.TransferHistoryDatabasePath)
+                    ? null
+                    : _settings.TransferHistoryDatabasePath;
+                _databaseService = new TransferDatabaseService(dbPath);
+                LoggingService.Info("Transfer database service initialized");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Failed to initialize transfer database service", ex);
+            }
+            
+            // Initialize compliance service
+            if (_settings.GenerateComplianceRecords)
+            {
+                _complianceService = new ComplianceRecordService(_settings);
+                LoggingService.Info("Compliance record service initialized");
+            }
         }
 
         public bool DriveHasContents(string drivePath)
@@ -434,21 +457,36 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                var logDir = _settings.TransferRecordsDirectory;
-                Directory.CreateDirectory(logDir);
-
-                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var fileName = $"{log.TransferInfo.FolderName}_{timestamp}.json";
-                var logPath = Path.Combine(logDir, fileName);
-
-                var json = JsonSerializer.Serialize(log, new JsonSerializerOptions
+                // Save to LiteDB database
+                if (_databaseService != null)
                 {
-                    WriteIndented = true
-                });
+                    _databaseService.AddTransfer(log);
+                }
+                
+                // Generate compliance record if enabled
+                if (_settings.AutoGenerateComplianceOnTransfer && _complianceService != null)
+                {
+                    await _complianceService.GenerateComplianceRecordAsync(log);
+                }
+                
+                // Save JSON log file (legacy/backup)
+                if (_settings.EnableTransferRecords)
+                {
+                    var logDir = _settings.TransferRecordsDirectory;
+                    Directory.CreateDirectory(logDir);
 
-                await File.WriteAllTextAsync(logPath, json);
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    var fileName = $"{log.TransferInfo.FolderName}_{timestamp}.json";
+                    var logPath = Path.Combine(logDir, fileName);
 
-                LoggingService.Info($"Transfer log saved: {logPath}");
+                    var json = JsonSerializer.Serialize(log, new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    });
+
+                    await File.WriteAllTextAsync(logPath, json);
+                    LoggingService.Info($"Transfer log saved: {logPath}");
+                }
             }
             catch (Exception ex)
             {

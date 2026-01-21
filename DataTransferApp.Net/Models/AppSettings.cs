@@ -67,6 +67,17 @@ namespace DataTransferApp.Net.Models
         public bool IncludeFileHashes { get; set; } = true;
         public int KeepTransferRecords { get; set; } = 365; // Days
         
+        // Transfer History Database (LiteDB)
+        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = use TransferRecordsDirectory
+        public bool UseSharedDatabaseLocation { get; set; } = true; // True = central location for all users
+        
+        // Compliance Records
+        public bool GenerateComplianceRecords { get; set; } = true;
+        public string ComplianceRecordFormat { get; set; } = "CSV"; // CSV, Excel
+        public string ComplianceRecordsPath { get; set; } = string.Empty; // Empty = use TransferRecordsDirectory
+        public bool IncludeFileListInCompliance { get; set; } = true;
+        public bool AutoGenerateComplianceOnTransfer { get; set; } = true;
+        
         // Transfer Settings
         public bool CalculateFileHashes { get; set; } = true;
         public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5

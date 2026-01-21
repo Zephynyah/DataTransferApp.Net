@@ -18,10 +18,11 @@ A modern .NET 8 WPF application for secure data transfer between air-gapped syst
 ## 📦 Installed Packages
 
 - **SharpCompress** (0.44.0) - Archive handling (zip, rar, 7z, tar, gz, etc.)
-- **LiteDB** (5.0.21) - Embedded NoSQL database for settings
+- **LiteDB** (5.0.21) - Embedded NoSQL database for settings and transfer history
 - **Serilog** (4.3.0) - Structured logging framework
 - **Serilog.Sinks.File** (7.0.0) - File logging sink
 - **CommunityToolkit.Mvvm** (8.4.0) - MVVM helpers and source generators
+- **EPPlus** (7.7.0) - Excel file generation for compliance records
 
 ## 🏗️ Project Structure
 
@@ -200,6 +201,27 @@ This .NET application improves upon the PowerShell version:
 - ✅ Modern MVVM architecture
 - ✅ Better error handling and validation
 - ✅ Configurable log levels and rotation
+- ✅ **LiteDB database for centralized transfer history (v1.2.0)**
+- ✅ **Automated compliance record generation (v1.2.0)**
+
+## 📋 Recent Updates
+
+### Version 1.2.0 (January 21, 2026)
+**Transfer History and Compliance Records Refactoring**
+
+Major enhancement implementing centralized transfer history storage and automated compliance record generation:
+
+- **LiteDB Database**: Centralized storage for all transfer records with 50-200x performance improvement
+- **Compliance Records**: Automatic generation of CSV/Excel compliance records for every transfer
+- **Multi-User Support**: Shared database location for team collaboration
+- **Migration Tool**: Utility to migrate existing JSON logs to database
+- **Database Maintenance**: Automatic cleanup and optimization features
+
+**Documentati1.2.0  
+**Last Updated**: January 21ntation](docs/TRANSFER_HISTORY_REFACTORING.md)
+- [User Quick Reference](docs/TRANSFER_HISTORY_QUICK_REFERENCE.md)
+- [Migration Guide](docs/MIGRATION_GUIDE.md)
+- [Refactoring Summary](docs/REFACTORING_SUMMARY.md)
 
 ## 🤝 Contributing
 

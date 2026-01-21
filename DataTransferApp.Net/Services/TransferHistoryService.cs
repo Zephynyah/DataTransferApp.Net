@@ -8,37 +8,106 @@ using System.Threading.Tasks;
 
 namespace DataTransferApp.Net.Services
 {
-    public class TransferHistoryService
+    /// <summary>
+    /// Service for managing transfer history.
+    /// Uses LiteDB database as primary storage with fallback to JSON files.
+    /// </summary>
+    public class TransferHistoryService : IDisposable
     {
-        private readonly string _TransferRecordsDirectory;
+        private readonly string _transferRecordsDirectory;
+        private readonly TransferDatabaseService _databaseService;
 
-        public TransferHistoryService(string TransferRecordsDirectory)
+        public TransferHistoryService(string transferRecordsDirectory, string? databasePath = null)
         {
-            _TransferRecordsDirectory = TransferRecordsDirectory;
+            _transferRecordsDirectory = transferRecordsDirectory;
+            _databaseService = new TransferDatabaseService(databasePath);
         }
 
+        /// <summary>
+        /// Gets all transfers from the database.
+        /// </summary>
         public async Task<List<TransferLog>> GetAllTransfersAsync()
         {
-            var transfers = new List<TransferLog>();
+            return await Task.Run(() => _databaseService.GetAllTransfers());
+        }
+
+        /// <summary>
+        /// Searches for transfers matching the search term.
+        /// </summary>
+        public async Task<List<TransferLog>> SearchTransfersAsync(string searchTerm)
+        {
+            return await Task.Run(() => _databaseService.SearchTransfers(searchTerm));
+        }
+
+        /// <summary>
+        /// Gets a transfer by its ID.
+        /// </summary>
+        public async Task<TransferLog?> GetTransferByIdAsync(string id)
+        {
+            return await Task.Run(() =>
+            {
+                if (LiteDB.ObjectId.TryParse(id, out var objectId))
+                {
+                    return _databaseService.GetTransferById(objectId);
+                }
+                return null;
+            });
+        }
+
+        /// <summary>
+        /// Gets transfers within a date range.
+        /// </summary>
+        public async Task<List<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await Task.Run(() => _databaseService.GetTransfersByDateRange(startDate, endDate));
+        }
+
+        /// <summary>
+        /// Gets the most recent transfers.
+        /// </summary>
+        public async Task<List<TransferLog>> GetRecentTransfersAsync(int count = 10)
+        {
+            return await Task.Run(() => _databaseService.GetRecentTransfers(count));
+        }
+
+        /// <summary>
+        /// Gets transfer statistics.
+        /// </summary>
+        public async Task<Dictionary<string, int>> GetTransferStatisticsAsync()
+        {
+            return await Task.Run(() => _databaseService.GetTransferStatistics());
+        }
+
+        /// <summary>
+        /// Migrates existing JSON transfer logs to the database.
+        /// </summary>
+        public async Task<int> MigrateJsonLogsToDatabase()
+        {
+            var migratedCount = 0;
 
             try
             {
-                if (!Directory.Exists(_TransferRecordsDirectory))
+                if (!Directory.Exists(_transferRecordsDirectory))
                 {
-                    return transfers;
+                    LoggingService.Warning("Transfer records directory does not exist");
+                    return 0;
                 }
 
-                var logFiles = Directory.GetFiles(_TransferRecordsDirectory, "*.json")
-                    .OrderByDescending(f => File.GetCreationTime(f))
+                var jsonFiles = Directory.GetFiles(_transferRecordsDirectory, "*.json")
+                    .OrderBy(f => File.GetCreationTime(f))
                     .ToList();
 
-                foreach (var logFile in logFiles)
+                LoggingService.Info($"Found {jsonFiles.Count} JSON transfer logs to migrate");
+
+                var transfers = new List<TransferLog>();
+
+                foreach (var jsonFile in jsonFiles)
                 {
                     try
                     {
-                        var json = await File.ReadAllTextAsync(logFile);
+                        var json = await File.ReadAllTextAsync(jsonFile);
                         var transfer = JsonSerializer.Deserialize<TransferLog>(json);
-                        
+
                         if (transfer != null)
                         {
                             transfers.Add(transfer);
@@ -46,77 +115,55 @@ namespace DataTransferApp.Net.Services
                     }
                     catch (Exception ex)
                     {
-                        LoggingService.Warning($"Failed to load transfer log: {logFile} - {ex.Message}");
+                        LoggingService.Warning($"Failed to parse JSON log: {jsonFile} - {ex.Message}");
                     }
                 }
 
-                LoggingService.Info($"Loaded {transfers.Count} transfer records");
+                // Batch insert into database
+                if (transfers.Count > 0)
+                {
+                    if (_databaseService.AddTransfers(transfers))
+                    {
+                        migratedCount = transfers.Count;
+                        LoggingService.Success($"Successfully migrated {migratedCount} transfer records to database");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                LoggingService.Error("Error loading transfer history", ex);
+                LoggingService.Error("Error migrating JSON logs to database", ex);
             }
 
-            return transfers;
+            return migratedCount;
         }
 
-        public async Task<List<TransferLog>> SearchTransfersAsync(string searchTerm)
+        /// <summary>
+        /// Gets the database file path.
+        /// </summary>
+        public string GetDatabasePath()
         {
-            var allTransfers = await GetAllTransfersAsync();
-
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                return allTransfers;
-            }
-
-            searchTerm = searchTerm.ToLower();
-
-            return allTransfers.Where(t =>
-                t.TransferInfo.FolderName.ToLower().Contains(searchTerm) ||
-                t.TransferInfo.Employee.ToLower().Contains(searchTerm) ||
-                t.TransferInfo.DTA.ToLower().Contains(searchTerm) ||
-                t.TransferInfo.Origin.ToLower().Contains(searchTerm) ||
-                t.TransferInfo.Destination.ToLower().Contains(searchTerm)
-            ).ToList();
+            return _databaseService.GetDatabasePath();
         }
 
-        public async Task<TransferLog?> GetTransferByIdAsync(string id)
+        /// <summary>
+        /// Cleans up old transfer records from database.
+        /// </summary>
+        public async Task<int> CleanupOldRecordsAsync(int retentionDays)
         {
-            var transfers = await GetAllTransfersAsync();
-            return transfers.FirstOrDefault(t => t.Id.ToString() == id);
+            return await Task.Run(() => _databaseService.CleanupOldTransfers(retentionDays));
         }
 
-        public async Task<List<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// Optimizes the database.
+        /// </summary>
+        public async Task OptimizeDatabaseAsync()
         {
-            var allTransfers = await GetAllTransfersAsync();
-
-            return allTransfers.Where(t =>
-                t.TransferInfo.Date >= startDate &&
-                t.TransferInfo.Date <= endDate
-            ).ToList();
+            await Task.Run(() => _databaseService.OptimizeDatabase());
         }
 
-        public async Task<List<TransferLog>> GetRecentTransfersAsync(int count = 10)
+        public void Dispose()
         {
-            var allTransfers = await GetAllTransfersAsync();
-            return allTransfers.OrderByDescending(t => t.TransferInfo.Date)
-                .Take(count)
-                .ToList();
-        }
-
-        public async Task<Dictionary<string, int>> GetTransferStatisticsAsync()
-        {
-            var transfers = await GetAllTransfersAsync();
-
-            return new Dictionary<string, int>
-            {
-                ["TotalTransfers"] = transfers.Count,
-                ["TodayTransfers"] = transfers.Count(t => t.TransferInfo.Date.Date == DateTime.Today),
-                ["ThisWeekTransfers"] = transfers.Count(t => t.TransferInfo.Date >= DateTime.Now.AddDays(-7)),
-                ["ThisMonthTransfers"] = transfers.Count(t => t.TransferInfo.Date.Month == DateTime.Now.Month && 
-                                                              t.TransferInfo.Date.Year == DateTime.Now.Year),
-                ["TotalFiles"] = transfers.Sum(t => t.Summary.TotalFiles)
-            };
+            _databaseService?.Dispose();
         }
     }
 }
