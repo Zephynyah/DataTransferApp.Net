@@ -11,6 +11,7 @@
     <Window.Resources>
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
         <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
+        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -259,6 +260,7 @@
                         <ComboBox SelectedValue="{Binding HashAlgorithm}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding CalculateFileHashes}">
                             <ComboBoxItem Content="SHA256"/>
                             <ComboBoxItem Content="SHA512"/>
+                            <ComboBoxItem Content="SHA1"/>
                             <ComboBoxItem Content="MD5"/>
                         </ComboBox>
                         
@@ -279,7 +281,7 @@
                             <ComboBoxItem Content="Overwrite"/>
                         </ComboBox>
                         <TextBlock FontSize="10" Foreground="#7F8C8D" TextWrapping="Wrap" Margin="0,0,0,10">
-                            • AppendSequence: Add sequence number to duplicate folders (e.g., Folder_001)
+                            • AppendSequence: Add sequence number to duplicate folders (e.g., Folder_1)
                             <LineBreak/>
                             • Skip: Do not transfer if folder already exists on drive
                             <LineBreak/>

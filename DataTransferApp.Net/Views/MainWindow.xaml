@@ -21,6 +21,7 @@
         <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
         <helpers:FileIconConverter x:Key="FileIconConverter"/>
         <helpers:AuditStatusToBrushConverter x:Key="AuditStatusToBrushConverter"/>
+        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -228,8 +229,8 @@
                             </Grid.ColumnDefinitions>
 
                             <Path Data="{StaticResource DropboxIconGeometry}" Width="16" Height="16" Grid.Column="0"  Stretch="Uniform" Margin="0,0,10,0" Fill="{StaticResource SecondaryBrush}"/>
-                            <TextBlock Text="Dropbox Folders" FontWeight="SemiBold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0"/>
-                            <Button Style="{StaticResource IconButtonStyle}" Grid.Column="2"  Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh List">
+                            <TextBlock Text="Dropbox Folders" FontWeight="Bold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0"/>
+                            <Button Background="Transparent" BorderBrush="Transparent" Padding="0" Margin="0" Grid.Column="2"  Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh List">
                                 <Path Data="{StaticResource RefreshIconGeometry}" Fill="{StaticResource SecondaryBrush}" Width="14" Height="14" Stretch="Uniform"/>
                             </Button>
                         </Grid>
@@ -460,11 +461,11 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         
-                        <StackPanel Grid.Row="0" Grid.Column="0">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Visibility="{Binding SelectedFolder, Converter={StaticResource NullToVisibilityConverter}}">
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding SelectedFolder.FolderName, TargetNullValue='No folder selected'}" FontSize="16" FontWeight="SemiBold" Margin="0,0,20,0"/>
                                 <!-- Stats: Size | File Count -->
-                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0" >
                                     <StackPanel.Resources>
                                         <!-- Implicit Style: Automatically applies to all TextBlocks in this StackPanel -->
                                         <Style TargetType="TextBlock">
@@ -474,7 +475,7 @@
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="{Binding SelectedFolder.AuditStatus, StringFormat='Status: {0}'}" Foreground="{Binding SelectedFolder.AuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
-                                    <TextBlock Text=" | "  Margin="3,0"/>
+                                    <TextBlock Text=" | "  Margin="3,0" />
                                     <TextBlock Text="{Binding SelectedFolder.SizeFormatted}" />
                                     <TextBlock Text=" | "  Margin="3,0"/>
                                     <TextBlock>
@@ -486,7 +487,7 @@
                         </StackPanel>
                         
                         <!-- Audit Summary with Color-Coded Status -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0" Visibility="{Binding SelectedFolder, Converter={StaticResource NullToVisibilityConverter}}">
                             <!-- Card Style (Badges) -->
                             <StackPanel Orientation="Horizontal" Visibility="{Binding ShowAuditSummaryAsCards, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <!-- Blacklist Audit Card -->
@@ -496,6 +497,7 @@
                                         Margin="0,0,10,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="{StaticResource ApplicationGeometry}" 
+                                           Stroke="Black" 
                                               Fill="White" 
                                               Width="14" 
                                               Height="14" 
@@ -528,7 +530,8 @@
                                         Padding="8,4"
                                         Margin="0,0,10,0">
                                     <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource PackageIconGeometry}" 
+                                        <Path Data="{StaticResource PackageIcon2Geometry}" 
+                                            Stroke="Black" 
                                               Fill="White" 
                                               Width="14" 
                                               Height="14" 
@@ -606,6 +609,7 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                                     <Path Data="{StaticResource BlockIconGeometry}" 
                                           Fill="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                          Stroke="Black" 
                                           Width="16" 
                                           Height="16" 
                                           Stretch="Uniform" 
@@ -635,10 +639,11 @@
                                 
                                 <!-- Compressed Files Audit Text -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
-                                    <Path Data="{StaticResource PackageIconGeometry}" 
-                                          Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                          Width="16" 
-                                          Height="16" 
+                                    <Path Data="{StaticResource PackageIcon2Geometry}" 
+                                          Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"
+                                          Stroke="Black"  
+                                          Width="14" 
+                                          Height="14" 
                                           Stretch="Uniform" 
                                           Margin="0,0,5,0"
                                           VerticalAlignment="Center"/>
@@ -796,12 +801,13 @@
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
                             <!-- Icon Column -->
-                            <DataGridTemplateColumn Header="" Width="30">
+                            <DataGridTemplateColumn Header="" Width="35">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Path Data="{Binding Converter={StaticResource FileIconConverter}}" 
-                                              Width="16" 
-                                              Height="16" 
+                                              Stroke="Black" 
+                                              Width="15" 
+                                              Height="15" 
                                               Stretch="Uniform" 
                                               HorizontalAlignment="Center">
                                             <Path.Style>

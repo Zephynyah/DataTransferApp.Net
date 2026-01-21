@@ -464,6 +464,7 @@ namespace DataTransferApp.Net.Services
                 {
                     "SHA512" => SHA512.Create(),
                     "MD5" => MD5.Create(),
+                    "SHA1" => SHA1.Create(),
                     _ => SHA256.Create()
                 };
 

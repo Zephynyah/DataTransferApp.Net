@@ -11,29 +11,27 @@ namespace DataTransferApp.Net.Models
         
         // Application Settings
         public string DataTransferAgent { get; set; } = Environment.UserName;
-        public string ApplicationVersion { get; set; } = "2.0.0";
+        public string ApplicationVersion { get; set; } = "1.2.0";
         
         // Directory Paths
         public string StagingDirectory { get; set; } = @"D:\TransferStaging";
         public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
         public string TransferLogsDirectory { get; set; } = @"D:\TransferLogs";
-        public int RetentionDays { get; set; } = 30;
+        public int RetentionDays { get; set; } = 7;
         
         // Folder Naming
-        public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{3}(_\d+)?$";
+        public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{2,10}(_\d+)?$";
         
         // File Extension Blacklist
         public List<string> BlacklistedExtensions { get; set; } = new()
         {
-            ".exe", ".dll", ".bat", ".cmd", ".ps1", ".vbs", ".msi",
-            ".scr", ".com", ".pif", ".sys", ".drv"
+            ".exe", ".dll", ".msi", ".scr", ".com", ".pif", ".sys", ".drv"
         };
         
         // Dataset Whitelist
         public List<string> WhiteListDatasets { get; set; } = new()
         {
-            "HYG", "FAN", "PGH", "JTH", "CAN", "XAN", "RAN", "YAN",
-            "BAN", "MAN", "SAN", "FRT"
+            "HYG", "FAN", "PGH", "JTH", "CAN", "XAN", "RAN", "YAN", "BAN", "MAN", "SAN", "FRT"
         };
         
         // Audit Strategy
@@ -54,7 +52,7 @@ namespace DataTransferApp.Net.Models
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;
         public string LogLevel { get; set; } = "Info"; // Debug, Info, Warning, Error
-        public string LogFormat { get; set; } = "JSON"; // JSON, CSV, TXT
+        public string LogFormat { get; set; } = "TXT"; // JSON, CSV, TXT
         public int MaxLogSizeMB { get; set; } = 10;
         public int KeepLogFiles { get; set; } = 5;
         
@@ -62,13 +60,13 @@ namespace DataTransferApp.Net.Models
         public bool EnableTransferLogs { get; set; } = true;
         public bool LogTransferDetails { get; set; } = true;
         public bool SaveTransferSummary { get; set; } = true;
-        public string TransferLogFormat { get; set; } = "JSON"; // JSON, CSV, TXT
+        public string TransferLogFormat { get; set; } = "CSV"; // JSON, CSV, TXT
         public bool IncludeFileHashes { get; set; } = true;
-        public int KeepTransferLogs { get; set; } = 30; // Days
+        public int KeepTransferLogs { get; set; } = 365; // Days
         
         // Transfer Settings
         public bool CalculateFileHashes { get; set; } = true;
-        public string HashAlgorithm { get; set; } = "SHA256"; // SHA256, SHA512, MD5
+        public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5
         public bool EnableCompression { get; set; } = false;
         public int MaxConcurrentTransfers { get; set; } = 1;
         public bool AutoHandleConflicts { get; set; } = true;
@@ -77,11 +75,11 @@ namespace DataTransferApp.Net.Models
         
         // UI Settings
         public double WindowWidth { get; set; } = 1400;
-        public double WindowHeight { get; set; } = 1000;
+        public double WindowHeight { get; set; } = 1200;
         public bool ShowSuccessNotifications { get; set; } = true;
         public bool AutoAuditOnStartup { get; set; } = false;
-        public bool ShowFolderAuditDetailsIcon { get; set; } = true;
-        public bool ShowAuditSummaryAsCards { get; set; } = true;
+        public bool ShowFolderAuditDetailsIcon { get; set; } = false;
+        public bool ShowAuditSummaryAsCards { get; set; } = false;
         public string WindowStartupMode { get; set; } = "Normal"; // Normal, Maximized, Fullscreen
         
         // Last Updated

@@ -17,7 +17,7 @@ namespace DataTransferApp.Net.Helpers
                 // Return geometry key for compressed files
                 if (file.IsCompressed)
                 {
-                    return "M 2,2 L 14,2 L 14,14 L 2,14 Z M 4,4 L 12,4 L 12,12 L 4,12 Z M 6,6 L 10,6 M 6,8 L 10,8 M 6,10 L 10,10"; // Archive/zip icon
+                    return "M19 9V20H5V9M19 9H5M19 9C19.5523 9 20 8.55228 20 8V5C20 4.44772 19.5523 4 19 4H5C4.44772 4 4 4.44772 4 5V8C4 8.55228 4.44772 9 5 9M10 13H14"; // Archive/zip icon
                 }
                 
                 // Return geometry key for blacklisted files
