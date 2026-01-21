@@ -59,28 +59,20 @@ namespace DataTransferApp.Net.Models
         public int MaxLogSizeMB { get; set; } = 10;
         public int KeepLogFiles { get; set; } = 5;
         
-        // Transfer Logging
-        public bool EnableTransferRecords { get; set; } = true;
-        public bool LogTransferDetails { get; set; } = true;
-        public bool SaveTransferSummary { get; set; } = true;
-        public string TransferLogFormat { get; set; } = "CSV"; // JSON, CSV, TXT
-        public bool IncludeFileHashes { get; set; } = true;
-        public int KeepTransferRecords { get; set; } = 365; // Days
-        
         // Transfer History Database (LiteDB)
-        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = use TransferRecordsDirectory
+        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = auto-select location
         public bool UseSharedDatabaseLocation { get; set; } = true; // True = central location for all users
+        public int KeepTransferRecords { get; set; } = 365; // Days to retain in database
         
-        // Compliance Records
+        // Compliance Records (Primary Transfer Documentation)
         public bool GenerateComplianceRecords { get; set; } = true;
-        public string ComplianceRecordFormat { get; set; } = "CSV"; // CSV, Excel
+        public string ComplianceRecordFormat { get; set; } = "CSV"; // CSV, Excel, JSON
         public string ComplianceRecordsPath { get; set; } = string.Empty; // Empty = use TransferRecordsDirectory
         public bool IncludeFileListInCompliance { get; set; } = true;
-        public bool AutoGenerateComplianceOnTransfer { get; set; } = true;
-        
-        // Transfer Settings
         public bool CalculateFileHashes { get; set; } = true;
         public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5
+        
+        // Transfer Settings
         public bool EnableCompression { get; set; } = false;
         public int MaxConcurrentTransfers { get; set; } = 1;
         public bool AutoHandleConflicts { get; set; } = true;
