@@ -829,6 +829,22 @@ namespace DataTransferApp.Net.ViewModels
         }
 
         [RelayCommand]
+        private void OpenAbout()
+        {
+            try
+            {
+                // var aboutWindow = new AboutWindow();
+                // aboutWindow.ShowDialog();
+
+            }
+            catch (Exception ex)
+            {
+                ShowSnackbar($"Error opening about: {ex.Message}", "error");
+                LoggingService.Error("Error opening about", ex);
+            }
+        }
+
+        [RelayCommand]
         private void ViewTransferHistory()
         {
             try

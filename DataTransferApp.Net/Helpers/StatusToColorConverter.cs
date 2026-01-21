@@ -18,7 +18,7 @@ namespace DataTransferApp.Net.Helpers
                     case "fail":
                         return Brushes.Red;
                     case "caution":
-                        return Brushes.Yellow;
+                        return Brushes.Orange;
                     default:
                         return Brushes.Black; // Default brush for unknown status
                 }
