@@ -296,7 +296,7 @@
                 </GroupBox>
                 
                 <!-- Compliance Records -->
-                <GroupBox Header="Compliance Records & Transfer Documentation">
+                <GroupBox Header="Compliance Records &amp; Transfer Documentation">
                     <StackPanel>
                         <CheckBox Content="Generate Compliance Records for Each Transfer" 
                                   IsChecked="{Binding GenerateComplianceRecords}" 
