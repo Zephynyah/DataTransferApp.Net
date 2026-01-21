@@ -58,6 +58,7 @@ $ErrorActionPreference = "Stop"
 
 $SelfContained = $true
 $SingleFile = $true
+$Trimmed = $true
 
 # Script paths
 $ScriptRoot = $PSScriptRoot
