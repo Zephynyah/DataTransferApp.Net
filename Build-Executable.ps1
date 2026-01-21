@@ -1,6 +1,40 @@
-# Build Executable for Data Transfer Application
-# This script publishes the .NET WPF application as a standalone executable
-
+<#
+.Synopsis
+   Builds the Data Transfer Application as a standalone executable.
+.DESCRIPTION
+   This script publishes the .NET WPF application as a standalone executable.
+   It supports different runtimes, configurations, and options for single-file and self-contained builds.
+   The output executable will be placed in the "publish" directory under a subfolder named with the runtime and configuration.
+   The script also cleans the previous build output before publishing the new executable.
+.PARAMETER Runtime
+   The target runtime for the published executable. Valid values are "win-x64", "win-x86", and "win-arm64".
+.PARAMETER Configuration
+   The build configuration for the published executable. Valid values are "Debug" and "Release".
+.PARAMETER SingleFile
+   Indicates whether to publish the application as a single file.
+.PARAMETER SelfContained
+   Indicates whether to publish the application as self-contained.
+.PARAMETER Trimmed
+   Indicates whether to enable trimming of unused assemblies to reduce the size of the published application.
+.EXAMPLE
+   .\build-exe.ps1 -Runtime win-x64 -Configuration Release -SingleFile -SelfContained -Trimmed
+.EXAMPLE
+   .\build-exe.ps1 -Runtime win-x64 -Configuration Debug
+.INPUTS
+   None
+.OUTPUTS
+   None
+.NOTES
+   This script requires the .NET SDK to be installed and available in the system PATH.
+   The script is intended for building the Data Transfer Application as a standalone executable for Windows platforms.
+   The script cleans the previous build output before publishing the new executable.
+.COMPONENT
+   Data Transfer Application
+.ROLE
+   Build
+.FUNCTIONALITY
+   Publishes the .NET WPF application as a standalone executable
+#>
 param(
     [Parameter(Mandatory=$false)]
     [ValidateSet("win-x64", "win-x86", "win-arm64")]
@@ -14,13 +48,16 @@ param(
     [switch]$SingleFile,
     
     [Parameter(Mandatory=$false)]
-    [switch]$SelfContained = $true,
+    [switch]$SelfContained,
     
     [Parameter(Mandatory=$false)]
     [switch]$Trimmed = $false
 )
 
 $ErrorActionPreference = "Stop"
+
+$SelfContained = $true
+$SingleFile = $true
 
 # Script paths
 $ScriptRoot = $PSScriptRoot
