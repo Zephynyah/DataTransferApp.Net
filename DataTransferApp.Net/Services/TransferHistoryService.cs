@@ -46,11 +46,15 @@ namespace DataTransferApp.Net.Services
         {
             return await Task.Run(() =>
             {
-                if (LiteDB.ObjectId.TryParse(id, out var objectId))
+                try
                 {
+                    var objectId = new LiteDB.ObjectId(id);
                     return _databaseService.GetTransferById(objectId);
                 }
-                return null;
+                catch
+                {
+                    return null;
+                }
             });
         }
 
