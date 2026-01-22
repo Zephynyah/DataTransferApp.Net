@@ -107,10 +107,10 @@ namespace DataTransferApp.Net.Services
         {
             var regex = new Regex(_settings.FolderNameRegex);
 
+            var parts = folderName.Split('_');
+
             if (regex.IsMatch(folderName))
             {
-                var parts = folderName.Split('_');
-
                 var result = new NameValidation
                 {
                     IsValid = true,
@@ -137,6 +137,42 @@ namespace DataTransferApp.Net.Services
                 }
 
                 return result;
+            }
+            else if (parts.Length == 3)
+            {
+                 var result = new NameValidation
+                {
+                    IsValid = false,
+                    EmployeeId = parts[0],
+                    Date = parts[1],
+                    Dataset = parts[2],
+                    Message = "Either employee Name/ID or Dataset has an invalid format"
+                };
+
+                 // Validate date format
+                try
+                {
+                    var dateStr = parts[1];
+                    var year = dateStr.Substring(0, 4);
+                    var month = dateStr.Substring(4, 2);
+                    var day = dateStr.Substring(6, 2);
+                    DateTime.ParseExact($"{year}-{month}-{day}", "yyyy-MM-dd", null);
+                }
+                catch
+                {
+                    result.IsValid = false;
+                    result.Message = "Invalid date format in folder name";
+                }
+
+                return result;
+            }
+            else if (parts.Length == 4)
+            {
+                return new NameValidation
+                {
+                    IsValid = false,
+                    Message = "Either employee Name/ID, Date, Dataset or Sequence has an invalid format"
+                };
             }
             else
             {
