@@ -185,6 +185,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
@@ -198,16 +199,21 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="Caution: " Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="{Binding CautionFolders}" Foreground="{StaticResource WarningBrush}" Style="{StaticResource StatValueStyle}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Text="Failed: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding FailedFolders}" Foreground="{StaticResource DangerBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <StackPanel Grid.Column="4" Orientation="Horizontal">
                     <TextBlock Text="Transferred: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding TransferredCount}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="4" Orientation="Horizontal"> 
+                <StackPanel Grid.Column="5" Orientation="Horizontal"> 
                     <TextBlock Text="Size: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding TotalSize}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
@@ -284,6 +290,13 @@
                                                     <Setter Property="Background">
                                                         <Setter.Value>
                                                             <SolidColorBrush Color="#E74C3C" Opacity="0.15"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding AuditStatus}" Value="Caution">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <SolidColorBrush Color="#F39C12" Opacity="0.35"/>
                                                         </Setter.Value>
                                                     </Setter>
                                                 </DataTrigger>

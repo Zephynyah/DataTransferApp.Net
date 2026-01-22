@@ -57,6 +57,9 @@ namespace DataTransferApp.Net.ViewModels
         private int _readyFolders = 0;
 
         [ObservableProperty]
+        private int _cautionFolders = 0;
+
+        [ObservableProperty]
         private int _failedFolders = 0;
 
         [ObservableProperty]
@@ -476,7 +479,7 @@ namespace DataTransferApp.Net.ViewModels
                 }
 
                 UpdateStatistics();
-                StatusMessage = $"Audit complete: {ReadyFolders} passed, {FailedFolders} failed";
+                StatusMessage = $"Audit complete: {ReadyFolders} passed, {CautionFolders} caution, {FailedFolders} failed";
             }
             catch (Exception ex)
             {
@@ -892,6 +895,7 @@ namespace DataTransferApp.Net.ViewModels
         {
             TotalFolders = FolderList.Count;
             ReadyFolders = FolderList.Count(f => f.AuditStatus == "Passed");
+            CautionFolders = FolderList.Count(f => f.AuditStatus == "Caution");
             FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
             TransferredCount = TransferredList.Count;
             TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
