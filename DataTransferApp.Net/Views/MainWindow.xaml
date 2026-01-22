@@ -663,7 +663,7 @@
                                 <!-- Compressed Files Audit Text -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
                                     <Path Data="{StaticResource PackageIcon2Geometry}" 
-                                          Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"
+                                          Fill="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushIconConverter}}"
                                           Stroke="#4D3D36" 
                                           Width="14" 
                                           Height="14" 
