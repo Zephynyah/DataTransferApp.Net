@@ -10,16 +10,14 @@ namespace DataTransferApp.Net.Services
 {
     /// <summary>
     /// Service for managing transfer history.
-    /// Uses LiteDB database as primary storage with fallback to JSON files.
+    /// Uses LiteDB database as primary storage.
     /// </summary>
     public class TransferHistoryService : IDisposable
     {
-        private readonly string _transferRecordsDirectory;
         private readonly TransferDatabaseService _databaseService;
 
-        public TransferHistoryService(string transferRecordsDirectory, string? databasePath = null)
+        public TransferHistoryService(string? databasePath = null)
         {
-            _transferRecordsDirectory = transferRecordsDirectory;
             _databaseService = new TransferDatabaseService(databasePath);
         }
 
@@ -85,19 +83,19 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Migrates existing JSON transfer logs to the database.
         /// </summary>
-        public async Task<int> MigrateJsonLogsToDatabase()
+        public async Task<int> MigrateJsonLogsToDatabase(string transferRecordsDirectory)
         {
             var migratedCount = 0;
 
             try
             {
-                if (!Directory.Exists(_transferRecordsDirectory))
+                if (!Directory.Exists(transferRecordsDirectory))
                 {
                     LoggingService.Warning("Transfer records directory does not exist");
                     return 0;
                 }
 
-                var jsonFiles = Directory.GetFiles(_transferRecordsDirectory, "*.json")
+                var jsonFiles = Directory.GetFiles(transferRecordsDirectory, "*.json")
                     .OrderBy(f => File.GetCreationTime(f))
                     .ToList();
 

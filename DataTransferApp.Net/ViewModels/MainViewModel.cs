@@ -857,7 +857,10 @@ namespace DataTransferApp.Net.ViewModels
         {
             try
             {
-                var historyWindow = new TransferHistoryWindow(_settings.TransferRecordsDirectory);
+                var databasePath = string.IsNullOrWhiteSpace(_settings.TransferHistoryDatabasePath)
+                    ? null
+                    : _settings.TransferHistoryDatabasePath;
+                var historyWindow = new TransferHistoryWindow(databasePath);
                 historyWindow.ShowDialog();
             }
             catch (Exception ex)

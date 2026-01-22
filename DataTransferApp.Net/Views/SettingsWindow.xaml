@@ -277,17 +277,6 @@
                             <ComboBoxItem Content="JSON"/>
                         </ComboBox>
                         
-                        <TextBlock Text="Compliance Records Storage Path:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding ComplianceRecordsPath}" 
-                                 Margin="0,0,0,5" 
-                                 IsEnabled="{Binding GenerateComplianceRecords}"
-                                 ToolTip="Leave empty to use Transfer Records Directory"/>
-                        <TextBlock Text="Leave empty to save compliance records in the Transfer Records Directory."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
-                        
                         <CheckBox Content="Include Detailed File List" 
                                   IsChecked="{Binding IncludeFileListInCompliance}" 
                                   IsEnabled="{Binding GenerateComplianceRecords}" 

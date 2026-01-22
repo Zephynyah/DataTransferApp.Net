@@ -11,12 +11,12 @@ namespace DataTransferApp.Net.Services
     /// <summary>
     /// Service for managing transfer history using LiteDB.
     /// Provides centralized storage for all transfer records.
+    /// Uses connection-per-operation pattern to avoid file locking issues.
     /// </summary>
     public class TransferDatabaseService : IDisposable
     {
-        private readonly LiteDatabase _database;
-        private readonly ILiteCollection<TransferLog> _transfersCollection;
         private readonly string _databasePath;
+        private readonly string _connectionString;
 
         public TransferDatabaseService(string? databasePath = null)
         {
@@ -30,17 +30,32 @@ namespace DataTransferApp.Net.Services
                 Directory.CreateDirectory(directory);
             }
 
-            // Initialize LiteDB
-            _database = new LiteDatabase(_databasePath);
-            _transfersCollection = _database.GetCollection<TransferLog>("transfers");
+            // Configure connection string with Shared mode to allow multiple concurrent accesses
+            _connectionString = $"Filename={_databasePath};Mode=Shared";
             
-            // Create indexes for better query performance
-            _transfersCollection.EnsureIndex(x => x.TransferInfo.Date);
-            _transfersCollection.EnsureIndex(x => x.TransferInfo.FolderName);
-            _transfersCollection.EnsureIndex(x => x.TransferInfo.Employee);
-            _transfersCollection.EnsureIndex(x => x.TransferInfo.DTA);
+            // Initialize indexes on first run
+            InitializeDatabase();
 
             LoggingService.Info($"Transfer database initialized: {_databasePath}");
+        }
+
+        private void InitializeDatabase()
+        {
+            try
+            {
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                
+                // Create indexes for better query performance
+                collection.EnsureIndex(x => x.TransferInfo.Date);
+                collection.EnsureIndex(x => x.TransferInfo.FolderName);
+                collection.EnsureIndex(x => x.TransferInfo.Employee);
+                collection.EnsureIndex(x => x.TransferInfo.DTA);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Error initializing database indexes", ex);
+            }
         }
 
         private string ResolveDatabasePath(string? customPath)
@@ -87,7 +102,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                _transfersCollection.Insert(transfer);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                collection.Insert(transfer);
                 LoggingService.Info($"Transfer record added to database: {transfer.TransferInfo.FolderName}");
                 return true;
             }
@@ -105,7 +122,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                _transfersCollection.InsertBulk(transfers);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                collection.InsertBulk(transfers);
                 LoggingService.Info($"Batch added {transfers.Count()} transfer records to database");
                 return true;
             }
@@ -123,7 +142,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.FindAll().ToList();
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.FindAll().ToList();
             }
             catch (Exception ex)
             {
@@ -139,7 +160,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.FindById(id);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.FindById(id);
             }
             catch (Exception ex)
             {
@@ -162,7 +185,9 @@ namespace DataTransferApp.Net.Services
 
                 searchTerm = searchTerm.ToLower();
                 
-                return _transfersCollection.Find(t =>
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Find(t =>
                     t.TransferInfo.FolderName.ToLower().Contains(searchTerm) ||
                     t.TransferInfo.Employee.ToLower().Contains(searchTerm) ||
                     t.TransferInfo.DTA.ToLower().Contains(searchTerm) ||
@@ -184,7 +209,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Find(t =>
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Find(t =>
                     t.TransferInfo.Date >= startDate &&
                     t.TransferInfo.Date <= endDate
                 ).ToList();
@@ -203,7 +230,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection
                     .Find(Query.All(Query.Descending))
                     .OrderByDescending(t => t.TransferInfo.Date)
                     .Take(count)
@@ -223,7 +252,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Find(t =>
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Find(t =>
                     t.TransferInfo.Employee == employeeId
                 ).ToList();
             }
@@ -241,7 +272,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Find(t =>
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Find(t =>
                     t.TransferInfo.DTA == dta
                 ).ToList();
             }
@@ -276,7 +309,14 @@ namespace DataTransferApp.Net.Services
             catch (Exception ex)
             {
                 LoggingService.Error("Error calculating transfer statistics", ex);
-                return new Dictionary<string, int>();
+                return new Dictionary<string, int>
+                {
+                    ["TotalTransfers"] = 0,
+                    ["TodayTransfers"] = 0,
+                    ["ThisWeekTransfers"] = 0,
+                    ["ThisMonthTransfers"] = 0,
+                    ["TotalFiles"] = 0
+                };
             }
         }
 
@@ -287,7 +327,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Update(transfer);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Update(transfer);
             }
             catch (Exception ex)
             {
@@ -303,7 +345,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Delete(id);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Delete(id);
             }
             catch (Exception ex)
             {
@@ -320,12 +364,14 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var cutoffDate = DateTime.Now.AddDays(-retentionDays);
-                var oldTransfers = _transfersCollection.Find(t => t.TransferInfo.Date < cutoffDate);
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                var oldTransfers = collection.Find(t => t.TransferInfo.Date < cutoffDate);
                 var count = 0;
 
                 foreach (var transfer in oldTransfers)
                 {
-                    if (_transfersCollection.Delete(transfer.Id))
+                    if (collection.Delete(transfer.Id))
                     {
                         count++;
                     }
@@ -352,7 +398,9 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return _transfersCollection.Count();
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                return collection.Count();
             }
             catch (Exception ex)
             {
@@ -373,7 +421,8 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                _database.Rebuild();
+                using var db = new LiteDatabase(_connectionString);
+                db.Rebuild();
                 LoggingService.Info("Database optimized successfully");
             }
             catch (Exception ex)
@@ -384,7 +433,7 @@ namespace DataTransferApp.Net.Services
 
         public void Dispose()
         {
-            _database?.Dispose();
+            // No persistent connection to dispose with connection-per-operation pattern
         }
     }
 }

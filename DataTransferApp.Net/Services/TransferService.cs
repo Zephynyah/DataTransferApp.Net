@@ -245,11 +245,11 @@ namespace DataTransferApp.Net.Services
                 // Create retention directory if it doesn't exist
                 Directory.CreateDirectory(_settings.RetentionDirectory);
                 
-                // Handle existing folder in retention
+                // Handle existing folder in retention - delete old one and replace
                 if (Directory.Exists(retentionPath))
                 {
-                    var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    retentionPath = Path.Combine(_settings.RetentionDirectory, $"{folderName}_{timestamp}");
+                    Directory.Delete(retentionPath, true);
+                    LoggingService.Info($"Replaced existing retention folder: {folderName}");
                 }
                 
                 // Move folder to retention

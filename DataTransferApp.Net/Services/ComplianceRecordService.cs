@@ -378,9 +378,7 @@ namespace DataTransferApp.Net.Services
 
         private string GetComplianceRecordPath(TransferLog transfer)
         {
-            var directory = string.IsNullOrWhiteSpace(_settings.ComplianceRecordsPath)
-                ? _settings.TransferRecordsDirectory
-                : _settings.ComplianceRecordsPath;
+            var directory = _settings.TransferRecordsDirectory;
 
             Directory.CreateDirectory(directory);
 
@@ -395,9 +393,7 @@ namespace DataTransferApp.Net.Services
 
         private string GetConsolidatedReportPath(DateTime startDate, DateTime endDate)
         {
-            var directory = string.IsNullOrWhiteSpace(_settings.ComplianceRecordsPath)
-                ? _settings.TransferRecordsDirectory
-                : _settings.ComplianceRecordsPath;
+            var directory = _settings.TransferRecordsDirectory;
 
             Directory.CreateDirectory(directory);
 

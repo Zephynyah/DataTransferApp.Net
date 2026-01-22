@@ -67,7 +67,6 @@ namespace DataTransferApp.Net.Models
         // Compliance Records (Primary Transfer Documentation)
         public bool GenerateComplianceRecords { get; set; } = true;
         public string ComplianceRecordFormat { get; set; } = "CSV"; // CSV, Excel, JSON
-        public string ComplianceRecordsPath { get; set; } = string.Empty; // Empty = use TransferRecordsDirectory
         public bool IncludeFileListInCompliance { get; set; } = true;
         public bool CalculateFileHashes { get; set; } = true;
         public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5
