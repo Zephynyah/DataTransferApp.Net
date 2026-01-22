@@ -285,7 +285,6 @@ namespace DataTransferApp.Net.ViewModels
                     SelectedFolder.FolderName);
 
                 SelectedFolder.AuditResult = result;
-                SelectedFolder.AuditStatus = result.OverallStatus;
                 
                 // Update individual audit statuses
                 // Combine naming and dataset validation into naming status
@@ -314,6 +313,16 @@ namespace DataTransferApp.Net.ViewModels
                     f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                 SelectedFolder.CompressedFileCount = compressedCount;
                 SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+                
+                // Determine overall status: if all checks pass but there are compressed files, set to Caution
+                if (result.OverallStatus == "Passed" && compressedCount > 0)
+                {
+                    SelectedFolder.AuditStatus = "Caution";
+                }
+                else
+                {
+                    SelectedFolder.AuditStatus = result.OverallStatus;
+                }
 
                 // Update file statuses and flags
                 // Reset all files first
@@ -387,7 +396,6 @@ namespace DataTransferApp.Net.ViewModels
 
                     var result = await _auditService.AuditFolderAsync(folder.FolderPath, folder.FolderName);
                     folder.AuditResult = result;
-                    folder.AuditStatus = result.OverallStatus;
                     
                     // Update individual audit statuses
                     // Combine naming and dataset validation into naming status
@@ -416,6 +424,16 @@ namespace DataTransferApp.Net.ViewModels
                         f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                     folder.CompressedFileCount = compressedCount;
                     folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+                    
+                    // Determine overall status: if all checks pass but there are compressed files, set to Caution
+                    if (result.OverallStatus == "Passed" && compressedCount > 0)
+                    {
+                        folder.AuditStatus = "Caution";
+                    }
+                    else
+                    {
+                        folder.AuditStatus = result.OverallStatus;
+                    }
                     
                     // Update file flags
                     foreach (var file in folder.Files)

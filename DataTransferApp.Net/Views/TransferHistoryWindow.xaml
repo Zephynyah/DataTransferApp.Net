@@ -132,15 +132,22 @@
                               CanUserAddRows="False"
                               IsReadOnly="True"
                               SelectionMode="Single">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="1"/>
+                                <Setter Property="Margin" Value="1"/>
+                            </Style>
+                        </DataGrid.CellStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Date" Width="120" Binding="{Binding TransferInfo.Date, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}"/>
-                            <DataGridTextColumn Header="DTA" Width="80" Binding="{Binding TransferInfo.DTA}"/>
-                            <DataGridTextColumn Header="Folder" Width="*" Binding="{Binding TransferInfo.FolderName}"/>
-                            <DataGridTextColumn Header="Employee" Width="120" Binding="{Binding TransferInfo.Employee}"/>
-                            <DataGridTextColumn Header="Origin" Width="100" Binding="{Binding TransferInfo.Origin}"/>
-                            <DataGridTextColumn Header="Destination" Width="100" Binding="{Binding TransferInfo.Destination}"/>
-                            <DataGridTextColumn Header="Files" Width="60" Binding="{Binding Summary.TotalFiles}"/>
-                            <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Summary.Status}"/>
+                            <DataGridTextColumn Header="Date" Width="*" Binding="{Binding TransferInfo.Date, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}"/>
+                            <DataGridTextColumn Header="DTA" Width="*" Binding="{Binding TransferInfo.DTA}"/>
+                            <DataGridTextColumn Header="Folder" Width="2*" Binding="{Binding TransferInfo.FolderName}"/>
+                            <DataGridTextColumn Header="Employee" Width="*" Binding="{Binding TransferInfo.Employee}"/>
+                            <DataGridTextColumn Header="Origin" Width="4*" Binding="{Binding TransferInfo.Origin}"/>
+                            <DataGridTextColumn Header="Destination" Width="2*" Binding="{Binding TransferInfo.Destination}"/>
+                            <DataGridTextColumn Header="Files" Width="*" Binding="{Binding Summary.TotalFiles}"/>
+                            <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Summary.Status}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

@@ -143,7 +143,7 @@ namespace DataTransferApp.Net.Services
                 return new NameValidation
                 {
                     IsValid = false,
-                    Message = "Required pattern: employeeid_yyyymmdd_dataset[_sequence]"
+                    Message = "Folder Required pattern: employee_yyyymmdd_dataset[_sequence]"
                 };
             }
         }

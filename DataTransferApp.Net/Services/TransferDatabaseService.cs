@@ -62,6 +62,19 @@ namespace DataTransferApp.Net.Services
         {
             if (!string.IsNullOrWhiteSpace(customPath))
             {
+                // If it's a directory, append TransferHistory.db
+                if (Directory.Exists(customPath))
+                {
+                    customPath = Path.Combine(customPath, "TransferHistory.db");
+                    LoggingService.Info($"Directory provided, using: {customPath}");
+                }
+                // If no extension, assume it's a directory and append filename
+                else if (!Path.HasExtension(customPath))
+                {
+                    customPath = Path.Combine(customPath, "TransferHistory.db");
+                    LoggingService.Info($"No extension provided, using: {customPath}");
+                }
+                
                 return customPath;
             }
 
