@@ -102,15 +102,23 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
+                LoggingService.Info($"Attempting to save transfer to database: {transfer.TransferInfo.FolderName}");
+                LoggingService.Info($"Database path: {_databasePath}");
+                LoggingService.Info($"Connection string: {_connectionString}");
+                
                 using var db = new LiteDatabase(_connectionString);
                 var collection = db.GetCollection<TransferLog>("transfers");
                 collection.Insert(transfer);
-                LoggingService.Info($"Transfer record added to database: {transfer.TransferInfo.FolderName}");
+                
+                LoggingService.Success($"Transfer record successfully added to database: {transfer.TransferInfo.FolderName}");
                 return true;
             }
             catch (Exception ex)
             {
-                LoggingService.Error("Error adding transfer to database", ex);
+                LoggingService.Error($"Error adding transfer to database: {transfer.TransferInfo.FolderName}", ex);
+                LoggingService.Error($"Exception type: {ex.GetType().Name}");
+                LoggingService.Error($"Exception message: {ex.Message}");
+                LoggingService.Error($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }

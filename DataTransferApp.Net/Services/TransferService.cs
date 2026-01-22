@@ -460,7 +460,19 @@ namespace DataTransferApp.Net.Services
                 // Save to LiteDB database
                 if (_databaseService != null)
                 {
-                    _databaseService.AddTransfer(log);
+                    bool saved = _databaseService.AddTransfer(log);
+                    if (saved)
+                    {
+                        LoggingService.Success($"Transfer record saved to database: {log.TransferInfo.FolderName}");
+                    }
+                    else
+                    {
+                        LoggingService.Error($"Failed to save transfer record to database: {log.TransferInfo.FolderName}");
+                    }
+                }
+                else
+                {
+                    LoggingService.Warning("Database service is not initialized - transfer record not saved to database");
                 }
                 
                 // Generate compliance record (replaces separate JSON logging)
@@ -472,6 +484,7 @@ namespace DataTransferApp.Net.Services
             catch (Exception ex)
             {
                 LoggingService.Error("Error saving transfer log", ex);
+                throw; // Re-throw to ensure caller knows about the failure
             }
         }
 
