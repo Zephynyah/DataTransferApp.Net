@@ -12,6 +12,14 @@
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
         <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+
+        <!-- Footnote Style -->
+        <Style x:Key="FootnoteStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Foreground" Value="#7f8c8d"/>
+            <Setter Property="Margin" Value="0,0,0,0"/> <!-- Top margin for spacing -->
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
     </Window.Resources>
     
     <Grid>
