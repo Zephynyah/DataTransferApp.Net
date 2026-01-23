@@ -34,7 +34,7 @@ namespace DataTransferApp.Net.Models
         // Dataset Whitelist
         public List<string> WhiteListDatasets { get; set; } = new()
         {
-            "UG", "PAN", "PGP"
+            "UG", "AETP", "PGP"
         };
         
         // Audit Strategy
