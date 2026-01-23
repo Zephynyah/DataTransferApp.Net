@@ -16,6 +16,8 @@ namespace DataTransferApp.Net.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
+        private enum DriveAction { Append, Clear, Abort }
+
         private readonly FileService _fileService;
         private readonly AuditService _auditService;
         private readonly TransferService _transferService;
@@ -179,6 +181,7 @@ namespace DataTransferApp.Net.ViewModels
             AuditFolderCommand.NotifyCanExecuteChanged();
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+            ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
         partial void OnSelectedDriveChanged(RemovableDrive? value)
@@ -186,6 +189,7 @@ namespace DataTransferApp.Net.ViewModels
             // Notify transfer commands to re-evaluate when selected drive changes
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+            ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
         partial void OnIsProcessingChanged(bool value)
@@ -194,6 +198,7 @@ namespace DataTransferApp.Net.ViewModels
             AuditFolderCommand.NotifyCanExecuteChanged();
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+            ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
@@ -509,31 +514,18 @@ namespace DataTransferApp.Net.ViewModels
             }
 
             // Check drive contents if no transfers yet
-            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            var action = await CheckDriveContentsAsync();
+            if (action == DriveAction.Abort)
             {
-                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
-                var result = MessageBox.Show(
-                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
-                    "Do you want to APPEND to existing contents?\n\n" +
-                    "YES = Append/Add to existing\n" +
-                    "NO = Clear drive first\n" +
-                    "CANCEL = Abort transfer",
-                    "Drive Contains Data",
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
-                else if (result == MessageBoxResult.No)
-                {
-                    // Clear drive first
-                    await ClearDriveAsync();
-                    if (IsProcessing) return; // If clear failed or is still running
-                }
-                // If Yes, continue with transfer
+                return;
             }
+            else if (action == DriveAction.Clear)
+            {
+                // Clear drive first
+                await ClearDriveAsync();
+                if (IsProcessing) return; // If clear failed or is still running
+            }
+            // If Append, continue with transfer
 
             IsProcessing = true;
             var total = passedFolders.Count;
@@ -604,31 +596,18 @@ namespace DataTransferApp.Net.ViewModels
             var folderName = SelectedFolder.FolderName; // Store name before folder is removed
 
             // Check drive contents if no transfers yet
-            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            var action = await CheckDriveContentsAsync();
+            if (action == DriveAction.Abort)
             {
-                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
-                var result = MessageBox.Show(
-                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
-                    "Do you want to APPEND to existing contents?\n\n" +
-                    "YES = Append/Add to existing\n" +
-                    "NO = Clear drive first\n" +
-                    "CANCEL = Abort transfer",
-                    "Drive Contains Data",
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
-                else if (result == MessageBoxResult.No)
-                {
-                    // Clear drive first
-                    await ClearDriveAsync();
-                    if (IsProcessing) return; // If clear failed or is still running
-                }
-                // If Yes, continue with transfer
+                return;
             }
+            else if (action == DriveAction.Clear)
+            {
+                // Clear drive first
+                await ClearDriveAsync();
+                if (IsProcessing) return; // If clear failed or is still running
+            }
+            // If Append, continue with transfer
 
             IsProcessing = true;
             ProgressPercent = 0;
@@ -700,6 +679,22 @@ namespace DataTransferApp.Net.ViewModels
 
             if (result != MessageBoxResult.Yes) return;
 
+
+            // Check drive contents if no transfers yet
+            var action = await CheckDriveContentsAsync();
+            if (action == DriveAction.Abort)
+            {
+                return;
+            }
+            else if (action == DriveAction.Clear)
+            {
+                // Clear drive first
+                await ClearDriveAsync();
+                if (IsProcessing) return; // If clear failed or is still running
+            }
+            // If Append, continue with transfer
+
+
             IsProcessing = true;
             ProgressPercent = 0;
 
@@ -750,7 +745,10 @@ namespace DataTransferApp.Net.ViewModels
             SelectedDrive != null &&
             !IsProcessing;
 
-        [RelayCommand]
+
+        private bool CanClearDrive() => SelectedDrive != null && !IsProcessing; 
+
+        [RelayCommand(CanExecute = nameof(CanClearDrive))]
         private async Task ClearDriveAsync()
         {
             if (SelectedDrive == null) return;
@@ -916,6 +914,42 @@ namespace DataTransferApp.Net.ViewModels
 
             await Task.Delay(4000);
             IsSnackbarVisible = false;
+        }
+
+        private async Task<DriveAction> CheckDriveContentsAsync()
+        {
+            if (SelectedDrive == null) return DriveAction.Append;
+
+            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            {
+                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
+                var messageResult = MessageBox.Show(
+                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
+                    "Do you want to APPEND to existing contents?\n\n" +
+                    "YES = Append/Add to existing\n" +
+                    "NO = Clear drive first\n" +
+                    "CANCEL = Abort transfer",
+                    "Drive Contains Data",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
+
+                if (messageResult == MessageBoxResult.Cancel)
+                {
+                    return DriveAction.Abort;
+                }
+                else if (messageResult == MessageBoxResult.No)
+                {
+                    return DriveAction.Clear;
+                }
+                else // Yes
+                {
+                    return DriveAction.Append;
+                }
+            }
+            else
+            {
+                return DriveAction.Append;
+            }
         }
 
         private static string FormatFileSize(long bytes)
