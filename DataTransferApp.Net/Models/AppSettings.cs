@@ -47,7 +47,7 @@ namespace DataTransferApp.Net.Models
         
         // Drive Detection
         public double MinimumFreeSpaceGB { get; set; } = 1.0;
-        public List<string> ExcludeDrives { get; set; } = new() { "A:", "B:" };
+        public List<string> ExcludeDrives { get; set; } = new() { "A:\\", "B:\\", "C:\\", "D:\\"  };
         
         // Folder Exclusion
         public List<string> ExcludedFolders { get; set; } = new();
