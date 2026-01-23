@@ -100,6 +100,10 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _appDescription = "Collateral L2H Data Transfer Application";
 
+        
+        [ObservableProperty]
+        private string _appFooter = "© 2026 Data Transfer Application (v1.2.0). All rights reserved.";
+
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
 
@@ -213,10 +217,7 @@ namespace DataTransferApp.Net.ViewModels
                 FolderList = new ObservableCollection<FolderData>(folders);
 
                 // Auto-select first folder if available
-                if (FolderList.Count > 0)
-                {
-                    SelectedFolder = FolderList[0];
-                }
+                AutoSelectFirstFolder();
 
                 UpdateStatistics();
                 StatusMessage = $"Loaded {folders.Count} folder(s)";
@@ -573,6 +574,9 @@ namespace DataTransferApp.Net.ViewModels
                 var successCount = completed - failed;
                 StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed, {skipped} skipped";
                 ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
+
+                // Auto-select first folder if available after transfers
+                AutoSelectFirstFolder();
             }
             catch (Exception ex)
             {
@@ -637,6 +641,9 @@ namespace DataTransferApp.Net.ViewModels
 
                     StatusMessage = message;
                     ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
+
+                    // Auto-select first folder if available after transfer
+                    AutoSelectFirstFolder();
                 }
                 else
                 {
@@ -718,6 +725,9 @@ namespace DataTransferApp.Net.ViewModels
                     UpdateStatistics();
                     StatusMessage = $"Transfer complete (Override): {folderName}";
                     ShowSnackbar($"Override transfer completed", "warning");
+
+                    // Auto-select first folder if available after transfer
+                    AutoSelectFirstFolder();
                 }
                 else
                 {
@@ -897,6 +907,15 @@ namespace DataTransferApp.Net.ViewModels
             FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
             TransferredCount = TransferredList.Count;
             TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
+        }
+
+        private void AutoSelectFirstFolder()
+        {
+            // Auto-select first folder if available
+            if (FolderList.Count > 0)
+            {
+                SelectedFolder = FolderList[0];
+            }
         }
 
         private async void ShowSnackbar(string message, string type = "success")

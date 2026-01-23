@@ -922,7 +922,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" Grid.Column="0"/>
-                <TextBlock Text="{Binding StatusMessage}" Foreground="White" VerticalAlignment="Center" Grid.Column="2"/>
+                <TextBlock Text="{Binding AppFooter}" Foreground="White" VerticalAlignment="Center" Grid.Column="2"/>
             </Grid>
         </Border>
 
