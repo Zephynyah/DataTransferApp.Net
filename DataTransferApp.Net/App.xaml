@@ -183,11 +183,19 @@
         
         <!-- ComboBox Style -->
         <Style TargetType="ComboBox">
-            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Padding" Value="5,5"/>
             <Setter Property="BorderBrush" Value="{StaticResource LightBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+         <!-- Style for the ComboBox Items (Dropdown List) -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,5,10,5"/> <!-- Padding around items -->
         </Style>
         
         <!-- DataGrid Style -->

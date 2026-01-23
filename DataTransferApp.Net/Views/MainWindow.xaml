@@ -95,7 +95,14 @@
                         </Style>
                     </Button.Style>
                     <Button.ContextMenu>
-                        <ContextMenu x:Name="MenuDropdown" Placement="Bottom">
+                        <ContextMenu x:Name="MenuDropdown" Placement="Bottom"  HorizontalOffset="-170" VerticalOffset="5" IsOpen="{Binding IsContextMenuOpen, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Button}}, Mode=TwoWay}">
+                             <ContextMenu.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <!-- Padding: Left, Top, Right, Bottom. 
+                                        Set Top/Bottom to control vertical space (Y) -->
+                                    <Setter Property="Padding" Value="10, 5, 10, 5"/>
+                                </Style>
+                            </ContextMenu.ItemContainerStyle>
                             <MenuItem Header="Transfer History" Command="{Binding ViewTransferHistoryCommand}">
                                 <MenuItem.Icon>
                                     <Path Data="{StaticResource ClockIconGeometry}" 
@@ -749,13 +756,14 @@
                             <!-- Destination Label -->
                             <TextBlock Text="Destination:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             <!-- Select Drive -->
-                            <ComboBox ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0"/>
-                            <!-- Refresh Drives -->
-                            <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="10,0,10,0" ToolTip="Detect Drives">
+                            <ComboBox ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0,0,10,0"/>
+                            <!-- Refresh Drives 
+                            <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0,0,10,0" ToolTip="Detect Drives">
                                  <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Stretch="Uniform" Width="14" Height="14"/>
                             </Button>
+                            -->
                             <!-- Clear Drive -->
-                            <Button Command="{Binding ClearDriveCommand}" Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0">
+                            <Button Command="{Binding ClearDriveCommand}" Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0,0,10,0">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource DeleteIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
                                     <TextBlock Text="Clear Drive" VerticalAlignment="Center"/>
@@ -764,7 +772,7 @@
                         </StackPanel>
 
                                                 
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right">
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right" Height="40">
                             <Button Command="{Binding AuditFolderCommand}" Style="{StaticResource ButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource SearchIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0"/>
