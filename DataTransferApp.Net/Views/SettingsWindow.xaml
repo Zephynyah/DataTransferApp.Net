@@ -156,6 +156,15 @@
                                    Foreground="#7f8c8d"
                                    TextWrapping="Wrap"
                                    Margin="20,0,0,10"/>
+
+                        <!-- Exclude Drives -->
+                        <TextBlock Text="Exclude Drives (comma-separated, e.g., C:\, D:\):" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}" Height="40" TextWrapping="Wrap" Margin="0,0,0,5"/>
+                        <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\)."
+                                   FontSize="10"
+                                   Foreground="#7f8c8d"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,10"/>
                     </StackPanel>
                 </GroupBox>
                 
