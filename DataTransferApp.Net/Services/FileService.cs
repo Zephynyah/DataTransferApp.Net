@@ -43,9 +43,12 @@ namespace DataTransferApp.Net.Services
                 var directories = Directory.GetDirectories(stagingPath);
                 
                 // Get excluded folder names (case-insensitive)
-                var excludedFolders = App.Settings?.ExcludedFolders?
-                    .Select(f => f.ToLowerInvariant())
-                    .ToHashSet() ?? new HashSet<string>();
+                // var excludedFolders = App.Settings?.ExcludedFolders?
+                //     .Select(f => f.ToLowerInvariant())
+                //     .ToHashSet() ?? new HashSet<string>();
+
+                // Get excluded folder patterns from settings
+                var excludedPatterns = App.Settings?.ExcludedFolders ?? new List<string>();
 
                 foreach (var dir in directories)
                 {
@@ -53,8 +56,11 @@ namespace DataTransferApp.Net.Services
                     {
                         var folderName = Path.GetFileName(dir);
                         
-                        // Skip if folder is in exclusion list (case-insensitive)
-                        if (excludedFolders.Contains(folderName.ToLowerInvariant()))
+                        // // Skip if folder is in exclusion list (case-insensitive)
+                        // if (excludedFolders.Contains(folderName.ToLowerInvariant()))
+                        
+                        // Skip if folder matches any exclusion pattern (supports wildcards)
+                        if (Helpers.WildcardMatcher.IsMatch(folderName, excludedPatterns))
                         {
                             LoggingService.Info($"Skipping excluded folder: {folderName}");
                             continue;
