@@ -13,6 +13,14 @@ namespace DataTransferApp.Net.Views
             PromptText.Text = prompt;
         }
 
+        public InputDialog(string title, string prompt, string defaultValue)
+        {
+            InitializeComponent();
+            Title = title;
+            PromptText.Text = prompt;
+            InputTextBox.Text = defaultValue;
+        }
+
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;

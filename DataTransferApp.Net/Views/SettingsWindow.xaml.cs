@@ -100,5 +100,34 @@ namespace DataTransferApp.Net.Views
                 }
             }
         }
+
+        private void EditExcludedFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ExcludedFoldersListBox.SelectedItem is string selectedFolder)
+            {
+                var inputDialog = new InputDialog("Edit Excluded Folder", "Enter new folder name:", selectedFolder);
+                if (inputDialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(inputDialog.InputText))
+                {
+                    var newFolderName = inputDialog.InputText.Trim();
+                    
+                    // Check if the new name already exists (case-insensitive), excluding the current one
+                    if (_settings.ExcludedFolders.Exists(f => f.Equals(newFolderName, System.StringComparison.OrdinalIgnoreCase) && !f.Equals(selectedFolder, System.StringComparison.OrdinalIgnoreCase)))
+                    {
+                        MessageBox.Show($"'{newFolderName}' is already in the exclusion list.", "Duplicate", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    // Replace the old folder with the new one
+                    var index = _settings.ExcludedFolders.IndexOf(selectedFolder);
+                    _settings.ExcludedFolders[index] = newFolderName;
+                    ExcludedFoldersListBox.Items.Refresh();
+                    LoggingService.Info($"Edited excluded folder from '{selectedFolder}' to '{newFolderName}'");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a folder to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
     }
 }

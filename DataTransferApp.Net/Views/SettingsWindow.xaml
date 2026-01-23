@@ -12,14 +12,6 @@
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
         <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-
-        <!-- Footnote Style -->
-        <Style x:Key="FootnoteStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="10.5"/>
-            <Setter Property="Foreground" Value="#7f8c8d"/>
-            <Setter Property="Margin" Value="0,0,0,0"/> <!-- Top margin for spacing -->
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
     </Window.Resources>
     
     <Grid>
@@ -76,7 +68,7 @@
                         <TextBlock Text="Folders to exclude from staging directory scan:" 
                                    Style="{StaticResource SubHeaderTextStyle}" 
                                    Margin="0,0,0,5"/>
-                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list." Style="{StaticResource FootnoteStyle}"/>
+                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list. Use wildcards (*) for pattern matching." Style="{StaticResource FootnoteStyle}"/>
                         
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -103,10 +95,33 @@
                                         <TextBlock Text="Add" Margin="0,0,5,0"/>
                                     </StackPanel>
                                 </Button>
+                                <Button x:Name="EditExcludedFolderButton" 
+                                        Click="EditExcludedFolderButton_Click"
+                                        Width="100" 
+                                        Margin="0,0,0,5"
+                                        Background="{StaticResource PrimaryBrush}"
+                                        Foreground="White"
+                                        Padding="10,5">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ExcludedFoldersListBox}" Value="{x:Null}">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource EditGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Edit" Margin="0,0,5,0"/>
+                                    </StackPanel>
+                                </Button>
                                 <Button x:Name="RemoveExcludedFolderButton" 
                                         Click="RemoveExcludedFolderButton_Click"
                                         Width="100"
                                         Background="{StaticResource DangerBrush}"
+                                        Margin="0,0,0,0"
                                         Foreground="White"
                                         Padding="10,5">
                                     <Button.Style>
