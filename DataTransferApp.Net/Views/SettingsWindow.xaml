@@ -44,10 +44,7 @@
                         
                         <TextBlock Text="Retention Period (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding RetentionDays}" Margin="0,0,0,5"/>
-                        <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup." Style="{StaticResource FootnoteStyle}"/>
                     </StackPanel>
                 </GroupBox>
                 
@@ -71,11 +68,7 @@
                         <TextBlock Text="Folders to exclude from staging directory scan:" 
                                    Style="{StaticResource SubHeaderTextStyle}" 
                                    Margin="0,0,0,5"/>
-                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,5"/>
+                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list." Style="{StaticResource FootnoteStyle}"/>
                         
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -136,10 +129,8 @@
                         <CheckBox Content="Automatically run audit on all folders at startup" 
                                   IsChecked="{Binding AutoAuditOnStartup}" 
                                   Margin="0,0,0,5"/>
-                        <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
+                        <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them." 
+                                   Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,0"/>
 
                                                            
@@ -151,20 +142,14 @@
                             <ComboBoxItem Content="Maximized" />
                             <ComboBoxItem Content="Fullscreen" />
                         </ComboBox>
-                        <TextBlock Text="Choose how the application window opens. Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="20,0,0,10"/>
+                        <TextBlock Text="Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,0,0,10"/>
 
                         <!-- Exclude Drives -->
                         <TextBlock Text="Exclude Drives (comma-separated, e.g., C:\, D:\):" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}" Height="40" TextWrapping="Wrap" Margin="0,0,0,5"/>
-                        <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\)."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\)." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                     </StackPanel>
                 </GroupBox>
                 
@@ -175,18 +160,14 @@
                                   IsChecked="{Binding ShowFolderAuditDetailsIcon}" 
                                   Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, folders with audit failures will display an information icon showing detailed audit statistics."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
                         <CheckBox Content="Display audit summary as colored cards" 
                                   IsChecked="{Binding ShowAuditSummaryAsCards}" 
                                   Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, audit summaries will be displayed as colored badge cards. When disabled, they will show as simple colored text with icons."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
 
                         
@@ -194,9 +175,7 @@
                                   IsChecked="{Binding ShowSuccessNotifications}" 
                                   Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, the application will show notification messages for successful operations."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,0"/>
                     </StackPanel>
                 </GroupBox>
@@ -247,9 +226,7 @@
                         <TextBox Text="{Binding TransferHistoryDatabasePath}" Margin="0,0,0,5" 
                                  ToolTip="Leave empty to use automatic location (shared or local)"/>
                         <TextBlock Text="Leave empty to automatically select shared or local location based on permissions."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
                         
                         <CheckBox Content="Use Shared Database Location (All Users)" 
@@ -257,12 +234,10 @@
                                   Margin="0,0,0,5"
                                   ToolTip="Stores database in ProgramData for all users to access"/>
                         <TextBlock Text="When enabled, database will be stored in %ProgramData%\DataTransferApp\ for multi-user access."
-                                   FontSize="10"
-                                   Foreground="#7f8c8d"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="20,0,0,10"/>
                         
-                        <TextBlock FontSize="10" Foreground="#3498db" TextWrapping="Wrap" Margin="0,0,0,5">
+                        <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" Margin="0,0,0,5">
                             💡 Database provides 50-200x faster queries than JSON files and supports multi-user access.
                         </TextBlock>
                     </StackPanel>
@@ -321,7 +296,7 @@
                         <CheckBox Content="Enable Compression" IsChecked="{Binding EnableCompression}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Minimum Free Space on Drive (GB):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding MinimumFreeSpaceGB}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding MinimumFreeSpaceGB}" Margin="0,0,0,0"/>
                         
                         <Separator Margin="0,10,0,10"/>
                         
@@ -334,7 +309,7 @@
                             <ComboBoxItem Content="Skip"/>
                             <ComboBoxItem Content="Overwrite"/>
                         </ComboBox>
-                        <TextBlock FontSize="10" Foreground="#7F8C8D" TextWrapping="Wrap" Margin="0,0,0,10">
+                        <TextBlock Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10">
                             • AppendSequence: Add sequence number to duplicate folders (e.g., Folder_1)
                             <LineBreak/>
                             • Skip: Do not transfer if folder already exists on drive
