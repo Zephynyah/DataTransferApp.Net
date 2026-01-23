@@ -21,7 +21,7 @@ namespace DataTransferApp.Net.Services
         {
             _settings = settings;
             _archiveService = new ArchiveService();
-            
+
             // Initialize database service
             try
             {
@@ -35,7 +35,7 @@ namespace DataTransferApp.Net.Services
             {
                 LoggingService.Error("Failed to initialize transfer database service", ex);
             }
-            
+
             // Initialize compliance service
             if (_settings.GenerateComplianceRecords)
             {
@@ -73,7 +73,7 @@ namespace DataTransferApp.Net.Services
         private string ResolveDestinationPath(string destinationDrive, string folderName)
         {
             var basePath = Path.Combine(destinationDrive, folderName);
-            
+
             if (!Directory.Exists(basePath))
             {
                 return basePath;
@@ -151,12 +151,12 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var destinationPath = ResolveDestinationPath(destinationDrive, folder.FolderName);
-                
+
                 LoggingService.Info($"Starting transfer: {folder.FolderName} -> {destinationPath}");
 
                 // Check if skipping due to conflict resolution
-                if (_settings.AutoHandleConflicts && 
-                    _settings.ConflictResolution == "Skip" && 
+                if (_settings.AutoHandleConflicts &&
+                    _settings.ConflictResolution == "Skip" &&
                     Directory.Exists(destinationPath))
                 {
                     result.Success = true;
@@ -181,7 +181,7 @@ namespace DataTransferApp.Net.Services
                     // Copy file
                     var destFilePath = Path.Combine(destinationPath, file.RelativePath);
                     var destFileDir = Path.GetDirectoryName(destFilePath);
-                    
+
                     if (!string.IsNullOrEmpty(destFileDir))
                     {
                         Directory.CreateDirectory(destFileDir);
@@ -218,7 +218,7 @@ namespace DataTransferApp.Net.Services
                 result.TransferLog = transferLog;
 
                 LoggingService.Success($"Transfer completed: {folder.FolderName}");
-                
+
                 // Move original folder to retention directory
                 await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
             }
@@ -241,20 +241,20 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var retentionPath = Path.Combine(_settings.RetentionDirectory, folderName);
-                
+
                 // Create retention directory if it doesn't exist
                 Directory.CreateDirectory(_settings.RetentionDirectory);
-                
+
                 // Handle existing folder in retention - delete old one and replace
                 if (Directory.Exists(retentionPath))
                 {
                     Directory.Delete(retentionPath, true);
                     LoggingService.Info($"Replaced existing retention folder: {folderName}");
                 }
-                
+
                 // Move folder to retention
                 await Task.Run(() => Directory.Move(sourcePath, retentionPath));
-                
+
                 LoggingService.Info($"Moved to retention: {folderName} -> {retentionPath}");
             }
             catch (Exception ex)
@@ -263,7 +263,7 @@ namespace DataTransferApp.Net.Services
                 // Don't throw - transfer was successful, this is just cleanup
             }
         }
-        
+
         public List<RemovableDrive> GetRemovableDrives()
         {
             var drives = new List<RemovableDrive>();
@@ -274,15 +274,26 @@ namespace DataTransferApp.Net.Services
 
                 foreach (var drive in allDrives)
                 {
-                    if (drive.DriveType == DriveType.Removable &&
-                        drive.IsReady &&
-                        drive.AvailableFreeSpace > _settings.MinimumFreeSpaceGB * 1024 * 1024 * 1024 &&
-                        !_settings.ExcludeDrives.Contains(drive.Name))
+                    LoggingService.Debug($"Drive {drive.Name}: Type={drive.DriveType}, IsReady={drive.IsReady}, VolumeLabel='{drive.VolumeLabel}'");
+
+                    if (drive.IsReady)
+                    {
+                        LoggingService.Debug($"  FreeSpace={FormatFileSize(drive.AvailableFreeSpace)}, TotalSize={FormatFileSize(drive.TotalSize)}");
+                    }
+
+
+                    if (_settings.ExcludeDrives.Contains(drive.Name))
+                    {
+                        LoggingService.Debug($"   Drive {drive.Name} is excluded by settings");
+                        continue;
+                    }
+
+                    if ((drive.DriveType == DriveType.Removable || drive.DriveType == DriveType.Fixed) && drive.IsReady && drive.AvailableFreeSpace > _settings.MinimumFreeSpaceGB * 1024 * 1024 * 1024)
                     {
                         drives.Add(new RemovableDrive
                         {
                             DriveLetter = drive.Name,
-                            VolumeName = string.IsNullOrEmpty(drive.VolumeLabel) ? "Removable Drive" : drive.VolumeLabel,
+                            VolumeName = string.IsNullOrEmpty(drive.VolumeLabel) ? $"{drive.DriveType} Drive" : drive.VolumeLabel,
                             FreeSpace = drive.AvailableFreeSpace,
                             TotalSize = drive.TotalSize,
                             DisplayText = $"{drive.Name} - {drive.VolumeLabel} (Free: {FormatFileSize(drive.AvailableFreeSpace)})"
@@ -311,11 +322,11 @@ namespace DataTransferApp.Net.Services
                         LoggingService.Info("Retention directory does not exist, skipping cleanup");
                         return;
                     }
-                    
+
                     var cutoffDate = DateTime.Now.AddDays(-_settings.RetentionDays);
                     var folders = Directory.GetDirectories(_settings.RetentionDirectory);
                     var deletedCount = 0;
-                    
+
                     foreach (var folder in folders)
                     {
                         var folderInfo = new DirectoryInfo(folder);
@@ -333,7 +344,7 @@ namespace DataTransferApp.Net.Services
                             }
                         }
                     }
-                    
+
                     if (deletedCount > 0)
                     {
                         LoggingService.Success($"Retention cleanup completed: {deletedCount} folder(s) removed");
@@ -349,7 +360,7 @@ namespace DataTransferApp.Net.Services
                 }
             });
         }
-        
+
         public async Task ClearDriveAsync(string drivePath, IProgress<TransferProgress>? progress = null)
         {
             await Task.Run(() =>
@@ -474,7 +485,7 @@ namespace DataTransferApp.Net.Services
                 {
                     LoggingService.Warning("Database service is not initialized - transfer record not saved to database");
                 }
-                
+
                 // Generate compliance record (replaces separate JSON logging)
                 if (_settings.GenerateComplianceRecords && _complianceService != null)
                 {
