@@ -376,13 +376,9 @@ namespace DataTransferApp.Net.Services
                         "RECYCLER",
                         "$WinREAgent"
                     };
-
-                    // Use wildcard matcher for excluded folders from settings
-                    var excludedPatterns = _settings.ExcludedFolders ?? new List<string>();
                     
                     var directories = Directory.GetDirectories(drivePath)
                         .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
-                        .Where(d => !Helpers.WildcardMatcher.IsMatch(Path.GetFileName(d), excludedPatterns))
                         .ToList();
                     var files = Directory.GetFiles(drivePath);
                     var totalItems = directories.Count + files.Length;
