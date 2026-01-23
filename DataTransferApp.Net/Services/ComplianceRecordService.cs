@@ -22,8 +22,8 @@ namespace DataTransferApp.Net.Services
         {
             _settings = settings;
             
-            // Set EPPlus license context (required for non-commercial use)
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            // Set EPPlus license (required for non-commercial use)
+            ExcelPackage.License.SetNonCommercialPersonal("DataTransferApp.Net");
         }
 
         /// <summary>
