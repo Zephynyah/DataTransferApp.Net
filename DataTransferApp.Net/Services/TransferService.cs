@@ -293,7 +293,7 @@ namespace DataTransferApp.Net.Services
                         drives.Add(new RemovableDrive
                         {
                             DriveLetter = drive.Name,
-                            VolumeName = string.IsNullOrEmpty(drive.VolumeLabel) ? $"{drive.DriveType} Drive" : drive.VolumeLabel,
+                            VolumeName = string.IsNullOrEmpty(drive.VolumeLabel) ? "Removable Drive" : drive.VolumeLabel,
                             FreeSpace = drive.AvailableFreeSpace,
                             TotalSize = drive.TotalSize,
                             DisplayText = $"{drive.Name} - {drive.VolumeLabel} (Free: {FormatFileSize(drive.AvailableFreeSpace)})"
@@ -367,10 +367,23 @@ namespace DataTransferApp.Net.Services
             {
                 try
                 {
-                    var directories = Directory.GetDirectories(drivePath);
+                    // System folders to skip
+                    var systemFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        "$RECYCLE.BIN",
+                        "System Volume Information",
+                        "$Recycle.Bin",
+                        "RECYCLER",
+                        "$WinREAgent"
+                    };
+
+                    var directories = Directory.GetDirectories(drivePath)
+                        .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
+                        .ToList();
                     var files = Directory.GetFiles(drivePath);
-                    var totalItems = directories.Length + files.Length;
+                    var totalItems = directories.Count + files.Length;
                     var completedItems = 0;
+                    var skippedItems = 0;
 
                     progress?.Report(new TransferProgress
                     {
@@ -391,8 +404,21 @@ namespace DataTransferApp.Net.Services
                             PercentComplete = (int)((completedItems / (double)totalItems) * 100)
                         });
 
-                        Directory.Delete(dir, true);
-                        completedItems++;
+                        try
+                        {
+                            Directory.Delete(dir, true);
+                            completedItems++;
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            LoggingService.Warning($"Access denied to folder: {dirName} (skipped)");
+                            skippedItems++;
+                        }
+                        catch (IOException ex)
+                        {
+                            LoggingService.Warning($"Cannot delete folder: {dirName} - {ex.Message} (skipped)");
+                            skippedItems++;
+                        }
                     }
 
                     foreach (var file in files)
@@ -406,8 +432,21 @@ namespace DataTransferApp.Net.Services
                             PercentComplete = (int)((completedItems / (double)totalItems) * 100)
                         });
 
-                        File.Delete(file);
-                        completedItems++;
+                        try
+                        {
+                            File.Delete(file);
+                            completedItems++;
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            LoggingService.Warning($"Access denied to file: {fileName} (skipped)");
+                            skippedItems++;
+                        }
+                        catch (IOException ex)
+                        {
+                            LoggingService.Warning($"Cannot delete file: {fileName} - {ex.Message} (skipped)");
+                            skippedItems++;
+                        }
                     }
 
                     progress?.Report(new TransferProgress
@@ -418,7 +457,14 @@ namespace DataTransferApp.Net.Services
                         PercentComplete = 100
                     });
 
-                    LoggingService.Success($"Drive cleared: {drivePath}");
+                    if (skippedItems > 0)
+                    {
+                        LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted, {skippedItems} items skipped)");
+                    }
+                    else
+                    {
+                        LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted)");
+                    }
                 }
                 catch (Exception ex)
                 {
