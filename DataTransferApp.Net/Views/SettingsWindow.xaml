@@ -335,7 +335,7 @@
         <!-- Action Buttons -->
         <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" Padding="15,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource LightBrush}">
+                <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource WarningBrush}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
                         <TextBlock Text="Reset to Defaults" VerticalAlignment="Center"/>
