@@ -19,7 +19,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        
+
         // Apply window startup mode based on setting
         var startupMode = App.Settings?.WindowStartupMode ?? "Normal";
         switch (startupMode)
@@ -38,17 +38,17 @@ public partial class MainWindow : Window
                 break;
         }
     }
-    
+
     private void UpdateFullScreenUI(bool isFullScreen)
     {
         // Update exit button visibility
         ExitButton.Tag = isFullScreen;
     }
-    
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
-        
+
         // Toggle fullscreen with F11
         if (e.Key == Key.F11)
         {
@@ -66,7 +66,7 @@ public partial class MainWindow : Window
             }
         }
     }
-    
+
     private void ExitButton_Click(object sender, RoutedEventArgs e)
     {
         // Exit fullscreen mode
@@ -74,7 +74,7 @@ public partial class MainWindow : Window
         WindowState = WindowState.Normal;
         UpdateFullScreenUI(false);
     }
-    
+
     private void MenuButton_Click(object sender, RoutedEventArgs e)
     {
         // Open the context menu dropdown

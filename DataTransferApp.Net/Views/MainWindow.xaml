@@ -628,6 +628,25 @@
                                         </Style.Triggers>
                                     </Style>
                                 </StackPanel.Style> 
+                                
+                                <!-- Naming Audit Text -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
+                                    <Path Data="{StaticResource FolderIcon2Geometry}" 
+                                          Fill="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushIconConverter}}" 
+                                          Stroke="#4D3D36"
+                                          StrokeThickness="0.5"
+                                          Width="16" 
+                                          Height="16" 
+                                          Stretch="Uniform" 
+                                          Margin="0,0,6,0"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Folder Name: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" 
+                                               Foreground="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
+                                               FontWeight="Bold" 
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
                                 <!-- Blacklist Audit Text -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
                                     <Path Data="{StaticResource DangerAlertIconGeometry}" 
@@ -690,24 +709,6 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                </StackPanel>
-
-                                 <!-- Naming Audit Text -->
-                                <StackPanel Orientation="Horizontal" Margin="0,5,20,0">
-                                    <Path Data="{StaticResource FolderIcon2Geometry}" 
-                                          Fill="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushIconConverter}}" 
-                                          Stroke="#4D3D36"
-                                          StrokeThickness="0.5"
-                                          Width="16" 
-                                          Height="16" 
-                                          Stretch="Uniform" 
-                                          Margin="0,0,6,0"
-                                          VerticalAlignment="Center"/>
-                                    <TextBlock Text="Folder Name: " FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding SelectedFolder.NamingAuditStatus}" 
-                                               Foreground="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" 
-                                               FontWeight="Bold" 
-                                               VerticalAlignment="Center"/>
                                 </StackPanel>
 
                             </StackPanel>

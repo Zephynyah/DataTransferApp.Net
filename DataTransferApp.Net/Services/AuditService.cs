@@ -161,7 +161,7 @@ namespace DataTransferApp.Net.Services
                 catch
                 {
                     result.IsValid = false;
-                    result.Message = "Invalid date format in folder name";
+                    result.Message = "Invalid date format in folder name.";
                 }
 
                 return result;
@@ -171,7 +171,7 @@ namespace DataTransferApp.Net.Services
                 return new NameValidation
                 {
                     IsValid = false,
-                    Message = "Either employee Name/ID, Date, Dataset or Sequence has an invalid format"
+                    Message = "Either employee Name/ID, Date, Dataset or Sequence has an invalid format."
                 };
             }
             else
@@ -179,14 +179,14 @@ namespace DataTransferApp.Net.Services
                 return new NameValidation
                 {
                     IsValid = false,
-                    Message = "Folder required pattern: employee_yyyymmdd_dataset[_sequence]"
+                    Message = "Folder required pattern: employee_yyyymmdd_dataset[_sequence]."
                 };
             }
         }
 
         private DatasetValidation ValidateDataset(NameValidation nameValidation)
         {
-            if (nameValidation.IsValid && !string.IsNullOrEmpty(nameValidation.Dataset))
+            if (!string.IsNullOrEmpty(nameValidation.Dataset))
             {
                 var isWhitelisted = _settings.WhiteListDatasets.Contains(nameValidation.Dataset);
 

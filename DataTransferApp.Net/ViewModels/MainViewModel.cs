@@ -79,28 +79,28 @@ namespace DataTransferApp.Net.ViewModels
 
         [ObservableProperty]
         private string _snackbarBackground = "#2ECC71";
-        
+
         [ObservableProperty]
         private bool _showFolderAuditDetailsIcon = true;
-        
+
         [ObservableProperty]
         private bool _showAuditSummaryAsCards = true;
-        
+
         [ObservableProperty]
         private string _currentUser = $"{Environment.MachineName}\\{Environment.UserName}";
-        
+
         [ObservableProperty]
         private string _appVersion = "1.2.0";
-        
+
         [ObservableProperty]
         private string _appTitle = "Data Transfer Application";
 
         [ObservableProperty]
         private string _appDescription = "Collateral L2H Data Transfer Application";
-        
+
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
-        
+
         private readonly DispatcherTimer _timeUpdateTimer;
 
         public MainViewModel(AppSettings settings)
@@ -110,7 +110,7 @@ namespace DataTransferApp.Net.ViewModels
             _auditService = new AuditService(settings);
             _transferService = new TransferService(settings);
             _archiveService = new ArchiveService();
-            
+
             // Initialize settings-based properties
             ShowFolderAuditDetailsIcon = _settings.ShowFolderAuditDetailsIcon;
             ShowAuditSummaryAsCards = _settings.ShowAuditSummaryAsCards;
@@ -122,7 +122,7 @@ namespace DataTransferApp.Net.ViewModels
             };
             _driveDetectionTimer.Tick += (s, e) => DetectDrives();
             _driveDetectionTimer.Start();
-            
+
             // Initialize time update timer (update every second)
             _timeUpdateTimer = new DispatcherTimer
             {
@@ -133,7 +133,7 @@ namespace DataTransferApp.Net.ViewModels
 
             // Load initial data
             _ = LoadDataAsync();
-            
+
             // Initial drive detection
             DetectDrives();
         }
@@ -156,7 +156,7 @@ namespace DataTransferApp.Net.ViewModels
         private void OnSelectedFolderPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // When folder properties change, notify commands to re-evaluate
-            if (e.PropertyName == nameof(FolderData.AuditStatus) || 
+            if (e.PropertyName == nameof(FolderData.AuditStatus) ||
                 e.PropertyName == nameof(FolderData.CanTransfer))
             {
                 AuditFolderCommand.NotifyCanExecuteChanged();
@@ -206,16 +206,16 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var folders = await _fileService.ScanStagingDirectoryAsync(_settings.StagingDirectory);
                 FolderList = new ObservableCollection<FolderData>(folders);
-                
+
                 // Auto-select first folder if available
                 if (FolderList.Count > 0)
                 {
                     SelectedFolder = FolderList[0];
                 }
-                
+
                 UpdateStatistics();
                 StatusMessage = $"Loaded {folders.Count} folder(s)";
-                
+
                 // Run audit all if enabled in settings
                 if (_settings.AutoAuditOnStartup && FolderList.Count > 0)
                 {
@@ -225,7 +225,7 @@ namespace DataTransferApp.Net.ViewModels
                 else
                 {
                     LoggingService.Info("Auto-audit on startup not enabled or no folders to audit.");
-                }   
+                }
 
             }
             catch (Exception ex)
@@ -247,12 +247,12 @@ namespace DataTransferApp.Net.ViewModels
                 var drives = _transferService.GetRemovableDrives();
                 var currentDriveLetters = RemovableDrives.Select(d => d.DriveLetter).ToList();
                 var newDriveLetters = drives.Select(d => d.DriveLetter).ToList();
-                
+
                 // Only update if drives changed
                 if (!currentDriveLetters.SequenceEqual(newDriveLetters))
                 {
                     RemovableDrives = new ObservableCollection<RemovableDrive>(drives);
-                    
+
                     // Auto-select first drive if none selected or if drives changed
                     if (drives.Count > 0 && SelectedDrive == null)
                     {
@@ -263,7 +263,7 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         SelectedDrive = drives.Count > 0 ? drives[0] : null;
                     }
-                    
+
                     LoggingService.Info($"Drive list updated: {drives.Count} removable drive(s) detected");
                 }
             }
@@ -288,12 +288,12 @@ namespace DataTransferApp.Net.ViewModels
                     SelectedFolder.FolderName);
 
                 SelectedFolder.AuditResult = result;
-                
+
                 // Update individual audit statuses
                 // Combine naming and dataset validation into naming status
                 bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
                 SelectedFolder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
-                
+
                 // Combine failure reasons
                 var namingReasons = new List<string>();
                 if (result.NameValidation?.IsValid == false)
@@ -301,22 +301,22 @@ namespace DataTransferApp.Net.ViewModels
                 if (result.DatasetValidation?.IsValid == false)
                     namingReasons.Add(result.DatasetValidation.Message);
                 SelectedFolder.NamingFailureReason = string.Join(". ", namingReasons);
-                
+
                 SelectedFolder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
                 SelectedFolder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
                 SelectedFolder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
                 SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
-                
+
                 // Count compressed files
                 var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-                var compressedCount = SelectedFolder.Files.Count(f => 
-                    compressedExtensions.Contains(f.Extension.ToLower()) || 
+                var compressedCount = SelectedFolder.Files.Count(f =>
+                    compressedExtensions.Contains(f.Extension.ToLower()) ||
                     f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
                     f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
                     f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                 SelectedFolder.CompressedFileCount = compressedCount;
                 SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
-                
+
                 // Determine overall status: if all checks pass but there are compressed files, set to Caution
                 if (result.OverallStatus == "Passed" && compressedCount > 0)
                 {
@@ -335,7 +335,7 @@ namespace DataTransferApp.Net.ViewModels
                     file.IsCompressed = false;
                     file.Status = "Ready";
                 }
-                
+
                 // Mark blacklisted files
                 if (result.ExtensionValidation?.Violations.Count > 0)
                 {
@@ -349,7 +349,7 @@ namespace DataTransferApp.Net.ViewModels
                         }
                     }
                 }
-                
+
                 // Mark compressed files
                 foreach (var file in SelectedFolder.Files)
                 {
@@ -399,12 +399,12 @@ namespace DataTransferApp.Net.ViewModels
 
                     var result = await _auditService.AuditFolderAsync(folder.FolderPath, folder.FolderName);
                     folder.AuditResult = result;
-                    
+
                     // Update individual audit statuses
                     // Combine naming and dataset validation into naming status
                     bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
                     folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
-                    
+
                     // Combine failure reasons
                     var namingReasons = new List<string>();
                     if (result.NameValidation?.IsValid == false)
@@ -412,22 +412,22 @@ namespace DataTransferApp.Net.ViewModels
                     if (result.DatasetValidation?.IsValid == false)
                         namingReasons.Add(result.DatasetValidation.Message);
                     folder.NamingFailureReason = string.Join(". ", namingReasons);
-                    
+
                     folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
                     folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
                     folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
                     folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
-                    
+
                     // Count compressed files
                     var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-                    var compressedCount = folder.Files.Count(f => 
-                        compressedExtensions.Contains(f.Extension.ToLower()) || 
+                    var compressedCount = folder.Files.Count(f =>
+                        compressedExtensions.Contains(f.Extension.ToLower()) ||
                         f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
                         f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
                         f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
                     folder.CompressedFileCount = compressedCount;
                     folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
-                    
+
                     // Determine overall status: if all checks pass but there are compressed files, set to Caution
                     if (result.OverallStatus == "Passed" && compressedCount > 0)
                     {
@@ -437,7 +437,7 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         folder.AuditStatus = result.OverallStatus;
                     }
-                    
+
                     // Update file flags
                     foreach (var file in folder.Files)
                     {
@@ -445,7 +445,7 @@ namespace DataTransferApp.Net.ViewModels
                         file.IsCompressed = false;
                         file.Status = "Ready";
                     }
-                    
+
                     // Mark blacklisted files
                     if (result.ExtensionValidation?.Violations.Count > 0)
                     {
@@ -459,7 +459,7 @@ namespace DataTransferApp.Net.ViewModels
                             }
                         }
                     }
-                    
+
                     // Mark compressed files
                     foreach (var file in folder.Files)
                     {
@@ -566,7 +566,7 @@ namespace DataTransferApp.Net.ViewModels
                             skipped++;
                             LoggingService.Info($"Skipped existing folder: {folder.FolderName}");
                         }
-                        
+
                         TransferredList.Add(folder);
                         FolderList.Remove(folder);
                     }
@@ -602,7 +602,7 @@ namespace DataTransferApp.Net.ViewModels
             if (SelectedFolder == null || SelectedDrive == null) return;
 
             var folderName = SelectedFolder.FolderName; // Store name before folder is removed
-            
+
             // Check drive contents if no transfers yet
             if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
             {
@@ -651,11 +651,11 @@ namespace DataTransferApp.Net.ViewModels
                     TransferredList.Add(SelectedFolder);
                     FolderList.Remove(SelectedFolder);
                     UpdateStatistics();
-                    
-                    var message = result.ErrorMessage == "Skipped - folder already exists" 
-                        ? $"Skipped (already exists): {folderName}" 
+
+                    var message = result.ErrorMessage == "Skipped - folder already exists"
+                        ? $"Skipped (already exists): {folderName}"
                         : $"Transfer complete: {folderName}";
-                    
+
                     StatusMessage = message;
                     ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
                 }
@@ -691,7 +691,7 @@ namespace DataTransferApp.Net.ViewModels
             if (SelectedFolder == null || SelectedDrive == null) return;
 
             var folderName = SelectedFolder.FolderName; // Store name before folder is removed
-            
+
             var result = MessageBox.Show(
                 $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {SelectedFolder.AuditStatus}",
                 "Override Audit - Confirm Transfer",
@@ -777,7 +777,7 @@ namespace DataTransferApp.Net.ViewModels
                 });
 
                 await _transferService.ClearDriveAsync(SelectedDrive.DriveLetter, progress);
-                
+
                 StatusMessage = $"Drive cleared: {SelectedDrive.DriveLetter}";
                 ShowSnackbar($"Drive cleared successfully: {SelectedDrive.DriveLetter}", "success");
             }
@@ -830,21 +830,21 @@ namespace DataTransferApp.Net.ViewModels
                 var settingsWindow = new SettingsWindow(
                     App.SettingsService!,
                     App.Settings!);
-                
+
                 if (settingsWindow.ShowDialog() == true)
                 {
                     // Reload settings from database
                     var updatedSettings = App.SettingsService!.GetSettings();
-                    
+
                     // Update observable properties from reloaded settings
                     ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
-                    
+
                     // Copy updated settings back to the _settings reference
                     _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
-                    
+
                     StatusMessage = "Settings updated successfully";
                     ShowSnackbar("Settings saved successfully!", "success");
                     LoggingService.Info("Settings updated successfully");
