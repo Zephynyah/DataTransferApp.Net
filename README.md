@@ -1,244 +1,143 @@
-# Data Transfer Application - .NET 8 WPF
+<p align="center">
+  <img src="DataTransferApp.Net/app.png" alt="Data Transfer Application Logo" width="30" style="vertical-align: middle; margin-right: 10px;"/>
+  <span style="font-size: 2em; font-weight: bold; vertical-align: middle;">Data Transfer Application (.NET)</span>
+</p>
 
-A modern .NET 8 WPF application for secure data transfer between air-gapped systems with comprehensive audit trails and compliance controls.
+A secure, user-friendly application for transferring data between air-gapped systems with comprehensive audit trails and compliance documentation.
 
-## 🚀 Project Status
+<p align="center">
+  <img src="DataTransferApp.Net/Screenshot.png" alt="Application Screenshot" width="800"/>
+</p>
 
-**Current Progress:**
-- ✅ Project scaffolding (.NET 8 WPF)
-- ✅ NuGet packages installed
-- ✅ Project structure created
-- ✅ Core models implemented
-- ✅ LoggingService implemented
-- ✅ SettingsService implemented
-- ⏳ Remaining services (in progress)
-- ⏳ ViewModels (pending)
-- ⏳ Views/XAML (pending)
 
-## 📦 Installed Packages
 
-- **SharpCompress** (0.44.0) - Archive handling (zip, rar, 7z, tar, gz, etc.)
-- **LiteDB** (5.0.21) - Embedded NoSQL database for settings and transfer history
-- **Serilog** (4.3.0) - Structured logging framework
-- **Serilog.Sinks.File** (7.0.0) - File logging sink
-- **CommunityToolkit.Mvvm** (8.4.0) - MVVM helpers and source generators
-- **EPPlus** (7.7.0) - Excel file generation for compliance records
+## ✨ Key Features
 
-## 🏗️ Project Structure
+- **🔒 Secure Air-Gapped Transfers** - No network connectivity required
+- **📁 Folder Auditing** - Validates folder naming and file contents
+- **📊 Real-Time Progress** - Live transfer progress with detailed statistics
+- **📋 Compliance Records** - Automatic generation of audit trails in multiple formats
+- **🗂️ Archive Support** - Handles ZIP, RAR, 7Z, TAR, and other archive formats
+- **⚙️ Configurable Settings** - Customize paths, validation rules, and logging
+- **📈 Transfer History** - Complete database of all past transfers
+- **🎯 Dataset Validation** - Ensures only authorized datasets are transferred
 
-```
-DataTransferApp.Net/
-├── Models/
-│   ├── AppSettings.cs          ✅ Complete
-│   ├── FileData.cs             ✅ Complete
-│   ├── FolderData.cs           ✅ Complete
-│   ├── AuditResult.cs          ✅ Complete
-│   └── TransferLog.cs          ✅ Complete
-├── Services/
-│   ├── LoggingService.cs       ✅ Complete
-│   ├── SettingsService.cs      ✅ Complete
-│   ├── AuditService.cs         ⏳ To create
-│   ├── TransferService.cs      ⏳ To create
-│   └── ArchiveService.cs       ⏳ To create
-├── ViewModels/
-│   ├── MainViewModel.cs        ⏳ To create
-│   └── SettingsViewModel.cs    ⏳ To create
-├── Views/
-│   ├── MainWindow.xaml         ⏳ To update
-│   └── SettingsWindow.xaml     ⏳ To create
-├── Helpers/
-│   └── RelayCommand.cs         ⏳ To create
-└── App.xaml                    ⏳ To update
-```
+## 🚀 Quick Start
 
-## 🎯 Key Features
+### System Requirements
+- Windows 10/11
+- .NET 8.0 Runtime (automatically installed if needed)
+- 100MB free disk space
 
-### Completed
-- ✅ LiteDB settings backend with automatic creation in AppData
-- ✅ Serilog file logging with configurable levels
-- ✅ Comprehensive data models for folders, files, audits, and transfers
-- ✅ Settings management with defaults
+### Installation
+1. Download the latest release from the releases page
+2. Extract the ZIP file to your preferred location
+3. Run `DataTransferApp.Net.exe`
 
-### To Implement
-- ⏳ Archive handling with SharpCompress
-- ⏳ Folder auditing with regex validation
-- ⏳ File transfer operations
-- ⏳ MVVM pattern with data binding
-- ⏳ Modern WPF UI matching original design
-- ⏳ Settings window
+The application will automatically create its data directory in `%AppData%\DataTransferApp\`.
 
-## 📝 Next Steps
+## 📖 How to Use
 
-### 1. Create Remaining Services
+### 1. Initial Setup
+- Launch the application
+- Configure your staging and destination paths in Settings
+- Set up folder naming patterns and file validation rules
 
-Create these files in `Services/`:
+### 2. Prepare Data for Transfer
+- Place folders in the staging directory following your naming convention
+- The application will automatically detect and validate folders
 
-**AuditService.cs** - Folder and file validation
-- Folder naming validation using regex
-- File extension blacklist checking
-- Dataset whitelist validation
-- Generate comprehensive audit results
+### 3. Audit and Transfer
+- Click **Refresh** to scan for available folders
+- Review audit results for each folder
+- Select folders and click **Transfer** to move data to destination drives
+- Monitor progress in real-time
 
-**TransferService.cs** - File transfer operations
-- Copy folders to destination drives
-- Calculate file hashes (optional)
-- Progress reporting
-- Error handling and rollback
+### 4. Compliance Documentation
+- Compliance records are automatically generated for each transfer
+- Available in CSV, Excel, TXT, and JSON formats
+- Stored alongside transfer data for easy access
 
-**ArchiveService.cs** - Archive file handling
-- List archive contents using SharpCompress
-- Support for zip, rar, 7z, tar, gz, bz2, xz
-- Extract archive information
-- Preview file listings
+## ⚙️ Configuration
 
-### 2. Create ViewModels
+Access settings through the **Settings** button in the main window:
 
-**MainViewModel.cs** - Main window logic
-- ObservableCollection for folders and files
-- Commands for Refresh, Audit, Transfer operations
-- Progress reporting
-- Status updates
+### Paths
+- **Staging Directory**: Where you place folders for transfer
+- **Destination Drives**: Network or external drives for data transfer
+- **Retention Directory**: Long-term storage location
 
-**SettingsViewModel.cs** - Settings window logic
-- Bind to AppSettings model
-- Save/Cancel/Reset commands
-- Validation logic
+### Validation Rules
+- **Folder Naming Pattern**: Regex for valid folder names (e.g., `Employee_YYYY-MM-DD_Dataset`)
+- **File Extension Blacklist**: Prohibited file types
+- **Dataset Whitelist**: Authorized dataset codes
 
-### 3. Update Views
+### Transfer Options
+- **Calculate File Hashes**: Enable for data integrity verification
+- **Compression**: Reduce transfer size for large datasets
+- **Concurrent Operations**: Speed up transfers with parallel processing
 
-**MainWindow.xaml** - Port from PowerShell design
-- Elegant tabbed interface
-- Folder list with status indicators
-- File DataGrid with view buttons
-- Transfer progress bar
-- Statistics panel
+## 📊 Transfer History
 
-**SettingsWindow.xaml** - Configuration UI
-- Grouped settings (Paths, Audit, Logging, Transfer)
-- Input validation
-- Save/Cancel/Reset buttons
+View complete transfer history with:
+- Transfer dates and times
+- File counts and sizes
+- Success/failure status
+- Compliance record links
+- Detailed file listings
 
-### 4. Update App.xaml.cs
+## 🔒 Security & Compliance
 
-Initialize services at startup:
-```csharp
-// Get AppData path
-var appDataPath = Path.Combine(
-    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-    "DataTransferApp");
+- **Air-Gapped Design**: No network connectivity prevents data leaks
+- **Audit Trails**: Every transfer is logged with file hashes and metadata
+- **Path Validation**: Prevents directory traversal attacks
+- **File Type Control**: Configurable restrictions on file extensions
+- **Dataset Authorization**: Only approved datasets can be transferred
 
-// Initialize services
-var dbPath = Path.Combine(appDataPath, "settings.db");
-var logPath = Path.Combine(appDataPath, "Logs", "app.log");
+## 🆘 Troubleshooting
 
-var settingsService = new SettingsService(dbPath);
-var settings = settingsService.GetSettings();
+### Common Issues
 
-var logLevel = LoggingService.ParseLogLevel(settings.LogLevel);
-LoggingService.Initialize(logPath, logLevel);
-```
+**"Drive not ready" errors**
+- Ensure destination drives are properly connected and formatted
+- Check drive letters in Settings match available drives
 
-## 🔧 Configuration
+**"Invalid folder name" errors**
+- Verify folder names match the configured regex pattern
+- Check Settings > Validation Rules for naming requirements
 
-Settings are stored in: `%AppData%\DataTransferApp\settings.db`  
-Logs are stored in: `%AppData%\DataTransferApp\Logs\`
+**Application won't start**
+- Ensure .NET 8.0 runtime is installed
+- Check Windows Event Viewer for error details
+- Verify write permissions to `%AppData%\DataTransferApp\`
 
-### Configurable Settings
+**Slow transfers**
+- Enable compression in Settings for large files
+- Consider increasing concurrent operations limit
+- Check destination drive performance
 
-- **Paths**: Staging, Retention, Logs directories
-- **Folder Naming**: Regex pattern for validation
-- **File Extensions**: Blacklist for prohibited file types
-- **Datasets**: Whitelist for allowed dataset codes
-- **Logging**: Level (Debug/Info/Warning/Error), format, rotation
-- **Transfer**: Hash calculation, compression, concurrency
-- **UI**: Window size, notifications
-
-## 🏃 Running the Application
-
-```powershell
-cd DataTransferApp.Net
-dotnet build
-dotnet run
-```
-
-## 📚 Development Guidelines
-
-### MVVM Pattern
-- Use `CommunityToolkit.Mvvm` for `ObservableProperty` and `RelayCommand`
-- ViewModels should not reference Views directly
-- Use data binding for all UI updates
-
-### Logging
-- Use `LoggingService` for all logging
-- Log levels: Debug, Info, Warning, Error, Success
-- Include context in log messages
-
-### Async/Await
-- Use async methods for I/O operations
-- Report progress for long-running operations
-- Handle cancellation tokens
-
-### Error Handling
-- Use try-catch blocks appropriately
-- Log exceptions with context
-- Show user-friendly error messages
-
-## 🔒 Security Considerations
-
-- No network operations (air-gapped design)
-- File path validation to prevent traversal attacks
-- Settings stored locally in LiteDB
-- Audit trail for all transfers
-- Configurable file extension blacklist
-
-## 📖 Migration from PowerShell
-
-This .NET application improves upon the PowerShell version:
-- ✅ Better performance with native compiled code
-- ✅ Robust archive handling with SharpCompress
-- ✅ Persistent settings with LiteDB
-- ✅ Professional logging with Serilog
-- ✅ Modern MVVM architecture
-- ✅ Better error handling and validation
-- ✅ Configurable log levels and rotation
-- ✅ **LiteDB database for centralized transfer history (v1.2.0)**
-- ✅ **Automated compliance record generation (v1.2.0)**
+### Logs and Support
+- Application logs are stored in `%AppData%\DataTransferApp\Logs\`
+- Include log files when reporting issues
+- Check the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for detailed solutions
 
 ## 📋 Recent Updates
 
 ### Version 1.2.0 (January 21, 2026)
-**Transfer History and Compliance Records Refactoring**
+- **Transfer History Database**: Centralized storage with 50-200x performance improvement
+- **Automated Compliance Records**: CSV/Excel generation for every transfer
+- **Multi-User Support**: Shared database for team collaboration
+- **Migration Tools**: Import existing transfer logs
 
-Major enhancement implementing centralized transfer history storage and automated compliance record generation:
+### Version 1.1.0 (January 17, 2026)
+- **Archive File Support**: Preview and validate compressed files
+- **Enhanced Validation**: Improved folder naming and file type checking
+- **Progress Reporting**: Real-time transfer statistics
+- **Settings Persistence**: All configuration saved automatically
 
-- **LiteDB Database**: Centralized storage for all transfer records with 50-200x performance improvement
-- **Compliance Records**: Automatic generation of CSV/Excel compliance records for every transfer
-- **Multi-User Support**: Shared database location for team collaboration
-- **Migration Tool**: Utility to migrate existing JSON logs to database
-- **Database Maintenance**: Automatic cleanup and optimization features
+## 📞 Support
 
-**Documentati1.2.0  
-**Last Updated**: January 21ntation](docs/TRANSFER_HISTORY_REFACTORING.md)
-- [User Quick Reference](docs/TRANSFER_HISTORY_QUICK_REFERENCE.md)
-- [Migration Guide](docs/MIGRATION_GUIDE.md)
-- [Refactoring Summary](docs/REFACTORING_SUMMARY.md)
-
-## 🤝 Contributing
-
-When extending this application:
-1. Follow existing patterns and conventions
-2. Add comprehensive logging
-3. Write unit tests for services
-4. Update this README with changes
-5. Document complex logic
-
-## 📄 License
-
-Internal use only - Air-gapped transfer system
-
----
-
-**Version**: 2.0.0  
-**Last Updated**: January 17, 2026  
-**Framework**: .NET 8.0  
-**UI**: WPF with MVVM
+For technical support or questions:
+- Check the [User Guide](docs/USER_GUIDE.md) for detailed instructions
+- Review [Troubleshooting](docs/TROUBLESHOOTING.md) for common solutions
+- Contact your system administrator for configuration assistance

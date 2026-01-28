@@ -70,7 +70,7 @@ namespace DataTransferApp.Net.Models
         public string ComplianceRecordType { get; set; } = "Standard"; // Standard, Comprehensive
         public string ComplianceSourceLocation { get; set; } = "Unclassified Corporate Network"; // Source location for compliance records
         public bool CalculateFileHashes { get; set; } = true;
-        public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5
+        public string HashAlgorithm { get; set; } = "SHA1"; // SHA256, SHA512, SHA1, MD5
         
         // Transfer Settings
         public bool EnableCompression { get; set; } = false;

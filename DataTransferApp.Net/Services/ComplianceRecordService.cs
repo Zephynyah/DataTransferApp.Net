@@ -269,7 +269,8 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = EscapeCsv(file.FileName);
                 var fileFormat = file.Extension.TrimStart('.');
-                var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
                 var source = _settings.ComplianceSourceLocation;
                 var destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName);
@@ -295,7 +296,8 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = $"\"{EscapeCsv(file.FileName)}\"";
                 var fileFormat = file.Extension.TrimStart('.');
-                var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
                 var source = $"\"{_settings.ComplianceSourceLocation}\"";
                 var destination = $"\"{ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName)}\"";
@@ -328,7 +330,8 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = file.FileName;
                 var fileFormat = file.Extension.TrimStart('.');
-                var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
                 var source = _settings.ComplianceSourceLocation;
                 var destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName);
@@ -363,7 +366,8 @@ namespace DataTransferApp.Net.Services
                 Date = transfer.TransferInfo.Date.ToString("yyyyMMdd"),
                 File = file.FileName,
                 FileFormat = file.Extension.TrimStart('.'),
-                Originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}",
+                // Originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}",
+                Originator = $"{transfer.TransferInfo.FolderName}",
                 DTA = transfer.TransferInfo.DTA,
                 Source = _settings.ComplianceSourceLocation,
                 Destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName),
