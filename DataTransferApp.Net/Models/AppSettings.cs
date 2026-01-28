@@ -1,6 +1,7 @@
 using LiteDB;
 using System;
 using System.Collections.Generic;
+using DataTransferApp.Net.Helpers;
 
 namespace DataTransferApp.Net.Models
 {
@@ -11,7 +12,8 @@ namespace DataTransferApp.Net.Models
         
         // Application Settings
         public string DataTransferAgent { get; set; } = Environment.UserName;
-        public string ApplicationVersion { get; set; } = "1.2.0";
+        
+        public string ApplicationVersion => VersionHelper.GetVersion();
         
         // Directory Paths
         // public string StagingDirectory { get; set; } = @"D:\TransferStaging";

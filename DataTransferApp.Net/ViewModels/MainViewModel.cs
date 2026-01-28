@@ -92,7 +92,7 @@ namespace DataTransferApp.Net.ViewModels
         private string _currentUser = $"{Environment.MachineName}\\{Environment.UserName}";
 
         [ObservableProperty]
-        private string _appVersion = "1.2.0";
+        private string _appVersion = VersionHelper.GetVersion();
 
         [ObservableProperty]
         private string _appTitle = "Data Transfer Application";
@@ -102,7 +102,7 @@ namespace DataTransferApp.Net.ViewModels
 
         
         [ObservableProperty]
-        private string _appFooter = "© 2026 Data Transfer Application (v1.2.0). All rights reserved.";
+        private string _appFooter = $"© 2026 Data Transfer Application ({VersionHelper.GetVersionWithPrefix()}). All rights reserved.";
 
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");

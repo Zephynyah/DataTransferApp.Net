@@ -123,6 +123,12 @@ View complete transfer history with:
 
 ## 📋 Recent Updates
 
+### Version 1.3.0 (January 28, 2026)
+- **Enhanced File Detection**: Improved text file identification with special handling for .md files
+- **File Viewer Coverage**: Better detection of viewable files using content analysis
+- **Archive Support**: Archives are properly marked as viewable for content browsing
+- **Performance Optimizations**: Sample-based file reading for faster detection
+
 ### Version 1.2.0 (January 21, 2026)
 - **Transfer History Database**: Centralized storage with 50-200x performance improvement
 - **Automated Compliance Records**: CSV/Excel generation for every transfer
@@ -141,3 +147,10 @@ For technical support or questions:
 - Check the [User Guide](docs/USER_GUIDE.md) for detailed instructions
 - Review [Troubleshooting](docs/TROUBLESHOOTING.md) for common solutions
 - Contact your system administrator for configuration assistance
+
+---
+
+**Version**: 1.3.0  
+**Last Updated**: January 28, 2026  
+**Framework**: .NET 8.0  
+**UI**: WPF with MVVM
