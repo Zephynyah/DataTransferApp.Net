@@ -1,4 +1,5 @@
 using DataTransferApp.Net.Models;
+using DataTransferApp.Net.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,7 +139,7 @@ namespace DataTransferApp.Net.Services
                             FullPath = fileInfo.FullName,
                             RelativePath = file.Replace(folderPath, "").TrimStart(Path.DirectorySeparatorChar),
                             Status = "Ready",
-                            IsViewable = IsFileViewable(ext),
+                            IsViewable = IsFileViewable(fileInfo.FullName, ext),
                             IsArchive = _archiveService.IsArchive(file)
                         };
 
@@ -192,8 +193,25 @@ namespace DataTransferApp.Net.Services
 
         private bool IsFileViewable(string extension)
         {
-            return ViewableExtensions.Contains(extension.ToLower()) || 
+            return ViewableExtensions.Contains(extension.ToLower()) ||
                    _archiveService.IsArchive(extension);
+        }
+
+        /// <summary>
+        /// Enhanced file viewability check that combines extension filtering with content analysis
+        /// </summary>
+        public bool IsFileViewable(string filePath, string extension)
+        {
+            // Archives are always "viewable" because we can show their contents
+            if (_archiveService.IsArchive(extension))
+                return true;
+
+            // For known text extensions, verify content is actually text
+            if (ViewableExtensions.Contains(extension.ToLower()))
+                return FileEncodingHelper.IsTextFile(filePath);
+
+            // For unknown extensions, check if file is actually text-based
+            return FileEncodingHelper.IsTextFile(filePath);
         }
     }
 }
