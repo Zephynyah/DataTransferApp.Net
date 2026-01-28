@@ -1,7 +1,34 @@
+Standard
+==========
 Date	    File	                                   FileFormat	Originator	         DTA	    Source	                       Destination	                                                   Hash	   Algorithm
 20260123	NSE SOW +Survey Justification Updates.msg	.msg	   VanMaren_20260123_UG	 C95062474	Unclassified Corporate Network	ug	52642B923A0142B344C30D267F767F69F6E546173B10B2E675A7A8A8C2576FF5	SHA256
 
 
+
+Comrehensive
+==============
+Transfer Compliance Record	
+Generated	1/27/2026 20:09
++
+Transfer Information	
+Transfer ID	697961cf64ec630e6a7c5630
+Data Transfer Agent	Jason
+Employee ID	Ben
+Transfer Date	1/27/2026 20:09
+Folder Name	Ben_2026-01-16_UG
+Source Path	D:\Powershell\GUI\DTA\test-data\TransferStaging\Ben_2026-01-16_UG
+Destination Path	D:\Ben_2026-01-16_UG
+Origin	D:\Powershell\GUI\DTA\test-data\TransferStaging\Ben_2026-01-16_UG
+Destination	D:\Ben_2026-01-16_UG
++
+Transfer Summary	
+Total Files	849
+Total Size (bytes)	24462941
+Total Size (formatted)	23.33 MB
+Transfer Started	1/27/2026 20:09
+Transfer Completed	1/27/2026 20:09
+Duration	0.00 seconds
+Status	Completed
++
 Standard
-Summary
-Combined
+
