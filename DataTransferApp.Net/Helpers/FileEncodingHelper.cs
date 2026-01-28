@@ -19,6 +19,10 @@ namespace DataTransferApp.Net.Helpers
             {
                 var fileInfo = new FileInfo(filePath);
 
+                // Special case: .md files are always considered text (they're markdown)
+                if (fileInfo.Extension.ToLower() == ".md")
+                    return true;
+
                 // Skip very large files
                 if (fileInfo.Length > MAX_FILE_SIZE)
                     return false;
@@ -88,12 +92,17 @@ namespace DataTransferApp.Net.Helpers
             if (nullByteCount > totalChars * 0.1)
                 return false;
 
-            // Try to decode as UTF-8
+            // Try to decode as UTF-8 and validate
             try
             {
                 string sample = Encoding.UTF8.GetString(buffer, 0, length);
-                // Check if it contains valid characters
-                return sample.All(c => c >= 32 || c == 9 || c == 10 || c == 13); // Printable chars + tab, CR, LF
+
+                // Very permissive validation: just ensure it's decodable and not mostly control chars
+                int controlCharCount = sample.Count(c => c < 32 && c != 9 && c != 10 && c != 13 && c != 12 && c != 11);
+                int sampleLength = sample.Length;
+
+                // Allow up to 5% control characters (for binary safety)
+                return controlCharCount <= sampleLength * 0.05;
             }
             catch
             {
