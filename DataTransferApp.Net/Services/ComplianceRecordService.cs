@@ -40,13 +40,20 @@ namespace DataTransferApp.Net.Services
             {
                 var outputPath = GetComplianceRecordPath(transfer);
                 
-                if (_settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase))
+                if (_settings.ComplianceRecordType.Equals("Standard", StringComparison.OrdinalIgnoreCase))
                 {
-                    await GenerateExcelRecordAsync(transfer, outputPath);
+                    await GenerateStandardRecordAsync(transfer, outputPath);
                 }
-                else // CSV is default
+                else // Comprehensive is default
                 {
-                    await GenerateCsvRecordAsync(transfer, outputPath);
+                    if (_settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase))
+                    {
+                        await GenerateExcelRecordAsync(transfer, outputPath);
+                    }
+                    else // CSV is default
+                    {
+                        await GenerateCsvRecordAsync(transfer, outputPath);
+                    }
                 }
 
                 LoggingService.Info($"Compliance record generated: {outputPath}");
@@ -160,6 +167,32 @@ namespace DataTransferApp.Net.Services
                                  $"\"{EscapeCsv(file.RelativePath)}\"," +
                                  $"{file.Status}");
                 }
+            }
+
+            await File.WriteAllTextAsync(outputPath, csv.ToString());
+        }
+
+        private async Task GenerateStandardRecordAsync(TransferLog transfer, string outputPath)
+        {
+            var csv = new StringBuilder();
+
+            // Standard format header
+            csv.AppendLine("Date\tFile\tFileFormat\tOriginator\tDTA\tSource\tDestination\tHash\tAlgorithm");
+
+            // File entries
+            foreach (var file in transfer.Files)
+            {
+                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
+                var fileName = EscapeCsv(file.FileName);
+                var fileFormat = file.Extension.TrimStart('.');
+                var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
+                var dta = transfer.TransferInfo.DTA;
+                var source = transfer.TransferInfo.SourcePath;
+                var destination = transfer.TransferInfo.DestinationPath;
+                var hash = file.FileHash ?? "N/A";
+                var algorithm = _settings.HashAlgorithm;
+
+                csv.AppendLine($"{date}\t{fileName}\t{fileFormat}\t{originator}\t{dta}\t{source}\t{destination}\t{hash}\t{algorithm}");
             }
 
             await File.WriteAllTextAsync(outputPath, csv.ToString());
@@ -383,9 +416,18 @@ namespace DataTransferApp.Net.Services
             Directory.CreateDirectory(directory);
 
             var timestamp = transfer.TransferInfo.Date.ToString("yyyyMMdd_HHmmss");
-            var extension = _settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase)
-                ? ".xlsx"
-                : ".csv";
+            
+            string extension;
+            if (_settings.ComplianceRecordType.Equals("Standard", StringComparison.OrdinalIgnoreCase))
+            {
+                extension = ".txt";
+            }
+            else
+            {
+                extension = _settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase)
+                    ? ".xlsx"
+                    : ".csv";
+            }
 
             var fileName = $"Compliance_{transfer.TransferInfo.FolderName}_{timestamp}{extension}";
             return Path.Combine(directory, fileName);

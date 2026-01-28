@@ -200,6 +200,18 @@
                                   Margin="0,0,0,10"
                                   ToolTip="Automatically generate compliance records for regulatory audits"/>
                         
+                        <TextBlock Text="Compliance Record Type:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <ComboBox SelectedValue="{Binding ComplianceRecordType}" 
+                                  SelectedValuePath="Content" 
+                                  Margin="0,0,0,10" 
+                                  IsEnabled="{Binding GenerateComplianceRecords}">
+                            <ComboBoxItem Content="Standard"/>
+                            <ComboBoxItem Content="Comprehensive"/>
+                        </ComboBox>
+                        <TextBlock Text="Standard: Tabular format with file-level details. Comprehensive: Detailed transfer summary with sections."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,0,0,10"/>
+                        
                         <TextBlock Text="Compliance Record Format:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" 
                                   SelectedValuePath="Content" 
