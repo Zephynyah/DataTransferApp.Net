@@ -271,8 +271,8 @@ namespace DataTransferApp.Net.Services
                 var fileFormat = file.Extension.TrimStart('.');
                 var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var dta = transfer.TransferInfo.DTA;
-                var source = transfer.TransferInfo.SourcePath;
-                var destination = transfer.TransferInfo.DestinationPath;
+                var source = _settings.ComplianceSourceLocation;
+                var destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName);
                 var hash = file.FileHash ?? "N/A";
                 var algorithm = _settings.HashAlgorithm;
 
@@ -297,8 +297,8 @@ namespace DataTransferApp.Net.Services
                 var fileFormat = file.Extension.TrimStart('.');
                 var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var dta = transfer.TransferInfo.DTA;
-                var source = $"\"{transfer.TransferInfo.SourcePath}\"";
-                var destination = $"\"{transfer.TransferInfo.DestinationPath}\"";
+                var source = $"\"{_settings.ComplianceSourceLocation}\"";
+                var destination = $"\"{ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName)}\"";
                 var hash = file.FileHash ?? "N/A";
                 var algorithm = _settings.HashAlgorithm;
 
@@ -330,8 +330,8 @@ namespace DataTransferApp.Net.Services
                 var fileFormat = file.Extension.TrimStart('.');
                 var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var dta = transfer.TransferInfo.DTA;
-                var source = transfer.TransferInfo.SourcePath;
-                var destination = transfer.TransferInfo.DestinationPath;
+                var source = _settings.ComplianceSourceLocation;
+                var destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName);
                 var hash = file.FileHash ?? "N/A";
                 var algorithm = _settings.HashAlgorithm;
 
@@ -365,8 +365,8 @@ namespace DataTransferApp.Net.Services
                 FileFormat = file.Extension.TrimStart('.'),
                 Originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}",
                 DTA = transfer.TransferInfo.DTA,
-                Source = transfer.TransferInfo.SourcePath,
-                Destination = transfer.TransferInfo.DestinationPath,
+                Source = _settings.ComplianceSourceLocation,
+                Destination = ExtractDatasetFromFolderName(transfer.TransferInfo.FolderName),
                 Hash = file.FileHash ?? "N/A",
                 Algorithm = _settings.HashAlgorithm
             });
@@ -680,6 +680,26 @@ namespace DataTransferApp.Net.Services
 
             var fileName = $"ConsolidatedReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}_{DateTime.Now:yyyyMMdd_HHmmss}{extension}";
             return Path.Combine(directory, fileName);
+        }
+
+        private string ExtractDatasetFromFolderName(string folderName)
+        {
+            // Extract dataset from folder name (e.g., "Ben_2026-01-16_UG" -> "UG")
+            // Look for the last part after the date pattern
+            var parts = folderName.Split('_');
+            if (parts.Length >= 3)
+            {
+                // Find the last part that looks like a dataset (typically 2-10 uppercase letters)
+                for (int i = parts.Length - 1; i >= 0; i--)
+                {
+                    var part = parts[i];
+                    if (part.Length >= 2 && part.Length <= 10 && part.All(char.IsLetter) && part.All(char.IsUpper))
+                    {
+                        return part;
+                    }
+                }
+            }
+            return "Unknown";
         }
 
         private string EscapeCsv(string value)

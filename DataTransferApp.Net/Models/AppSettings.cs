@@ -68,7 +68,7 @@ namespace DataTransferApp.Net.Models
         public bool GenerateComplianceRecords { get; set; } = true;
         public string ComplianceRecordFormat { get; set; } = "CSV"; // CSV, Excel, JSON
         public string ComplianceRecordType { get; set; } = "Standard"; // Standard, Comprehensive
-
+        public string ComplianceSourceLocation { get; set; } = "Unclassified Corporate Network"; // Source location for compliance records
         public bool CalculateFileHashes { get; set; } = true;
         public string HashAlgorithm { get; set; } = "MD5"; // SHA256, SHA512, SHA1, MD5
         

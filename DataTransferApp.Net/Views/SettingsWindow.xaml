@@ -223,6 +223,12 @@
                             <ComboBoxItem Content="JSON"/>
                         </ComboBox>
                         
+                        <TextBlock Text="Source Location:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding ComplianceSourceLocation}" 
+                                 Margin="0,0,0,10" 
+                                 IsEnabled="{Binding GenerateComplianceRecords}"
+                                 ToolTip="Source location name for compliance records (e.g., Unclassified Corporate Network)"/>
+                        
                         <CheckBox Content="Calculate File Hashes for Verification" 
                                   IsChecked="{Binding CalculateFileHashes}" 
                                   IsEnabled="{Binding GenerateComplianceRecords}" 
