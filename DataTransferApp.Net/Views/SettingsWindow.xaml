@@ -55,94 +55,20 @@
                         <TextBox Text="{Binding FolderNameRegex}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Blacklisted File Extensions (comma-separated):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding BlacklistedExtensions, Converter={StaticResource ListToStringConverter}}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBox Text="{Binding BlacklistedExtensions, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
                         
                         <TextBlock Text="Whitelisted Datasets (comma-separated):" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,2"/>
-                        <TextBox Text="{Binding WhiteListDatasets, Converter={StaticResource ListToStringConverter}}" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBox Text="{Binding WhiteListDatasets, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- Excluded Folders -->
+
                 <GroupBox Header="Excluded Folders">
                     <StackPanel>
-                        <TextBlock Text="Folders to exclude from staging directory scan:" 
-                                   Style="{StaticResource SubHeaderTextStyle}" 
-                                   Margin="0,0,0,5"/>
-                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list. Use wildcards (*) for pattern matching." Style="{StaticResource FootnoteStyle}"/>
-                        
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <ListBox x:Name="ExcludedFoldersListBox" 
-                                     Grid.Column="0"
-                                     ItemsSource="{Binding ExcludedFolders}" 
-                                     Height="100" 
-                                     Margin="0,0,5,0"/>
-                            
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <Button x:Name="AddExcludedFolderButton" 
-                                        Click="AddExcludedFolderButton_Click"
-                                        Width="100" 
-                                        Margin="0,0,0,5"
-                                        Background="{StaticResource SuccessBrush}"
-                                        Foreground="White"
-                                        Padding="10,5">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource PlusFolderGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
-                                        <TextBlock Text="Add" Margin="0,0,5,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="EditExcludedFolderButton" 
-                                        Click="EditExcludedFolderButton_Click"
-                                        Width="100" 
-                                        Margin="0,0,0,5"
-                                        Background="{StaticResource PrimaryBrush}"
-                                        Foreground="White"
-                                        Padding="10,5">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ExcludedFoldersListBox}" Value="{x:Null}">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource EditGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
-                                        <TextBlock Text="Edit" Margin="0,0,5,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="RemoveExcludedFolderButton" 
-                                        Click="RemoveExcludedFolderButton_Click"
-                                        Width="100"
-                                        Background="{StaticResource DangerBrush}"
-                                        Margin="0,0,0,0"
-                                        Foreground="White"
-                                        Padding="10,5">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ExcludedFoldersListBox}" Value="{x:Null}">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Path Data="{StaticResource MinusFolderGeometry}" Fill="White" Width="16" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
-                                        <TextBlock Text="Remove" Margin="0,0,5,0"/>
-                                    </StackPanel>
-                                </Button>
-
-                                
-                            </StackPanel>
-                        </Grid>
+                        <TextBlock Text="Folders to exclude from staging directory scan (comma-separated):" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,2"/>
+                        <TextBox Text="{Binding ExcludedFolders, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list. Use wildcards (*) for pattern matching."  Style="{StaticResource FootnoteStyle}" Margin="0"/>
                     </StackPanel>
                 </GroupBox>
                 
@@ -171,7 +97,7 @@
 
                         <!-- Exclude Drives -->
                         <TextBlock Text="Exclude Drives (comma-separated, e.g., C:\, D:\):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}" Height="40" TextWrapping="Wrap" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}"  TextWrapping="Wrap" Margin="0,0,0,5"/>
                         <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\)." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                     </StackPanel>
                 </GroupBox>
