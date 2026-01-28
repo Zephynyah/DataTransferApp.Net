@@ -218,15 +218,10 @@
                                   Margin="0,0,0,10" 
                                   IsEnabled="{Binding GenerateComplianceRecords}">
                             <ComboBoxItem Content="CSV"/>
+                            <ComboBoxItem Content="TXT"/>
                             <ComboBoxItem Content="Excel"/>
                             <ComboBoxItem Content="JSON"/>
                         </ComboBox>
-                        
-                        <CheckBox Content="Include Detailed File List" 
-                                  IsChecked="{Binding IncludeFileListInCompliance}" 
-                                  IsEnabled="{Binding GenerateComplianceRecords}" 
-                                  Margin="0,0,0,10"
-                                  ToolTip="Include complete file listing with sizes and dates"/>
                         
                         <CheckBox Content="Calculate File Hashes for Verification" 
                                   IsChecked="{Binding CalculateFileHashes}" 

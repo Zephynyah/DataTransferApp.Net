@@ -274,13 +274,16 @@ namespace DataTransferApp.Net.Services
 
                 foreach (var drive in allDrives)
                 {
-                    LoggingService.Debug($"Drive {drive.Name}: Type={drive.DriveType}, IsReady={drive.IsReady}, VolumeLabel='{drive.VolumeLabel}'");
+                    LoggingService.Debug($"Drive {drive.Name}: Type={drive.DriveType}, IsReady={drive.IsReady}");
 
                     if (drive.IsReady)
                     {
-                        LoggingService.Debug($"  FreeSpace={FormatFileSize(drive.AvailableFreeSpace)}, TotalSize={FormatFileSize(drive.TotalSize)}");
+                        LoggingService.Debug($"  VolumeLabel='{drive.VolumeLabel}', FreeSpace={FormatFileSize(drive.AvailableFreeSpace)}, TotalSize={FormatFileSize(drive.TotalSize)}");
                     }
-
+                    else
+                    {
+                        LoggingService.Debug("  Drive not ready");
+                    }
 
                     if (_settings.ExcludeDrives.Contains(drive.Name))
                     {
