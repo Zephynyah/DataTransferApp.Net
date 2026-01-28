@@ -1,2 +1,7 @@
-Date	File	FileFormat	Originator	DTA	Source	Destination	Hash	Algorithm
-20260123	NSE SOW +Survey Justification Updates.msg	.msg	VanMaren_20260123_UG	C95062474	Unclassified Corporate Network	ug	52642B923A0142B344C30D267F767F69F6E546173B10B2E675A7A8A8C2576FF5	SHA256
+Date	    File	                                   FileFormat	Originator	         DTA	    Source	                       Destination	                                                   Hash	   Algorithm
+20260123	NSE SOW +Survey Justification Updates.msg	.msg	   VanMaren_20260123_UG	 C95062474	Unclassified Corporate Network	ug	52642B923A0142B344C30D267F767F69F6E546173B10B2E675A7A8A8C2576FF5	SHA256
+
+
+Standard
+Summary
+Combined
