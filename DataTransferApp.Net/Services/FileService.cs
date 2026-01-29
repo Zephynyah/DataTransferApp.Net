@@ -139,7 +139,8 @@ namespace DataTransferApp.Net.Services
                             FullPath = fileInfo.FullName,
                             RelativePath = file.Replace(folderPath, "").TrimStart(Path.DirectorySeparatorChar),
                             Status = "Ready",
-                            IsViewable = IsFileViewable(fileInfo.FullName, ext),
+                            // IsViewable = IsFileViewable(fileInfo.FullName, ext),
+                            IsViewable = IsFileViewable(ext),
                             IsArchive = _archiveService.IsArchive(file)
                         };
 
@@ -193,8 +194,7 @@ namespace DataTransferApp.Net.Services
 
         private bool IsFileViewable(string extension)
         {
-            return ViewableExtensions.Contains(extension.ToLower()) ||
-                   _archiveService.IsArchive(extension);
+            return ViewableExtensions.Contains(extension.ToLower()) || _archiveService.IsArchive(extension);
         }
 
         /// <summary>
