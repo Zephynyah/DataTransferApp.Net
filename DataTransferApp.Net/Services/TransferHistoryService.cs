@@ -81,6 +81,25 @@ namespace DataTransferApp.Net.Services
         }
 
         /// <summary>
+        /// Deletes a transfer by its ID.
+        /// </summary>
+        public async Task<bool> DeleteTransferAsync(string id)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var objectId = new LiteDB.ObjectId(id);
+                    return _databaseService.DeleteTransfer(objectId);
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+
+        /// <summary>
         /// Migrates existing JSON transfer logs to the database.
         /// </summary>
         public async Task<int> MigrateJsonLogsToDatabase(string transferRecordsDirectory)

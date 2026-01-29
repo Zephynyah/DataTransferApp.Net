@@ -161,17 +161,37 @@ namespace DataTransferApp.Net.Services
         /// </summary>
         public List<TransferLog> GetAllTransfers()
         {
-            try
+            const int maxRetries = 3;
+            const int delayMs = 500;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
-                return collection.FindAll().ToList();
+                try
+                {
+                    using var db = new LiteDatabase(_connectionString);
+                    var collection = db.GetCollection<TransferLog>("transfers");
+                    return collection.FindAll().ToList();
+                }
+                catch (IOException ex) when (ex.Message.Contains("being used by another process"))
+                {
+                    LoggingService.Warning($"Database file locked, attempt {attempt}/{maxRetries}: {ex.Message}");
+                    if (attempt < maxRetries)
+                    {
+                        System.Threading.Thread.Sleep(delayMs);
+                    }
+                    else
+                    {
+                        LoggingService.Error("Error retrieving all transfers from database after retries", ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Error("Error retrieving all transfers from database", ex);
+                    return new List<TransferLog>();
+                }
             }
-            catch (Exception ex)
-            {
-                LoggingService.Error("Error retrieving all transfers from database", ex);
-                return new List<TransferLog>();
-            }
+
+            return new List<TransferLog>();
         }
 
         /// <summary>
@@ -364,17 +384,37 @@ namespace DataTransferApp.Net.Services
         /// </summary>
         public bool DeleteTransfer(ObjectId id)
         {
-            try
+            const int maxRetries = 3;
+            const int delayMs = 500;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
-                return collection.Delete(id);
+                try
+                {
+                    using var db = new LiteDatabase(_connectionString);
+                    var collection = db.GetCollection<TransferLog>("transfers");
+                    return collection.Delete(id);
+                }
+                catch (IOException ex) when (ex.Message.Contains("being used by another process"))
+                {
+                    LoggingService.Warning($"Database file locked during delete, attempt {attempt}/{maxRetries}: {ex.Message}");
+                    if (attempt < maxRetries)
+                    {
+                        System.Threading.Thread.Sleep(delayMs);
+                    }
+                    else
+                    {
+                        LoggingService.Error($"Error deleting transfer from database after retries: {id}", ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Error($"Error deleting transfer from database: {id}", ex);
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                LoggingService.Error($"Error deleting transfer from database: {id}", ex);
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>

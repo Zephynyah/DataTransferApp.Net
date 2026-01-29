@@ -43,9 +43,20 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _statusMessage = "Ready";
 
+        [ObservableProperty]
+        private string _historyDbLocation;
+
+        [ObservableProperty]
+        private string _historyDbHealth = "Checking...";
+
+        [ObservableProperty]
+        private bool _isDeleteEnabled;
+
         public TransferHistoryViewModel(string? databasePath)
         {
             _historyService = new TransferHistoryService(databasePath);
+            HistoryDbLocation = _historyService.GetDatabasePath();
+            _ = CheckDbHealthAsync();
             _ = LoadTransfersAsync();
         }
 
@@ -133,6 +144,55 @@ namespace DataTransferApp.Net.ViewModels
             else
             {
                 TransferFiles.Clear();
+            }
+            IsDeleteEnabled = value != null;
+        }
+
+        private async Task CheckDbHealthAsync()
+        {
+            try
+            {
+                await _historyService.GetTransferStatisticsAsync();
+                HistoryDbHealth = "Healthy";
+            }
+            catch (Exception ex)
+            {
+                HistoryDbHealth = $"Error: {ex.Message}";
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteTransferAsync()
+        {
+            if (SelectedTransfer == null) return;
+
+            var result = System.Windows.MessageBox.Show(
+                $"Are you sure you want to delete the transfer record for '{SelectedTransfer.TransferInfo.FolderName}'?",
+                "Confirm Delete",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+
+            if (result == System.Windows.MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var success = await _historyService.DeleteTransferAsync(SelectedTransfer.Id.ToString());
+                    if (success)
+                    {
+                        Transfers.Remove(SelectedTransfer);
+                        SelectedTransfer = Transfers.FirstOrDefault();
+                        StatusMessage = "Transfer deleted successfully";
+                    }
+                    else
+                    {
+                        StatusMessage = "Failed to delete transfer";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage = $"Error deleting transfer: {ex.Message}";
+                    LoggingService.Error("Failed to delete transfer", ex);
+                }
             }
         }
     }

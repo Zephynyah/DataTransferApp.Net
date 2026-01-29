@@ -21,6 +21,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -163,7 +164,21 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="0" Background="{StaticResource LightBackgroundBrush}" Padding="10" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1">
-                        <TextBlock Text="Transfer Details" FontWeight="SemiBold" FontSize="14"/>
+                        <DockPanel LastChildFill="True">
+                            <!-- <Button DockPanel.Dock="Right" 
+                                    Style="{StaticResource DangerButtonStyle}"
+                                    Command="{Binding DeleteTransferCommand}"
+                                    ToolTip="Delete Transfer"
+                                    Margin="5,0,0,0"
+                                    Width="32" Height="32">
+                                <Path Data="{StaticResource MinusIconGeometry}" Fill="White" Width="16" Height="16" Stretch="Uniform"/>
+                            </Button> -->
+                            
+                            <Button DockPanel.Dock="Right"  Background="Transparent" BorderBrush="Transparent" Padding="0" Margin="0" Grid.Column="2" Command="{Binding DeleteTransferCommand}" IsEnabled="{Binding IsDeleteEnabled}" ToolTip="Delete Transfer">
+                                <Path Data="{StaticResource TrashIconGeometry}" Fill="{StaticResource DangerBrush}" Width="14" Height="14" Stretch="Uniform"/>
+                            </Button>
+                            <TextBlock Text="Transfer Details" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </DockPanel>
                     </Border>
 
                     <!-- Details Info -->
@@ -237,5 +252,25 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="4" Background="{StaticResource LightBackgroundBrush}" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,1,0,0" Padding="15,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Database Location: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding HistoryDbLocation}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Health: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding HistoryDbHealth}" Foreground="{StaticResource SuccessBrush}" FontWeight="Bold"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
