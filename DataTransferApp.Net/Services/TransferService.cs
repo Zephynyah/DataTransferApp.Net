@@ -304,7 +304,7 @@ namespace DataTransferApp.Net.Services
                     }
                 }
 
-                LoggingService.Info($"Found {drives.Count} removable drive(s)");
+                LoggingService.Debug($"Found {drives.Count} removable drive(s)");
             }
             catch (Exception ex)
             {
