@@ -658,7 +658,7 @@ namespace DataTransferApp.Net.Services
                 extension = ".csv";
             }
 
-            var fileName = $"Compliance_{transfer.TransferInfo.FolderName}_{timestamp}{extension}";
+            var fileName = $"{transfer.TransferInfo.FolderName}-{timestamp}-L2H{extension}";
             return Path.Combine(directory, fileName);
         }
 
