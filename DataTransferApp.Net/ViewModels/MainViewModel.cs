@@ -121,12 +121,12 @@ namespace DataTransferApp.Net.ViewModels
             ShowFolderAuditDetailsIcon = _settings.ShowFolderAuditDetailsIcon;
             ShowAuditSummaryAsCards = _settings.ShowAuditSummaryAsCards;
 
-            // Initialize drive detection timer (check every 3 seconds)
+            // Initialize drive detection timer (check every 10 seconds)
             _driveDetectionTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(3)
+                Interval = TimeSpan.FromSeconds(10)
             };
-            _driveDetectionTimer.Tick += (s, e) => DetectDrives();
+            _driveDetectionTimer.Tick += (s, e) => { _ = DetectDrives(); };
             _driveDetectionTimer.Start();
 
             // Initialize time update timer (update every second)
@@ -141,7 +141,7 @@ namespace DataTransferApp.Net.ViewModels
             _ = LoadDataAsync();
 
             // Initial drive detection
-            DetectDrives();
+            _ = DetectDrives();
         }
 
         partial void OnSelectedFolderChanged(FolderData? oldValue, FolderData? newValue)
@@ -246,29 +246,32 @@ namespace DataTransferApp.Net.ViewModels
         }
 
         [RelayCommand]
-        private void DetectDrives()
+        private async Task DetectDrives()
         {
             try
             {
-                var drives = _transferService.GetRemovableDrives();
+                var drives = await Task.Run(() => _transferService.GetRemovableDrives());
                 var currentDriveLetters = RemovableDrives.Select(d => d.DriveLetter).ToList();
                 var newDriveLetters = drives.Select(d => d.DriveLetter).ToList();
 
                 // Only update if drives changed
                 if (!currentDriveLetters.SequenceEqual(newDriveLetters))
                 {
-                    RemovableDrives = new ObservableCollection<RemovableDrive>(drives);
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        RemovableDrives = new ObservableCollection<RemovableDrive>(drives);
 
-                    // Auto-select first drive if none selected or if drives changed
-                    if (drives.Count > 0 && SelectedDrive == null)
-                    {
-                        SelectedDrive = drives[0];
-                    }
-                    // Clear selection if selected drive was removed
-                    else if (SelectedDrive != null && !drives.Any(d => d.DriveLetter == SelectedDrive.DriveLetter))
-                    {
-                        SelectedDrive = drives.Count > 0 ? drives[0] : null;
-                    }
+                        // Auto-select first drive if none selected or if drives changed
+                        if (drives.Count > 0 && SelectedDrive == null)
+                        {
+                            SelectedDrive = drives[0];
+                        }
+                        // Clear selection if selected drive was removed
+                        else if (SelectedDrive != null && !drives.Any(d => d.DriveLetter == SelectedDrive.DriveLetter))
+                        {
+                            SelectedDrive = drives.Count > 0 ? drives[0] : null;
+                        }
+                    });
 
                     LoggingService.Info($"Drive list updated: {drives.Count} removable drive(s) detected");
                 }
