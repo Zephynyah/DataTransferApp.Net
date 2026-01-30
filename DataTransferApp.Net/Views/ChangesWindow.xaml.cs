@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace DataTransferApp.Net.Views
 {
@@ -61,6 +62,11 @@ namespace DataTransferApp.Net.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            // Optional: Add smooth scrolling behavior if needed
         }
     }
 }
