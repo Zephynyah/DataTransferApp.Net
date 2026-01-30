@@ -63,10 +63,5 @@ namespace DataTransferApp.Net.Views
         {
             this.Close();
         }
-
-        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            // Optional: Add smooth scrolling behavior if needed
-        }
     }
 }
