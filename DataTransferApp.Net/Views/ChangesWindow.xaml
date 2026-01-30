@@ -5,13 +5,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+        xmlns:local="clr-namespace:DataTransferApp.Net.Views"
         mc:Ignorable="d"
         Title="What's New" Height="700" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize"
         Background="{StaticResource BackgroundBrush}">
 
-    <Grid Margin="20">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -19,20 +20,33 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+        <!-- <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
             <Image Source="/app.png" Width="48" Height="48" Margin="0,0,15,0"/>
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="What's New" FontSize="24" FontWeight="Bold" Foreground="#2C3E50"/>
                 <TextBlock Text="Version History &amp; Updates" FontSize="14" Foreground="#7F8C8D"/>
             </StackPanel>
-        </StackPanel>
+        </StackPanel> -->
 
-        <!-- Changelog Content -->
-        <markdig:MarkdownViewer Grid.Row="1"
-                                Markdown="{Binding MarkdownContent}"
-                                Background="Transparent"
-                                Foreground="#34495E"
-                                Padding="10"/>
+                <!-- Header with Logo and Title -->
+        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">    
+            <StackPanel Orientation="Horizontal">
+                <fa:IconBlock Icon="StackOverflow" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="What's New" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
+                    <TextBlock Text="Version History &amp; Updates" FontSize="12"  Foreground="{StaticResource LightBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="10">
+            <!-- The MarkdownViewer renders the bound string as a FlowDocument -->
+            <markdig:MarkdownViewer  
+                Markdown="{Binding MarkdownContent}"  
+                Pipeline="{Binding Pipeline}" 
+                Foreground="#34495E"
+                Background="Transparent"/>
+        </Grid>
 
         <!-- Footer -->
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
