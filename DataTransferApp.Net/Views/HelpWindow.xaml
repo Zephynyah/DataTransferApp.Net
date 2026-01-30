@@ -11,8 +11,8 @@
         Width="900"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}"
-        Icon="pack://application:,,,/Resources/app.ico">
-        
+        Icon="pack://application:,,,/app.ico">
+
     <Window.Resources>
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18"/>
