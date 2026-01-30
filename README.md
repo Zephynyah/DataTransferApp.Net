@@ -123,6 +123,14 @@ View complete transfer history with:
 
 ## 📋 Recent Updates
 
+### Version 1.3.2 (January 30, 2026)
+- **Bug Fixes**: Resolved issues with file hash calculation for large files
+- **UI Improvements**: Enhanced progress bar animations and status indicators
+- **Export Enhancements**: Added PDF export option for compliance reports
+- **Security Updates**: Improved path validation to prevent directory traversal
+- **Performance**: Optimized memory usage during bulk file operations
+
+
 ### Version 1.3.0 (January 28, 2026)
 - **Enhanced File Detection**: Improved text file identification with special handling for .md files
 - **File Viewer Coverage**: Better detection of viewable files using content analysis
@@ -150,7 +158,7 @@ For technical support or questions:
 
 ---
 
-**Version**: 1.3.0  
-**Last Updated**: January 28, 2026  
+**Version**: 1.3.2  
+**Last Updated**: January 30, 2026  
 **Framework**: .NET 8.0  
 **UI**: WPF with MVVM

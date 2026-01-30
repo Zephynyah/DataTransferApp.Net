@@ -15,7 +15,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 _version = Assembly.GetExecutingAssembly().GetName().Version;
             }
-            return _version?.ToString(3) ?? "1.3.0";
+            return _version?.ToString(3) ?? "1.3.2";
         }
 
         /// <summary>

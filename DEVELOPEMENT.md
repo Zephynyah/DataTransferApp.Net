@@ -262,7 +262,7 @@ Internal use only - Air-gapped transfer system
 
 ---
 
-**Version**: 1.3.0  
-**Last Updated**: January 28, 2025  
+**Version**: 1.3.2  
+**Last Updated**: January 30, 2026  
 **Framework**: .NET 8.0  
 **UI**: WPF with MVVM
