@@ -16,6 +16,13 @@
         <CommandBinding Command="{x:Static markdig:Commands.Hyperlink}" Executed="OpenHyperlink" />
     </FrameworkElement.CommandBindings>
 
+    <Window.Resources>
+        <Style TargetType="{x:Type markdig:MarkdownViewer}">
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -34,15 +41,15 @@
             </StackPanel>
         </Border>
 
-
         <!-- The MarkdownViewer renders the bound string as a FlowDocument -->
         <markdig:MarkdownViewer  
+            x:Name="MarkdownViewer"
             Grid.Row="1"
             Margin="10"
             Markdown="{Binding MarkdownContent}"  
             Pipeline="{Binding Pipeline}" 
             Foreground="#34495E"
-            Background="Transparent"/>
+            Background="Transparent"/> 
      
 
         <!-- Footer -->

@@ -2,13 +2,12 @@ using System.ComponentModel;
 using System.IO;
 using Markdig;
 using DataTransferApp.Net.Helpers;
-// Make sure to include any other necessary namespaces
 using System.Diagnostics;
 
 
 namespace DataTransferApp.Net.ViewModels
 {
-    public class ChangesViewModel : ViewModelBase, INotifyPropertyChanged
+    public class ChangesViewModel : ViewModelBase
     {
         private string _markdownContent = string.Empty;
         public string MarkdownContent
@@ -39,8 +38,5 @@ namespace DataTransferApp.Net.ViewModels
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
