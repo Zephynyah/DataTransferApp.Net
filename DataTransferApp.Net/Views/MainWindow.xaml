@@ -106,7 +106,7 @@
                             </ContextMenu.ItemContainerStyle>
                             <MenuItem Header="Transfer History" Command="{Binding ViewTransferHistoryCommand}">
                                 <MenuItem.Icon>
-                                    <fa:IconBlock Icon="NewsPaper" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/> 
+                                    <fa:IconBlock Icon="History" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/> 
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}">
@@ -437,13 +437,13 @@
 
                         <Button Style="{StaticResource ButtonStyle}"  Command="{Binding AuditAllFoldersCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}">
                             <StackPanel Orientation="Horizontal">
-                                <fa:IconBlock Icon="Search" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                <fa:IconBlock Icon="Search" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
                                 <TextBlock Text="Audit All" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource SuccessButtonStyle}"  Command="{Binding TransferAllFoldersCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}">
                             <StackPanel Orientation="Horizontal">
-                                <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" Width="14" Height="14" Margin="0,0,5,0"/>
+                                <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
                                 <TextBlock Text="Transfer All" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
@@ -656,7 +656,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </StackPanel.Style>
-                                    <fa:IconBlock Icon="Share" Foreground="{StaticResource DangerBrush}" Margin="0,0,5,0" FontSize="12"/>
+                                    <fa:IconBlock Icon="Share" Foreground="{StaticResource DangerBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" Text="{Binding SelectedFolder.NamingFailureReason}" />
                                 </StackPanel>
                             </StackPanel>
@@ -670,12 +670,12 @@
                             <ComboBox ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0,0,10,0"/>
                             <!-- Refresh Drives -->
                             <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0,0,10,0" ToolTip="Detect Drives">
-                                 <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                 <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                             </Button>
                             <!-- Clear Drive -->
                             <Button Command="{Binding ClearDriveCommand}" Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0,0,10,0">
                                 <StackPanel Orientation="Horizontal">
-                                     <fa:IconBlock Icon="Trash" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                     <fa:IconBlock Icon="Trash" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Clear Drive" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -685,19 +685,19 @@
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right" Height="40">
                             <Button Command="{Binding AuditFolderCommand}" Style="{StaticResource ButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
-                                     <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                     <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Audit" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding TransferFolderCommand}" Style="{StaticResource SuccessButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                    <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Transfer" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding TransferFolderWithOverrideCommand}" Style="{StaticResource WarningButtonStyle}" ToolTip="Force transfer even if audit failed">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Warning" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0"/>
+                                    <fa:IconBlock Icon="Warning" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>

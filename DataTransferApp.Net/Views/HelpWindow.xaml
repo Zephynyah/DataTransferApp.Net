@@ -43,30 +43,16 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="20">
             <!-- Header -->
-            <Border Background="{StaticResource PrimaryBrush}" 
-                    CornerRadius="5" 
-                    Padding="20,15" 
-                    Margin="0,0,0,20">
+            <Border Background="{StaticResource PrimaryBrush}" CornerRadius="5" Padding="20,15" Margin="0,0,0,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <fa:IconBlock Grid.Column="0" 
-                                  Icon="QuestionCircle" 
-                                  Foreground="White" 
-                                  FontSize="32" 
-                                  Margin="0,0,15,0" 
-                                  VerticalAlignment="Center"/>
+                    <fa:IconBlock Grid.Column="0" Icon="QuestionCircle" Foreground="White" FontSize="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="Data Transfer Application Help" 
-                                   FontSize="24" 
-                                   FontWeight="Bold" 
-                                   Foreground="White"/>
-                        <TextBlock Text="Comprehensive guide for setup and usage" 
-                                   FontSize="14" 
-                                   Foreground="#E8F4FD" 
-                                   Margin="0,5,0,0"/>
+                        <TextBlock Text="Data Transfer Application Help" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Comprehensive guide for setup and usage" FontSize="14" Foreground="#E8F4FD" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -329,14 +315,8 @@
             </StackPanel>
 
             <!-- Footer -->
-            <Border Background="{StaticResource LightBrush}" 
-                    CornerRadius="5" 
-                    Padding="15" 
-                    Margin="0,20,0,0">
-                <TextBlock Text="Data Transfer Application v1.2.0 - © 2024" 
-                           FontSize="11" 
-                           Foreground="{StaticResource SecondaryBrush}" 
-                           HorizontalAlignment="Center"/>
+            <Border Background="{StaticResource LightBrush}" CornerRadius="5" Padding="15" Margin="0,20,0,0">
+                <TextBlock Text="Data Transfer Application v1.2.0 - © 2024" FontSize="11" Foreground="{StaticResource SecondaryBrush}" HorizontalAlignment="Center"/>
             </Border>
         </StackPanel>
     </ScrollViewer>

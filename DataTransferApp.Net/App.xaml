@@ -25,8 +25,8 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <!-- ScrollBar Size Definitions -->
-        <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">8</system:Double>
-        <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">8</system:Double>
+        <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">4</system:Double>
+        <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">4</system:Double>
 
         <!-- Icon Geometries -->
         <!-- Icon Geometries -->

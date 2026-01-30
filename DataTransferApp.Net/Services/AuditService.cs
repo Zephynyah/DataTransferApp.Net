@@ -146,7 +146,7 @@ namespace DataTransferApp.Net.Services
                     EmployeeId = parts[0],
                     Date = parts[1],
                     Dataset = parts[2],
-                    Message = "Either employee Name/ID or Dataset has an invalid format"
+                    Message = "Invalid format detected in folder name"
                 };
 
                  // Validate date format
@@ -161,7 +161,7 @@ namespace DataTransferApp.Net.Services
                 catch
                 {
                     result.IsValid = false;
-                    result.Message = "Invalid date format in folder name.";
+                    result.Message = "Invalid date format in folder name";
                 }
 
                 return result;

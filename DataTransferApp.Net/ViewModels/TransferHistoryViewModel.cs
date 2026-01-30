@@ -6,11 +6,16 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace DataTransferApp.Net.ViewModels
 {
-    public partial class TransferHistoryViewModel : ObservableObject
+    public partial class TransferHistoryViewModel : ViewModelBase
     {
+        public string PageTitle { get; } = "Transfer History";
+
+        public string PageDescription { get; } = "View all transferred folders and files";
+
         private readonly TransferHistoryService _historyService;
 
         [ObservableProperty]

@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace DataTransferApp.Net.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ViewModelBase
     {
         private enum DriveAction { Append, Clear, Abort }
 
