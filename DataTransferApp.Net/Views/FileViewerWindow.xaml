@@ -42,7 +42,7 @@
         <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" Padding="15,10">
             <Button Click="CloseButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <Path Data="{StaticResource CloseIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <fa:IconBlock Icon="Times" Foreground="{StaticResource BackgroundBrush}" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>    
                     <TextBlock Text="Close" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
