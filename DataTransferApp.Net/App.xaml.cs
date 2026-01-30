@@ -44,6 +44,7 @@ public partial class App : Application
             LoggingService.Info($"DTA: {Settings.DataTransferAgent}");
             LoggingService.Info($"AppData: {appDataPath}");
 
+            #if DEBUG
             // Create main window with ViewModel
             var mainWindow = new Views.MainWindow
             {
@@ -51,6 +52,24 @@ public partial class App : Application
             };
 
             mainWindow.Show();
+            Application.Current.MainWindow = mainWindow;
+            #else
+            // Create splash screen
+            var splash = new Views.SplashScreenWindow(() =>
+            {
+                // Create main window with ViewModel
+                var mainWindow = new Views.MainWindow
+                {
+                    DataContext = new MainViewModel(Settings)
+                };
+
+                mainWindow.Show();
+                Application.Current.MainWindow = mainWindow;
+            });
+
+            Application.Current.MainWindow = splash;
+            splash.Show();
+            #endif
         }
         catch (Exception ex)
         {
