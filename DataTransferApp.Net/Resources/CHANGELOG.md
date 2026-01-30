@@ -5,7 +5,7 @@ All notable changes to Data Transfer Application (.NET) will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.3] - 2026-01-30
 
 ### Added
 - Changelog window with markdown viewer for displaying change history
@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help window for application documentation
 - FontAwesome icons support across UI elements
 - Animation support with Loaded event in MainWindow
+- Moved CHANGELOG.md to Resources directory for better organization
+- Updated project file to reference local CHANGELOG.md
 
 ### Changed
 - Refactored ViewModels to inherit from ViewModelBase for consistency

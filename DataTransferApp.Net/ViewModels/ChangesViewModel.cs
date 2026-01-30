@@ -1,10 +1,14 @@
 using System.ComponentModel;
 using System.IO;
 using Markdig;
+using DataTransferApp.Net.Helpers;
+// Make sure to include any other necessary namespaces
+using System.Diagnostics;
+
 
 namespace DataTransferApp.Net.ViewModels
 {
-    public class ChangesViewModel : INotifyPropertyChanged
+    public class ChangesViewModel : ViewModelBase, INotifyPropertyChanged
     {
         private string _markdownContent = string.Empty;
         public string MarkdownContent
@@ -24,11 +28,15 @@ namespace DataTransferApp.Net.ViewModels
 
         private void LoadReadme()
         {
-            // Load your CHANGELOG.md file (ensure it's in the output directory or project root)
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "CHANGELOG.md");
-            if (File.Exists(path))
+            // Load CHANGELOG.md from embedded resources
+            MarkdownContent = ResourceHelper.LoadEmbeddedResource("DataTransferApp.Net.Resources.CHANGELOG.md");
+        }
+
+        private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is string url && !string.IsNullOrEmpty(url))
             {
-                MarkdownContent = File.ReadAllText(path);
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
         }
 

@@ -12,6 +12,10 @@
         ResizeMode="CanResize"
         Background="{StaticResource BackgroundBrush}">
 
+    <FrameworkElement.CommandBindings>
+        <CommandBinding Command="{x:Static markdig:Commands.Hyperlink}" Executed="OpenHyperlink" />
+    </FrameworkElement.CommandBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,16 +23,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <!-- <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-            <Image Source="/app.png" Width="48" Height="48" Margin="0,0,15,0"/>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="What's New" FontSize="24" FontWeight="Bold" Foreground="#2C3E50"/>
-                <TextBlock Text="Version History &amp; Updates" FontSize="14" Foreground="#7F8C8D"/>
-            </StackPanel>
-        </StackPanel> -->
-
-                <!-- Header with Logo and Title -->
+        <!-- Header with Logo and Title -->
         <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">    
             <StackPanel Orientation="Horizontal">
                 <fa:IconBlock Icon="StackOverflow" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
@@ -39,14 +34,16 @@
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="1" Margin="10">
-            <!-- The MarkdownViewer renders the bound string as a FlowDocument -->
-            <markdig:MarkdownViewer  
-                Markdown="{Binding MarkdownContent}"  
-                Pipeline="{Binding Pipeline}" 
-                Foreground="#34495E"
-                Background="Transparent"/>
-        </Grid>
+
+        <!-- The MarkdownViewer renders the bound string as a FlowDocument -->
+        <markdig:MarkdownViewer  
+            Grid.Row="1"
+            Margin="10"
+            Markdown="{Binding MarkdownContent}"  
+            Pipeline="{Binding Pipeline}" 
+            Foreground="#34495E"
+            Background="Transparent"/>
+     
 
         <!-- Footer -->
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
