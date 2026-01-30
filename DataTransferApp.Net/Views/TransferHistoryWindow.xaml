@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:local="clr-namespace:DataTransferApp.Net.Views"
         xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
         mc:Ignorable="d"
@@ -27,7 +28,7 @@
         <!-- Header -->
         <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">
             <StackPanel>
-                <TextBlock Text="Transfer History" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Transfer History" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
                 <TextBlock Text="View all transferred folders and files" FontSize="12" Foreground="{StaticResource LightBrush}"/>
             </StackPanel>
         </Border>
@@ -83,24 +84,16 @@
                     </TextBox.InputBindings>
                 </TextBox>
 
-                <Button Grid.Column="1" 
-                        Style="{StaticResource ButtonStyle}"
-                        Command="{Binding SearchTransfersCommand}"
-                        Width="100"
-                        Margin="5,0">
+                <Button Grid.Column="1"  Style="{StaticResource ButtonStyle}" Command="{Binding SearchTransfersCommand}" Width="100" Margin="5,0">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="{StaticResource SearchIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <fa:IconBlock Icon="Search" Foreground="{StaticResource BackgroundBrush}" Width="14" Height="14" Margin="0,0,5,0"/>
                         <TextBlock Text="Search" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
-                <Button Grid.Column="2" 
-                        Style="{StaticResource ButtonStyle}"
-                        Command="{Binding LoadTransfersCommand}"
-                        Width="100"
-                        Margin="5,0">
+                <Button Grid.Column="2"  Style="{StaticResource ButtonStyle}"  Command="{Binding LoadTransfersCommand}" Width="100" Margin="5,0">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="{StaticResource RefreshIconGeometry}" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,5,0"/>
+                        <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Width="14" Height="14" Margin="0,0,5,0"/>
                         <TextBlock Text="Refresh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
@@ -165,17 +158,10 @@
 
                     <Border Grid.Row="0" Background="{StaticResource LightBackgroundBrush}" Padding="10" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1">
                         <DockPanel LastChildFill="True">
-                            <!-- <Button DockPanel.Dock="Right" 
-                                    Style="{StaticResource DangerButtonStyle}"
-                                    Command="{Binding DeleteTransferCommand}"
-                                    ToolTip="Delete Transfer"
-                                    Margin="5,0,0,0"
-                                    Width="32" Height="32">
-                                <Path Data="{StaticResource MinusIconGeometry}" Fill="White" Width="16" Height="16" Stretch="Uniform"/>
-                            </Button> -->
-                            
                             <Button DockPanel.Dock="Right"  Background="Transparent" BorderBrush="Transparent" Padding="0" Margin="0" Grid.Column="2" Command="{Binding DeleteTransferCommand}" IsEnabled="{Binding IsDeleteEnabled}" ToolTip="Delete Transfer">
-                                <Path Data="{StaticResource TrashIconGeometry}" Fill="{StaticResource DangerBrush}" Width="14" Height="14" Stretch="Uniform"/>
+                                <Button.Content>
+                                    <fa:IconBlock Icon="trash" Foreground="Red"/>
+                                </Button.Content>
                             </Button>
                             <TextBlock Text="Transfer Details" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
                         </DockPanel>

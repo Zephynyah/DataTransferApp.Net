@@ -1,6 +1,7 @@
 <Window x:Class="DataTransferApp.Net.Views.FileViewerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         Title="File Viewer" 
         Height="600" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -16,7 +17,7 @@
         <!-- Header -->
         <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">
             <StackPanel>
-                <TextBlock FontSize="20" FontWeight="Bold" Foreground="White">
+                <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}">
                     <Run Text="📄 File Contents"/>
                 </TextBlock>
                 <TextBlock x:Name="FileNameText" FontSize="12" Foreground="{StaticResource LightBrush}" Margin="0,5,0,0"/>
