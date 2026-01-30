@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -19,6 +20,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        this.Loaded += MainWindow_Loaded;
 
         // Apply window startup mode based on setting
         var startupMode = App.Settings?.WindowStartupMode ?? "Normal";
@@ -37,6 +39,13 @@ public partial class MainWindow : Window
                 // Use default window size from XAML
                 break;
         }
+    }
+
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Find the storyboard resource and begin the animation
+        // Storyboard storyboard = (Storyboard)FindResource("RotateStoryboard");
+        // storyboard.Begin();
     }
 
     private void UpdateFullScreenUI(bool isFullScreen)

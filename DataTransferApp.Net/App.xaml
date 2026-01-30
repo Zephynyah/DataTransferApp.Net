@@ -19,6 +19,7 @@
         <SolidColorBrush x:Key="VeryLightBackgroundBrush" Color="#F8F9FA"/>
         <SolidColorBrush x:Key="LightBlueBrush" Color="#E3F2FD"/>
         <SolidColorBrush x:Key="IconButtonBrush" Color="#34495E"/>
+        <SolidColorBrush x:Key="AnimationBlueBrush" Color="DodgerBlue"/>
         
         <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
