@@ -52,7 +52,7 @@ namespace DataTransferApp.Net.Models
         public List<string> ExcludeDrives { get; set; } = new() { "A:\\", "B:\\", "C:\\", "D:\\"  };
         
         // Folder Exclusion
-        public List<string> ExcludedFolders { get; set; } = new();
+        public List<string> ExcludedFolders { get; set; } = new() { "New*", "MOVED", "ISSUES", "TEST" };
         
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;

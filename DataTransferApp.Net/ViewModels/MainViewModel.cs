@@ -885,6 +885,21 @@ namespace DataTransferApp.Net.ViewModels
         }
 
         [RelayCommand]
+        private void OpenChanges()
+        {
+            try
+            {
+                var changesWindow = new ChangesWindow();
+                changesWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                ShowSnackbar($"Error opening changes: {ex.Message}", "error");
+                LoggingService.Error("Error opening changes", ex);
+            }
+        }
+
+        [RelayCommand]
         private void OpenHelp()
         {
             try

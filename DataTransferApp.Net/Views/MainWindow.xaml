@@ -124,6 +124,11 @@
                                     <fa:IconBlock Icon="InfoCircle" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="What's New" Command="{Binding OpenChangesCommand}">
+                                <MenuItem.Icon>
+                                    <fa:IconBlock Icon="Newspaper" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>

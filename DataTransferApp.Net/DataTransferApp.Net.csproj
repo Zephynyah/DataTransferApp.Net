@@ -20,6 +20,7 @@
     <PackageReference Include="FontAwesome.Sharp.Material" Version="6.6.0" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="LTRData.LoadingIndicators.WPF" Version="2.0.0" />
+    <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="SharpCompress" Version="0.44.2" />
@@ -28,6 +29,12 @@
   <ItemGroup>
     <Resource Include="app.ico" />
     <Resource Include="app.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\CHANGES.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

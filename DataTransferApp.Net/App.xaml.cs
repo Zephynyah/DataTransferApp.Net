@@ -1,4 +1,4 @@
-﻿using DataTransferApp.Net.Models;
+using DataTransferApp.Net.Models;
 using DataTransferApp.Net.Services;
 using DataTransferApp.Net.ViewModels;
 using System;
@@ -21,10 +21,13 @@ public partial class App : Application
 
         try
         {
-            // Get AppData path
-            var appDataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "DataTransferApp");
+            #if DEBUG
+            // Set debug working directory to project root for easier debugging
+            var appDataPath = Path.Combine("appDataPath", "DataTransferApp");
+            #else
+            // Set application data path
+            var appDataPath = Path.Combine(  Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"DataTransferApp");
+            #endif
 
             // Ensure directory exists
             Directory.CreateDirectory(appDataPath);
