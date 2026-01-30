@@ -21,10 +21,16 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
-        <!-- Header -->
-        <Border Grid.Row="0" Background="#2C3E50" Padding="15,10">
-            <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
+
+        <!-- Header with Logo and Title -->
+        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">    
+            <StackPanel Orientation="Horizontal">
+                <fa:IconBlock Icon="Cog" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
+                    <TextBlock Text="Configure application preferences and behavior" FontSize="12"  Foreground="{StaticResource LightBrush}"/>
+                </StackPanel>
+            </StackPanel>
         </Border>
         
         <!-- Settings Content -->
@@ -289,26 +295,32 @@
         
         <!-- Action Buttons -->
         <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" Padding="15,10">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource WarningBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource WarningBrush}" Grid.Column="0">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock Icon="Redo" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Reset to Defaults" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="CancelButton" Click="CancelButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconBlock Icon="Times" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Cancel" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="SaveButton" Click="SaveButton_Click" Style="{StaticResource SuccessButtonStyle}">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconBlock Icon="Save" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Save Settings" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="CancelButton" Click="CancelButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconBlock Icon="Times" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Cancel" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="SaveButton" Click="SaveButton_Click" Style="{StaticResource SuccessButtonStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconBlock Icon="Save" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Save Settings" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>
