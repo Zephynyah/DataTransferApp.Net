@@ -3,7 +3,9 @@ using DataTransferApp.Net.Services;
 using DataTransferApp.Net.ViewModels;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Media;
 
 namespace DataTransferApp.Net;
 
@@ -44,6 +46,16 @@ public partial class App : Application
             LoggingService.Info($"DTA: {Settings.DataTransferAgent}");
             LoggingService.Info($"AppData: {appDataPath}");
 
+            // Ensure DPI awareness is set programmatically (backup to manifest)
+            try
+            {
+                SetProcessDpiAwareness();
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Failed to set DPI awareness programmatically", ex);
+            }
+
             // Create main window with ViewModel
             var mainWindow = new Views.MainWindow
             {
@@ -80,5 +92,49 @@ public partial class App : Application
 
         base.OnExit(e);
     }
+
+    #region DPI Awareness
+
+    private enum PROCESS_DPI_AWARENESS
+    {
+        PROCESS_DPI_UNAWARE = 0,
+        PROCESS_SYSTEM_DPI_AWARE = 1,
+        PROCESS_PER_MONITOR_DPI_AWARE = 2
+    }
+
+    private enum DPI_AWARENESS_CONTEXT
+    {
+        DPI_AWARENESS_CONTEXT_UNAWARE = -1,
+        DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = -2,
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = -3,
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SetProcessDpiAwareness(PROCESS_DPI_AWARENESS value);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+
+    private void SetProcessDpiAwareness()
+    {
+        try
+        {
+            // Try PerMonitorV2 first (Windows 10 1607+)
+            if (!SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+            {
+                // Fallback to PerMonitor (Windows 8.1+)
+                SetProcessDpiAwareness(PROCESS_DPI_AWARENESS.PROCESS_PER_MONITOR_DPI_AWARE);
+            }
+
+            LoggingService.Info("DPI awareness set to PerMonitorV2");
+        }
+        catch (Exception ex)
+        {
+            LoggingService.Error("Failed to set DPI awareness", ex);
+        }
+    }
+
+    #endregion
 }
 
