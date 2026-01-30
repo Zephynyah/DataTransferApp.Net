@@ -25,15 +25,18 @@ namespace DataTransferApp.Net.Views
             {
                 foreach (var block in MarkdownViewer.Document.Blocks)
                 {
+                    // Reduce margins for paragraphs (text blocks in markdown) to tighten spacing between lines and sections
                     if (block is Paragraph para)
                     {
                         para.Margin = new Thickness(0, 0, 0, 5); // Reduce bottom margin
                         para.LineHeight = 1.2; // Adjust line height
                     }
+                    // Remove margins for sections (major structural elements like headings) to eliminate extra spacing
                     else if (block is Section section)
                     {
                         section.Margin = new Thickness(0);
                     }
+                    // Adjust margins for lists (bullet points and numbered lists in markdown) to compact list items
                     else if (block is List list)
                     {
                         list.Margin = new Thickness(0, 0, 0, 5);
