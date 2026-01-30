@@ -885,6 +885,21 @@ namespace DataTransferApp.Net.ViewModels
         }
 
         [RelayCommand]
+        private void OpenHelp()
+        {
+            try
+            {
+                var helpWindow = new HelpWindow();
+                helpWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                ShowSnackbar($"Error opening help: {ex.Message}", "error");
+                LoggingService.Error("Error opening help", ex);
+            }
+        }
+
+        [RelayCommand]
         private void ViewTransferHistory()
         {
             try

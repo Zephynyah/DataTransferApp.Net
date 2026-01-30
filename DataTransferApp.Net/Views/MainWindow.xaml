@@ -114,6 +114,11 @@
                                     <fa:IconBlock Icon="Cog" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="Help" Command="{Binding OpenHelpCommand}">
+                                <MenuItem.Icon>
+                                    <fa:IconBlock Icon="QuestionCircle" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="About" Command="{Binding OpenAboutCommand}">
                                 <MenuItem.Icon>
                                     <fa:IconBlock Icon="InfoCircle" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
