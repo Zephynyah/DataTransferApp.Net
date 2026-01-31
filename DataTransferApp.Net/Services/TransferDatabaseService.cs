@@ -421,15 +421,7 @@ namespace DataTransferApp.Net.Services
                 using var db = new LiteDatabase(_connectionString);
                 var collection = db.GetCollection<TransferLog>("transfers");
                 var oldTransfers = collection.Find(t => t.TransferInfo.Date < cutoffDate);
-                var count = 0;
-
-                foreach (var transfer in oldTransfers)
-                {
-                    if (collection.Delete(transfer.Id))
-                    {
-                        count++;
-                    }
-                }
+                var count = oldTransfers.Count(transfer => collection.Delete(transfer.Id));
 
                 if (count > 0)
                 {

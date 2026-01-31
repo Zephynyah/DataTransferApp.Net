@@ -9,6 +9,7 @@ namespace DataTransferApp.Net.Services
     {
         private readonly LiteDatabase _db;
         private readonly ILiteCollection<AppSettings> _collection;
+        private bool _disposed;
 
         public SettingsService(string dbPath)
         {
@@ -52,7 +53,20 @@ namespace DataTransferApp.Net.Services
 
         public void Dispose()
         {
-            _db?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _db?.Dispose();
+                }
+                _disposed = true;
+            }
         }
 
         private void EnsureDefaultSettings()

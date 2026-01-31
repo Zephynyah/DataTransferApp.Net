@@ -145,7 +145,7 @@ namespace DataTransferApp.Net.Services
 
         private NameValidation ValidateFolderName(string folderName)
         {
-            var regex = new Regex(_settings.FolderNameRegex, RegexOptions.Compiled);
+            var regex = new Regex(_settings.FolderNameRegex, RegexOptions.Compiled, TimeSpan.FromSeconds(5));
             var parts = folderName.Split('_');
 
             if (regex.IsMatch(folderName))

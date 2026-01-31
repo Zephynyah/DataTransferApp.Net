@@ -15,6 +15,7 @@ namespace DataTransferApp.Net.Services
     public class TransferHistoryService : IDisposable
     {
         private readonly TransferDatabaseService _databaseService;
+        private bool _disposed;
 
         public TransferHistoryService(string? databasePath = null)
         {
@@ -192,7 +193,20 @@ namespace DataTransferApp.Net.Services
 
         public void Dispose()
         {
-            _databaseService?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _databaseService?.Dispose();
+                }
+                _disposed = true;
+            }
         }
     }
 }
