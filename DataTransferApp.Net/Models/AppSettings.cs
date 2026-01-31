@@ -16,9 +16,6 @@ namespace DataTransferApp.Net.Models
         public string ApplicationVersion => VersionHelper.GetVersion();
 
         // Directory Paths
-        // public string StagingDirectory { get; set; } = @"D:\TransferStaging";
-        // public string RetentionDirectory { get; set; } = @"D:\TransferRetention";
-        // public string TransferRecordsDirectory { get; set; } = @"D:\TransferRecords";
         public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
 
         public string RetentionDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
@@ -39,7 +36,7 @@ namespace DataTransferApp.Net.Models
         // Dataset Whitelist
         public IList<string> WhiteListDatasets { get; set; } = new List<string>
         {
-            "UG", "AETP", "PGP"
+            "UG", "AETP", "PGP", "PAN"
         };
 
         // Audit Strategy

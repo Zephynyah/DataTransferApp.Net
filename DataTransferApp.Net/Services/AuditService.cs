@@ -188,7 +188,7 @@ namespace DataTransferApp.Net.Services
         {
             if (!string.IsNullOrEmpty(nameValidation.Dataset))
             {
-                var isWhitelisted = _settings.WhiteListDatasets.Contains(nameValidation.Dataset);
+                var isWhitelisted = _settings.WhiteListDatasets.Any(d => string.Equals(d, nameValidation.Dataset, StringComparison.OrdinalIgnoreCase));
 
                 return new DatasetValidation
                 {

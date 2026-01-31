@@ -24,9 +24,6 @@
     It uses Roslyn analyzers, dotnet-format, and dotnet test.
     Ensure you have the necessary permissions to run these commands.
 .INPUTS
-    None.
-.OUTPUTS
-    Console output indicating the results of the code quality checks.
 #>
 param(
     [switch]$Fix,

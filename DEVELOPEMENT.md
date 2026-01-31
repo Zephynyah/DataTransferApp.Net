@@ -5,6 +5,7 @@ A modern .NET 8 WPF application for secure data transfer between air-gapped syst
 ## 🚀 Project Status
 
 **Current Progress:**
+
 - ✅ Project scaffolding (.NET 8 WPF)
 - ✅ NuGet packages installed
 - ✅ Project structure created
@@ -27,7 +28,7 @@ A modern .NET 8 WPF application for secure data transfer between air-gapped syst
 
 ## 🏗️ Project Structure
 
-```
+```bash
 DataTransferApp.Net/
 ├── Models/
 │   ├── AppSettings.cs          ✅ Complete
@@ -113,6 +114,7 @@ dotnet run
 ## �🎯 Key Features
 
 ### Completed
+
 - ✅ LiteDB settings backend with automatic creation in AppData
 - ✅ Serilog file logging with configurable levels
 - ✅ Comprehensive data models for folders, files, audits, and transfers
@@ -131,6 +133,7 @@ dotnet run
 ## 📝 Next Steps
 
 ### 1. Testing & Validation
+
 - ✅ Application builds successfully
 - ⏳ Run comprehensive testing of all features
 - ⏳ Test file transfer operations with various file types
@@ -139,12 +142,14 @@ dotnet run
 - ⏳ Test settings persistence and UI responsiveness
 
 ### 2. Documentation Updates
+
 - ⏳ Update README.md with complete feature list
 - ⏳ Create user manual for end users
 - ⏳ Document configuration options and best practices
 - ⏳ Add troubleshooting guide
 
 ### 3. Potential Enhancements
+
 - ⏳ Add unit tests for services
 - ⏳ Implement automated build pipeline
 - ⏳ Add more archive format support if needed
@@ -177,21 +182,25 @@ dotnet run
 ## 📚 Development Guidelines
 
 ### MVVM Pattern
+
 - Use `CommunityToolkit.Mvvm` for `ObservableProperty` and `RelayCommand`
 - ViewModels should not reference Views directly
 - Use data binding for all UI updates
 
 ### Logging
+
 - Use `LoggingService` for all logging
 - Log levels: Debug, Info, Warning, Error, Success
 - Include context in log messages
 
 ### Async/Await
+
 - Use async methods for I/O operations
 - Report progress for long-running operations
 - Handle cancellation tokens
 
 ### Error Handling
+
 - Use try-catch blocks appropriately
 - Log exceptions with context
 - Show user-friendly error messages
@@ -207,6 +216,7 @@ dotnet run
 ## 📖 Migration from PowerShell
 
 This .NET application improves upon the PowerShell version:
+
 - ✅ Better performance with native compiled code
 - ✅ Robust archive handling with SharpCompress
 - ✅ Persistent settings with LiteDB
@@ -217,29 +227,7 @@ This .NET application improves upon the PowerShell version:
 - ✅ **LiteDB database for centralized transfer history (v1.2.0)**
 - ✅ **Automated compliance record generation (v1.2.0)**
 
-## 📚 Development Guidelines
-
-### MVVM Pattern
-- Use `CommunityToolkit.Mvvm` for `ObservableProperty` and `RelayCommand`
-- ViewModels should not reference Views directly
-- Use data binding for all UI updates
-
-### Logging
-- Use `LoggingService` for all logging
-- Log levels: Debug, Info, Warning, Error, Success
-- Include context in log messages
-
-### Async/Await
-- Use async methods for I/O operations
-- Report progress for long-running operations
-- Handle cancellation tokens
-
-### Error Handling
-- Use try-catch blocks appropriately
-- Log exceptions with context
-- Show user-friendly error messages
-
-## 🔒 Security Considerations
+## Security Considerations
 
 - Air-gapped design with no network operations
 - File path validation to prevent traversal attacks
@@ -250,6 +238,7 @@ This .NET application improves upon the PowerShell version:
 ## 🤝 Contributing
 
 When extending this application:
+
 1. Follow existing MVVM patterns and conventions
 2. Add comprehensive logging for all operations
 3. Write unit tests for new services
