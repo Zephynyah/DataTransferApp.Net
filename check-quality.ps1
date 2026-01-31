@@ -57,12 +57,22 @@ if ($Fix -or $All) {
 
 # Run analyzers explicitly
 Write-Host "`n🔬 Running Roslyn analyzers..." -ForegroundColor Yellow
-dotnet build /p:RunAnalyzersDuringBuild=true --verbosity quiet
 
-# Check for warnings/errors
-$buildOutput = dotnet build 2>&1
-$warnings = $buildOutput | Select-String ":\s*warning\s" | Where-Object { $_ -notmatch "^\s*\d+\s+Warning\(s\)$" }
-$errors = $buildOutput | Select-String ":\s*error\s" | Where-Object { $_ -notmatch "^\s*\d+\s+Error\(s\)$" }
+dotnet clean | Out-Null
+# $analyzerOutput =  dotnet build /p:RunAnalyzersDuringBuild=true 2>&1
+# $analyzerOutput = $analyzerOutput | Where-Object { $_ -notmatch "^\s*\d+\s+Warning\(s\)$" -and $_ -notmatch "^\s*\d+\s+Error\(s\)$" }
+
+$Output = dotnet clean; dotnet build /p:RunAnalyzersDuringBuild=true 2>&1
+$analyzerOutput = $Output | Where-Object { $_ -match ":\s*warning\s" -or $_ -match ":\s*error\s" }
+
+# Check for warnings/errors from analyzer output
+$warnings = $analyzerOutput | Select-String ": warning" 
+$errors = $analyzerOutput | Select-String ": error" 
+
+$warnings
+$errors
+
+exit
 
 Write-Host "`n📊 Analysis Results:" -ForegroundColor Cyan
 Write-Host "Warnings found: $($warnings.Count)" -ForegroundColor Yellow

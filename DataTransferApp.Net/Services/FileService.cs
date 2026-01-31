@@ -162,7 +162,7 @@ namespace DataTransferApp.Net.Services
             return fileDataList;
         }
 
-        public string ReadTextFile(string filePath, int maxLines = 50000)
+        public static string ReadTextFile(string filePath, int maxLines = 50000)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-        private string GetRelativePath(string? directoryPath, string basePath)
+        private static string GetRelativePath(string? directoryPath, string basePath)
         {
             if (string.IsNullOrEmpty(directoryPath))
             {

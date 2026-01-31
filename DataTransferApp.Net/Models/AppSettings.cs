@@ -13,7 +13,7 @@ namespace DataTransferApp.Net.Models
         // Application Settings
         public string DataTransferAgent { get; set; } = Environment.UserName;
 
-        public string ApplicationVersion => VersionHelper.GetVersion();
+        public static string ApplicationVersion => VersionHelper.GetVersion();
 
         // Directory Paths
         public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";

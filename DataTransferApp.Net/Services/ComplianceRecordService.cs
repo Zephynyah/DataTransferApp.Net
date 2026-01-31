@@ -29,7 +29,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates a compliance record for a transfer.
         /// </summary>
-        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<string?> GenerateComplianceRecordAsync(TransferLog transfer)
         {
             if (!_settings.GenerateComplianceRecords)
@@ -63,7 +63,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates compliance records for multiple transfers.
         /// </summary>
-        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<List<string>> GenerateBatchComplianceRecordsAsync(IEnumerable<TransferLog> transfers)
         {
             var generatedFiles = new List<string>();
@@ -83,7 +83,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates a consolidated compliance report for multiple transfers.
         /// </summary>
-        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<string?> GenerateConsolidatedReportAsync(
             IEnumerable<TransferLog> transfers,
             DateTime startDate,
@@ -715,7 +715,7 @@ namespace DataTransferApp.Net.Services
             return "Unknown";
         }
 
-        private string EscapeCsv(string value)
+        private static string EscapeCsv(string value)
         {
             if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
             {

@@ -44,7 +44,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-        public bool DriveHasContents(string drivePath)
+        public static bool DriveHasContents(string drivePath)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-        public int GetTransferredFolderCount(string drivePath)
+        public static int GetTransferredFolderCount(string drivePath)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace DataTransferApp.Net.Services
             return basePath;
         }
 
-        private string GetSequencedPath(string destinationDrive, string folderName)
+        private static string GetSequencedPath(string destinationDrive, string folderName)
         {
             // Check if folder name already has a sequence (e.g., X50135_20260116_JTH_2)
             var parts = folderName.Split('_');

@@ -14,7 +14,7 @@ namespace DataTransferApp.Net.Services
     {
         private static readonly string[] ArchiveExtensions = { ".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
 
-        public bool IsArchive(string filePath)
+        public static bool IsArchive(string filePath)
         {
             var fileName = filePath.ToLowerInvariant();
 
