@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Various UI alignment and styling issues
 - Retention cleanup status display and animation timing
 
-## [1.3.2] - 2024-10-XX
+## [1.3.2] - 2026-01-25
 
 ### Added
 - Transfer history database with significant performance improvements (50-200x)
@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sample-based file reading for faster detection
 - Improved loading times for large directories
 
-## [1.3.0] - 2024-09-XX
+## [1.3.0] - 2025-09-XX
 
 ### Added
 - Compliance Source Location setting
@@ -105,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Archive handling for compound archives
 - Error handling in TransferHistoryService
 
-## [1.2.0] - 2024-08-XX
+## [1.2.0] - 2025-08-XX
 
 ### Added
 - Initial release of Data Transfer Application (.NET)
@@ -130,7 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Application settings paths
 - Logging messages and UI styling
 
-## [1.1.0] - 2024-07-XX
+## [1.1.0] - 2025-07-XX
 
 ### Added
 - Enhanced archive handling with Reader approach
@@ -141,9 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored styles in MainWindow and App.xaml
 - Added ApplicationGeometry and adjusted margins
 
-## [1.0.0] - 2024-06-XX
+## [1.0.0] - 2025-06-XX
 
 ### Added
 - Basic project structure and initial commit
-- Core functionality setup</content>
-<parameter name="filePath">d:\Powershell\GUI\DTA-WPF\DataTransferApp.Net\CHANGES.md
+- Core functionality setup
