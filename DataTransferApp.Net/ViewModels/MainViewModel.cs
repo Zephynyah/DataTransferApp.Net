@@ -112,13 +112,6 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
 
-        private enum DriveAction
-        {
-            Append,
-            Clear,
-            Abort
-        }
-
         public MainViewModel(AppSettings settings)
         {
             _settings = settings;
@@ -155,6 +148,13 @@ namespace DataTransferApp.Net.ViewModels
 
             // Initialize commands
             RunRetentionCleanupAsyncCommand = new AsyncRelayCommand(RunRetentionCleanupAsync, () => !IsRetentionCleanupRunning);
+        }
+
+        private enum DriveAction
+        {
+            Append,
+            Clear,
+            Abort
         }
 
         public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }

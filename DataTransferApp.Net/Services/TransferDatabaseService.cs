@@ -39,71 +39,6 @@ namespace DataTransferApp.Net.Services
             LoggingService.Info($"Transfer database initialized: {_databasePath}");
         }
 
-        private static string ResolveDatabasePath(string? customPath)
-        {
-            if (!string.IsNullOrWhiteSpace(customPath))
-            {
-                // If it's a directory, append TransferHistory.db
-                if (Directory.Exists(customPath))
-                {
-                    customPath = Path.Combine(customPath, "TransferHistory.db");
-                    LoggingService.Info($"Directory provided, using: {customPath}");
-                }
-
-                // If no extension, assume it's a directory and append filename
-                else if (!Path.HasExtension(customPath))
-                {
-                    customPath = Path.Combine(customPath, "TransferHistory.db");
-                    LoggingService.Info($"No extension provided, using: {customPath}");
-                }
-
-                return customPath;
-            }
-
-            // Default: use a shared location or fall back to local
-            var sharedPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                "DataTransferApp",
-                "TransferHistory.db");
-
-            try
-            {
-                // Test if we can write to shared location
-                var testDir = Path.GetDirectoryName(sharedPath);
-                if (!string.IsNullOrEmpty(testDir))
-                {
-                    Directory.CreateDirectory(testDir);
-                    return sharedPath;
-                }
-            }
-            catch
-            {
-                LoggingService.Warning("Cannot access shared database location, using local database");
-            }
-
-            // Fallback to user's local app data
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "DataTransferApp",
-                "TransferHistory.db");
-        }
-
-        private void InitializeDatabase()
-        {
-            try
-            {
-                using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
-                collection.EnsureIndex(x => x.TransferInfo.Date);
-                collection.EnsureIndex(x => x.TransferInfo.FolderName);
-                collection.EnsureIndex(x => x.TransferInfo.DTA);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Error("Error initializing database indexes", ex);
-            }
-        }
-
         /// <summary>
         /// Adds a new transfer record to the database.
         /// </summary>
@@ -505,6 +440,71 @@ namespace DataTransferApp.Net.Services
         {
             // No persistent connection to dispose with connection-per-operation pattern
             // No unmanaged resources to release
+        }
+
+        private static string ResolveDatabasePath(string? customPath)
+        {
+            if (!string.IsNullOrWhiteSpace(customPath))
+            {
+                // If it's a directory, append TransferHistory.db
+                if (Directory.Exists(customPath))
+                {
+                    customPath = Path.Combine(customPath, "TransferHistory.db");
+                    LoggingService.Info($"Directory provided, using: {customPath}");
+                }
+
+                // If no extension, assume it's a directory and append filename
+                else if (!Path.HasExtension(customPath))
+                {
+                    customPath = Path.Combine(customPath, "TransferHistory.db");
+                    LoggingService.Info($"No extension provided, using: {customPath}");
+                }
+
+                return customPath;
+            }
+
+            // Default: use a shared location or fall back to local
+            var sharedPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "DataTransferApp",
+                "TransferHistory.db");
+
+            try
+            {
+                // Test if we can write to shared location
+                var testDir = Path.GetDirectoryName(sharedPath);
+                if (!string.IsNullOrEmpty(testDir))
+                {
+                    Directory.CreateDirectory(testDir);
+                    return sharedPath;
+                }
+            }
+            catch
+            {
+                LoggingService.Warning("Cannot access shared database location, using local database");
+            }
+
+            // Fallback to user's local app data
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "DataTransferApp",
+                "TransferHistory.db");
+        }
+
+        private void InitializeDatabase()
+        {
+            try
+            {
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                collection.EnsureIndex(x => x.TransferInfo.Date);
+                collection.EnsureIndex(x => x.TransferInfo.FolderName);
+                collection.EnsureIndex(x => x.TransferInfo.DTA);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Error initializing database indexes", ex);
+            }
         }
     }
 }
