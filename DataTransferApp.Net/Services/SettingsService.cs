@@ -65,6 +65,7 @@ namespace DataTransferApp.Net.Services
                 {
                     _db?.Dispose();
                 }
+
                 _disposed = true;
             }
         }
@@ -81,5 +82,4 @@ namespace DataTransferApp.Net.Services
         }
     }
 }
-
 

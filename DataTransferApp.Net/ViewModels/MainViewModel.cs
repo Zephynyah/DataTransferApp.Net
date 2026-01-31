@@ -183,11 +183,6 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        partial void OnIsRetentionCleanupRunningChanged(bool value)
-        {
-            RunRetentionCleanupAsyncCommand?.NotifyCanExecuteChanged();
-        }
-
         private static string FormatFileSize(long bytes)
         {
             const long GB = 1024 * 1024 * 1024;
@@ -204,6 +199,119 @@ namespace DataTransferApp.Net.ViewModels
             }
 
             return $"{bytes / 1024.0:N2} KB";
+        }
+
+        private static void UpdateFolderAuditStatuses(FolderData folder, AuditResult result)
+        {
+            // Combine naming and dataset validation into naming status
+            bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
+            folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
+
+            // Combine failure reasons
+            var namingReasons = new List<string>();
+            if (result.NameValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.NameValidation.Message);
+            }
+
+            if (result.DatasetValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.DatasetValidation.Message);
+            }
+
+            folder.NamingFailureReason = string.Join(". ", namingReasons);
+
+            folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
+            folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
+            folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
+            folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
+        }
+
+        private static void CountAndUpdateCompressedFiles(FolderData folder)
+        {
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+            var compressedCount = folder.Files.Count(f =>
+                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
+            folder.CompressedFileCount = compressedCount;
+            folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+        }
+
+        private static void DetermineFolderOverallStatus(FolderData folder, AuditResult result)
+        {
+            // Determine overall status: if all checks pass but there are compressed files, set to Caution
+            if (result.OverallStatus == "Passed" && folder.CompressedFileCount > 0)
+            {
+                folder.AuditStatus = "Caution";
+            }
+            else
+            {
+                folder.AuditStatus = result.OverallStatus;
+            }
+        }
+
+        private static void UpdateFileStatuses(FolderData folder, AuditResult result)
+        {
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+
+            // Reset file flags
+            foreach (var file in folder.Files)
+            {
+                file.IsBlacklisted = false;
+                file.IsCompressed = false;
+                file.Status = "Ready";
+            }
+
+            // Mark blacklisted files
+            if (result.ExtensionValidation?.Violations.Count > 0)
+            {
+                foreach (var violation in result.ExtensionValidation.Violations)
+                {
+                    var file = folder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
+                    if (file != null)
+                    {
+                        file.Status = "Blacklisted";
+                        file.IsBlacklisted = true;
+                    }
+                }
+            }
+
+            // Mark compressed files
+            foreach (var file in folder.Files)
+            {
+                var fileName = file.FileName.ToLowerInvariant();
+                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
+                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
+                {
+                    file.IsCompressed = true;
+                    if (file.Status == "Ready")
+                    {
+                        file.Status = "Compressed";
+                    }
+                }
+            }
+        }
+
+        private static string DetermineOverallAuditStatus(AuditResult result, int compressedCount)
+        {
+            // Determine overall status: if all checks pass but there are compressed files, set to Caution
+            if (result.OverallStatus == "Passed" && compressedCount > 0)
+            {
+                return "Caution";
+            }
+            else
+            {
+                return result.OverallStatus;
+            }
+        }
+
+        partial void OnIsRetentionCleanupRunningChanged(bool value)
+        {
+            RunRetentionCleanupAsyncCommand?.NotifyCanExecuteChanged();
         }
 
         partial void OnSelectedFolderChanged(FolderData? oldValue, FolderData? newValue)
@@ -421,19 +529,6 @@ namespace DataTransferApp.Net.ViewModels
             return compressedCount;
         }
 
-        private string DetermineOverallAuditStatus(AuditResult result, int compressedCount)
-        {
-            // Determine overall status: if all checks pass but there are compressed files, set to Caution
-            if (result.OverallStatus == "Passed" && compressedCount > 0)
-            {
-                return "Caution";
-            }
-            else
-            {
-                return result.OverallStatus;
-            }
-        }
-
         private void UpdateFileStatuses(AuditResult result)
         {
             // Update file statuses and flags
@@ -520,101 +615,6 @@ namespace DataTransferApp.Net.ViewModels
             CountAndUpdateCompressedFiles(folder);
             DetermineFolderOverallStatus(folder, result);
             UpdateFileStatuses(folder, result);
-        }
-
-        private static void UpdateFolderAuditStatuses(FolderData folder, AuditResult result)
-        {
-            // Combine naming and dataset validation into naming status
-            bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
-            folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
-
-            // Combine failure reasons
-            var namingReasons = new List<string>();
-            if (result.NameValidation?.IsValid == false)
-            {
-                namingReasons.Add(result.NameValidation.Message);
-            }
-
-            if (result.DatasetValidation?.IsValid == false)
-            {
-                namingReasons.Add(result.DatasetValidation.Message);
-            }
-
-            folder.NamingFailureReason = string.Join(". ", namingReasons);
-
-            folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
-            folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
-            folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
-            folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
-        }
-
-        private static void CountAndUpdateCompressedFiles(FolderData folder)
-        {
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-            var compressedCount = folder.Files.Count(f =>
-                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
-                f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
-                f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
-                f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
-            folder.CompressedFileCount = compressedCount;
-            folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
-        }
-
-        private static void DetermineFolderOverallStatus(FolderData folder, AuditResult result)
-        {
-            // Determine overall status: if all checks pass but there are compressed files, set to Caution
-            if (result.OverallStatus == "Passed" && folder.CompressedFileCount > 0)
-            {
-                folder.AuditStatus = "Caution";
-            }
-            else
-            {
-                folder.AuditStatus = result.OverallStatus;
-            }
-        }
-
-        private static void UpdateFileStatuses(FolderData folder, AuditResult result)
-        {
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-
-            // Reset file flags
-            foreach (var file in folder.Files)
-            {
-                file.IsBlacklisted = false;
-                file.IsCompressed = false;
-                file.Status = "Ready";
-            }
-
-            // Mark blacklisted files
-            if (result.ExtensionValidation?.Violations.Count > 0)
-            {
-                foreach (var violation in result.ExtensionValidation.Violations)
-                {
-                    var file = folder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
-                    if (file != null)
-                    {
-                        file.Status = "Blacklisted";
-                        file.IsBlacklisted = true;
-                    }
-                }
-            }
-
-            // Mark compressed files
-            foreach (var file in folder.Files)
-            {
-                var fileName = file.FileName.ToLowerInvariant();
-                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
-                {
-                    file.IsCompressed = true;
-                    if (file.Status == "Ready")
-                    {
-                        file.Status = "Compressed";
-                    }
-                }
-            }
         }
 
         [RelayCommand]

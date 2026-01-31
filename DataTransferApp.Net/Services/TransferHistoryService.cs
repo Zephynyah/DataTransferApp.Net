@@ -205,6 +205,7 @@ namespace DataTransferApp.Net.Services
                 {
                     _databaseService?.Dispose();
                 }
+
                 _disposed = true;
             }
         }

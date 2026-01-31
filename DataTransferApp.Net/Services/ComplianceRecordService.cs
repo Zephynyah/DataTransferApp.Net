@@ -382,7 +382,10 @@ namespace DataTransferApp.Net.Services
             AddInfoRow(sheet, ref row, "Total Size", FormatFileSize(transfer.Summary.TotalSize));
             AddInfoRow(sheet, ref row, "Transfer Started", transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Transfer Completed", transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-            AddInfoRow(sheet, ref row, "Duration (seconds)",
+            AddInfoRow(
+                sheet,
+                ref row,
+                "Duration (seconds)",
                 (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Status", transfer.Summary.Status);
 

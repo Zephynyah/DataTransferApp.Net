@@ -137,6 +137,7 @@ namespace DataTransferApp.Net.Helpers
                     nullByteCount++;
                 }
             }
+
             return nullByteCount;
         }
 
@@ -150,6 +151,7 @@ namespace DataTransferApp.Net.Helpers
                     return true;
                 }
             }
+
             return false;
         }
 
