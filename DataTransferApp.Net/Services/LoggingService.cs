@@ -78,7 +78,7 @@ namespace DataTransferApp.Net.Services
 
         public static LogEventLevel ParseLogLevel(string level)
         {
-            return level.ToLower() switch
+            return level.ToLowerInvariant() switch
             {
                 "debug" => LogEventLevel.Debug,
                 "info" or "information" => LogEventLevel.Information,

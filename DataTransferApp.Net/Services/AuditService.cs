@@ -220,7 +220,7 @@ namespace DataTransferApp.Net.Services
 
                 foreach (var file in files)
                 {
-                    var ext = Path.GetExtension(file).ToLower();
+                    var ext = Path.GetExtension(file).ToLowerInvariant();
                     if (_settings.BlacklistedExtensions.Contains(ext))
                     {
                         violations.Add(new FileViolation

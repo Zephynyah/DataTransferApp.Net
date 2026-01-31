@@ -161,7 +161,7 @@ namespace DataTransferApp.Net.Services
         /// Retrieves all transfer records.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> GetAllTransfers()
+        public IList<TransferLog> GetAllTransfers()
         {
             const int maxRetries = 3;
             const int delayMs = 500;
@@ -219,7 +219,7 @@ namespace DataTransferApp.Net.Services
         /// Searches for transfers matching the search term.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> SearchTransfers(string searchTerm)
+        public IList<TransferLog> SearchTransfers(string searchTerm)
         {
             try
             {
@@ -228,16 +228,16 @@ namespace DataTransferApp.Net.Services
                     return GetAllTransfers();
                 }
 
-                searchTerm = searchTerm.ToLower();
+                searchTerm = searchTerm.ToLowerInvariant();
 
                 using var db = new LiteDatabase(_connectionString);
                 var collection = db.GetCollection<TransferLog>("transfers");
                 return collection.Find(t =>
-                    t.TransferInfo.FolderName.ToLower().Contains(searchTerm) ||
-                    t.TransferInfo.Employee.ToLower().Contains(searchTerm) ||
-                    t.TransferInfo.DTA.ToLower().Contains(searchTerm) ||
-                    t.TransferInfo.Origin.ToLower().Contains(searchTerm) ||
-                    t.TransferInfo.Destination.ToLower().Contains(searchTerm))
+                    t.TransferInfo.FolderName.ToLowerInvariant().Contains(searchTerm) ||
+                    t.TransferInfo.Employee.ToLowerInvariant().Contains(searchTerm) ||
+                    t.TransferInfo.DTA.ToLowerInvariant().Contains(searchTerm) ||
+                    t.TransferInfo.Origin.ToLowerInvariant().Contains(searchTerm) ||
+                    t.TransferInfo.Destination.ToLowerInvariant().Contains(searchTerm))
                 .ToList();
             }
             catch (Exception ex)
@@ -251,7 +251,7 @@ namespace DataTransferApp.Net.Services
         /// Retrieves transfers within a date range.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> GetTransfersByDateRange(DateTime startDate, DateTime endDate)
+        public IList<TransferLog> GetTransfersByDateRange(DateTime startDate, DateTime endDate)
         {
             try
             {
@@ -273,7 +273,7 @@ namespace DataTransferApp.Net.Services
         /// Retrieves the most recent transfers.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> GetRecentTransfers(int count = 10)
+        public IList<TransferLog> GetRecentTransfers(int count = 10)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace DataTransferApp.Net.Services
         /// Retrieves transfers by employee ID.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> GetTransfersByEmployee(string employeeId)
+        public IList<TransferLog> GetTransfersByEmployee(string employeeId)
         {
             try
             {

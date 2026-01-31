@@ -6,7 +6,7 @@ namespace DataTransferApp.Net.Views
 {
     public partial class ArchiveViewerWindow : Window
     {
-        public ArchiveViewerWindow(string fileName, string filePath, List<ArchiveEntry> entries)
+        public ArchiveViewerWindow(string fileName, string filePath, IList<ArchiveEntry> entries)
         {
             InitializeComponent();
 

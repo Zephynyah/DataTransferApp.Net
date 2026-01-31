@@ -31,19 +31,19 @@ namespace DataTransferApp.Net.Models
         public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{2,10}(_\d+)?$";
 
         // File Extension Blacklist
-        public List<string> BlacklistedExtensions { get; set; } = new()
+        public IList<string> BlacklistedExtensions { get; set; } = new List<string>
         {
             ".exe", ".dll", ".msi", ".scr", ".com", ".pif", ".sys", ".drv"
         };
 
         // Dataset Whitelist
-        public List<string> WhiteListDatasets { get; set; } = new()
+        public IList<string> WhiteListDatasets { get; set; } = new List<string>
         {
             "UG", "AETP", "PGP"
         };
 
         // Audit Strategy
-        public List<string> AuditStrategy { get; set; } = new()
+        public IList<string> AuditStrategy { get; set; } = new List<string>
         {
             "ValidateFolderName",
             "BlacklistExtensions",
@@ -53,10 +53,10 @@ namespace DataTransferApp.Net.Models
         // Drive Detection
         public double MinimumFreeSpaceGB { get; set; } = 1.0;
 
-        public List<string> ExcludeDrives { get; set; } = new() { "A:\\", "B:\\", "C:\\", "D:\\" };
+        public IList<string> ExcludeDrives { get; set; } = new List<string> { "A:\\", "B:\\", "C:\\", "D:\\" };
 
         // Folder Exclusion
-        public List<string> ExcludedFolders { get; set; } = new() { "New*", "MOVED", "ISSUES", "TEST" };
+        public IList<string> ExcludedFolders { get; set; } = new List<string> { "New*", "MOVED", "ISSUES", "TEST" };
 
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;

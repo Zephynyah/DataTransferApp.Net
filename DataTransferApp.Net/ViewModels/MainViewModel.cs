@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -117,7 +118,7 @@ namespace DataTransferApp.Net.ViewModels
         private string _appFooter = $"Data Transfer Application ({VersionHelper.GetVersionWithPrefix()})";
 
         [ObservableProperty]
-        private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
+        private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
 
         public AppSettings Settings => _settings;
 
@@ -148,7 +149,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 Interval = TimeSpan.FromSeconds(1)
             };
-            _timeUpdateTimer.Tick += (s, e) => CurrentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
+            _timeUpdateTimer.Tick += (s, e) => CurrentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
             _timeUpdateTimer.Start();
 
             // Load initial data

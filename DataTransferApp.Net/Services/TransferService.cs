@@ -109,7 +109,7 @@ namespace DataTransferApp.Net.Services
             int currentSequence = 0;
 
             // If there are 4 parts and the last part is numeric, it's already sequenced
-            if (parts.Length == 4 && int.TryParse(parts[3], out int existingSeq))
+            if (parts.Length == 4 && int.TryParse(parts[3], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int existingSeq))
             {
                 // Remove the existing sequence number
                 baseFolderName = string.Join("_", parts.Take(3));
@@ -170,43 +170,8 @@ namespace DataTransferApp.Net.Services
                 // Create destination directory
                 Directory.CreateDirectory(destinationPath);
 
-                var files = folder.Files.ToList();
-                var totalFiles = files.Count;
-                var completedFiles = 0;
-
-                foreach (var file in files)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    // Copy file
-                    var destFilePath = Path.Combine(destinationPath, file.RelativePath);
-                    var destFileDir = Path.GetDirectoryName(destFilePath);
-
-                    if (!string.IsNullOrEmpty(destFileDir))
-                    {
-                        Directory.CreateDirectory(destFileDir);
-                    }
-
-                    await Task.Run(() => File.Copy(file.FullPath, destFilePath, true), cancellationToken);
-
-                    // Calculate hash if enabled
-                    if (_settings.CalculateFileHashes)
-                    {
-                        file.Hash = await CalculateFileHashAsync(file.FullPath, cancellationToken);
-                    }
-
-                    file.Status = "Transferred";
-                    completedFiles++;
-
-                    // Report progress
-                    progress?.Report(new TransferProgress
-                    {
-                        CurrentFile = file.FileName,
-                        CompletedFiles = completedFiles,
-                        TotalFiles = totalFiles,
-                        PercentComplete = (int)((completedFiles / (double)totalFiles) * 100)
-                    });
-                }
+                // Transfer all files
+                await TransferFilesAsync(folder.Files, destinationPath, progress, cancellationToken);
 
                 // Create transfer log
                 var transferLog = CreateTransferLog(folder, destinationPath);
@@ -234,6 +199,47 @@ namespace DataTransferApp.Net.Services
             }
 
             return result;
+        }
+
+        private async Task TransferFilesAsync(IEnumerable<FileData> files, string destinationPath, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
+        {
+            var fileList = files.ToList();
+            var totalFiles = fileList.Count;
+            var completedFiles = 0;
+
+            foreach (var file in fileList)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Copy file
+                var destFilePath = Path.Combine(destinationPath, file.RelativePath);
+                var destFileDir = Path.GetDirectoryName(destFilePath);
+
+                if (!string.IsNullOrEmpty(destFileDir))
+                {
+                    Directory.CreateDirectory(destFileDir);
+                }
+
+                await Task.Run(() => File.Copy(file.FullPath, destFilePath, true), cancellationToken);
+
+                // Calculate hash if enabled
+                if (_settings.CalculateFileHashes)
+                {
+                    file.Hash = await CalculateFileHashAsync(file.FullPath, cancellationToken);
+                }
+
+                file.Status = "Transferred";
+                completedFiles++;
+
+                // Report progress
+                progress?.Report(new TransferProgress
+                {
+                    CurrentFile = file.FileName,
+                    CompletedFiles = completedFiles,
+                    TotalFiles = totalFiles,
+                    PercentComplete = (int)((completedFiles / (double)totalFiles) * 100)
+                });
+            }
         }
 
         private async Task MoveToRetentionAsync(string sourcePath, string folderName)
@@ -268,7 +274,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-        public List<RemovableDrive> GetRemovableDrives()
+        public IList<RemovableDrive> GetRemovableDrives()
         {
             var drives = new List<RemovableDrive>();
 
@@ -571,7 +577,7 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                HashAlgorithm hashAlgorithm = _settings.HashAlgorithm.ToUpper() switch
+                HashAlgorithm hashAlgorithm = _settings.HashAlgorithm.ToUpperInvariant() switch
                 {
                     "SHA512" => SHA512.Create(),
                     "MD5" => MD5.Create(),
@@ -583,7 +589,7 @@ namespace DataTransferApp.Net.Services
                 using (var stream = File.OpenRead(filePath))
                 {
                     var hash = await Task.Run(() => hashAlgorithm.ComputeHash(stream), cancellationToken);
-                    return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+                    return BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
                 }
             }
             catch (Exception ex)

@@ -25,12 +25,12 @@ namespace DataTransferApp.Net.Services
             _archiveService = new ArchiveService();
         }
 
-        public async Task<List<FolderData>> ScanStagingDirectoryAsync(string stagingPath)
+        public async Task<IList<FolderData>> ScanStagingDirectoryAsync(string stagingPath)
         {
             return await Task.Run(() => ScanStagingDirectory(stagingPath));
         }
 
-        public List<FolderData> ScanStagingDirectory(string stagingPath)
+        public IList<FolderData> ScanStagingDirectory(string stagingPath)
         {
             var folders = new List<FolderData>();
 
@@ -128,7 +128,7 @@ namespace DataTransferApp.Net.Services
                     try
                     {
                         var fileInfo = new FileInfo(file);
-                        var ext = fileInfo.Extension.ToLower();
+                        var ext = fileInfo.Extension.ToLowerInvariant();
 
                         var fileData = new FileData
                         {
@@ -198,7 +198,7 @@ namespace DataTransferApp.Net.Services
 
         private bool IsFileViewable(string extension)
         {
-            return ViewableExtensions.Contains(extension.ToLower()) || _archiveService.IsArchive(extension);
+            return ViewableExtensions.Contains(extension.ToLowerInvariant()) || _archiveService.IsArchive(extension);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace DataTransferApp.Net.Services
             }
 
             // For known text extensions, verify content is actually text
-            if (ViewableExtensions.Contains(extension.ToLower()))
+            if (ViewableExtensions.Contains(extension.ToLowerInvariant()))
             {
                 return FileEncodingHelper.IsTextFile(filePath);
             }

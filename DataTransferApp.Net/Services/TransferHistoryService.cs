@@ -25,7 +25,7 @@ namespace DataTransferApp.Net.Services
         /// Gets all transfers from the database.
         /// </summary>
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-        public async Task<List<TransferLog>> GetAllTransfersAsync()
+        public async Task<IList<TransferLog>> GetAllTransfersAsync()
         {
             return await Task.Run(() => _databaseService.GetAllTransfers());
         }
@@ -34,7 +34,7 @@ namespace DataTransferApp.Net.Services
         /// Searches for transfers matching the search term.
         /// </summary>
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-        public async Task<List<TransferLog>> SearchTransfersAsync(string searchTerm)
+        public async Task<IList<TransferLog>> SearchTransfersAsync(string searchTerm)
         {
             return await Task.Run(() => _databaseService.SearchTransfers(searchTerm));
         }
@@ -63,7 +63,7 @@ namespace DataTransferApp.Net.Services
         /// Gets transfers within a date range.
         /// </summary>
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-        public async Task<List<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<IList<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await Task.Run(() => _databaseService.GetTransfersByDateRange(startDate, endDate));
         }
@@ -72,7 +72,7 @@ namespace DataTransferApp.Net.Services
         /// Gets the most recent transfers.
         /// </summary>
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
-        public async Task<List<TransferLog>> GetRecentTransfersAsync(int count = 10)
+        public async Task<IList<TransferLog>> GetRecentTransfersAsync(int count = 10)
         {
             return await Task.Run(() => _databaseService.GetRecentTransfers(count));
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using SharpCompress.Archives;
@@ -15,7 +16,7 @@ namespace DataTransferApp.Net.Services
 
         public bool IsArchive(string filePath)
         {
-            var fileName = filePath.ToLower();
+            var fileName = filePath.ToLowerInvariant();
 
             // Check for compound extensions first (.tar.gz, .tar.xz, etc.)
             if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
@@ -26,7 +27,7 @@ namespace DataTransferApp.Net.Services
             }
 
             // Then check single extensions
-            var ext = Path.GetExtension(filePath).ToLower();
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
             return ArchiveExtensions.Contains(ext);
         }
 
@@ -36,7 +37,7 @@ namespace DataTransferApp.Net.Services
 
             try
             {
-                var fileName = archiveFilePath.ToLower();
+                var fileName = archiveFilePath.ToLowerInvariant();
 
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
                 if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
@@ -56,7 +57,7 @@ namespace DataTransferApp.Net.Services
                                 Path = reader.Entry.Key ?? string.Empty,
                                 Size = reader.Entry.Size,
                                 CompressedSize = reader.Entry.CompressedSize,
-                                Modified = reader.Entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Unknown"
+                                Modified = reader.Entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) ?? "Unknown"
                             });
                         }
                     }
@@ -74,7 +75,7 @@ namespace DataTransferApp.Net.Services
                             Path = entry.Key ?? string.Empty,
                             Size = entry.Size,
                             CompressedSize = entry.CompressedSize,
-                            Modified = entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Unknown"
+                            Modified = entry.LastModifiedTime?.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) ?? "Unknown"
                         });
                     }
                 }
@@ -96,7 +97,7 @@ namespace DataTransferApp.Net.Services
             {
                 Directory.CreateDirectory(destinationPath);
 
-                var fileName = archiveFilePath.ToLower();
+                var fileName = archiveFilePath.ToLowerInvariant();
 
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
                 if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||

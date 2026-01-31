@@ -21,7 +21,7 @@ namespace DataTransferApp.Net.Models
 
         public bool CanTransfer { get; set; }
 
-        public List<string> Issues { get; set; } = new();
+        public IList<string> Issues { get; set; } = new List<string>();
     }
 
     public class NameValidation
@@ -43,7 +43,7 @@ namespace DataTransferApp.Net.Models
     {
         public bool IsValid { get; set; }
 
-        public List<FileViolation> Violations { get; set; } = new();
+        public IList<FileViolation> Violations { get; set; } = new List<FileViolation>();
 
         public string Message { get; set; } = string.Empty;
     }

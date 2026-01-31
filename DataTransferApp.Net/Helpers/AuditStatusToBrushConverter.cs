@@ -14,7 +14,7 @@ namespace DataTransferApp.Net.Helpers
         {
             if (value is string status)
             {
-                switch (status.ToLower())
+                switch (status.ToLowerInvariant())
                 {
                     case "passed":
                     case "pass":

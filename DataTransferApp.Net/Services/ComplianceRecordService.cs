@@ -139,7 +139,7 @@ namespace DataTransferApp.Net.Services
 
             // Header section
             txt.AppendLine("Transfer Compliance Record");
-            txt.AppendLine($"Generated,{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            txt.AppendLine($"Generated,{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             txt.AppendLine();
 
             // Transfer information
@@ -147,7 +147,7 @@ namespace DataTransferApp.Net.Services
             txt.AppendLine($"Transfer ID,{transfer.Id}");
             txt.AppendLine($"Data Transfer Agent,{transfer.TransferInfo.DTA}");
             txt.AppendLine($"Employee ID,{transfer.TransferInfo.Employee}");
-            txt.AppendLine($"Transfer Date,{transfer.TransferInfo.Date:yyyy-MM-dd HH:mm:ss}");
+            txt.AppendLine($"Transfer Date,{transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             txt.AppendLine($"Folder Name,{transfer.TransferInfo.FolderName}");
             txt.AppendLine($"Source Path,\"{transfer.TransferInfo.SourcePath}\"");
             txt.AppendLine($"Destination Path,\"{transfer.TransferInfo.DestinationPath}\"");
@@ -157,12 +157,12 @@ namespace DataTransferApp.Net.Services
 
             // Summary
             txt.AppendLine("Transfer Summary");
-            txt.AppendLine($"Total Files,{transfer.Summary.TotalFiles}");
-            txt.AppendLine($"Total Size (bytes),{transfer.Summary.TotalSize}");
+            txt.AppendLine($"Total Files,{transfer.Summary.TotalFiles.ToString(CultureInfo.InvariantCulture)}");
+            txt.AppendLine($"Total Size (bytes),{transfer.Summary.TotalSize.ToString(CultureInfo.InvariantCulture)}");
             txt.AppendLine($"Total Size (formatted),{FormatFileSize(transfer.Summary.TotalSize)}");
-            txt.AppendLine($"Transfer Started,{transfer.Summary.TransferStarted:yyyy-MM-dd HH:mm:ss}");
-            txt.AppendLine($"Transfer Completed,{transfer.Summary.TransferCompleted:yyyy-MM-dd HH:mm:ss}");
-            txt.AppendLine($"Duration,{(transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds:F2} seconds");
+            txt.AppendLine($"Transfer Started,{transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
+            txt.AppendLine($"Transfer Completed,{transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
+            txt.AppendLine($"Duration,{(transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2", CultureInfo.InvariantCulture)} seconds");
             txt.AppendLine($"Status,{transfer.Summary.Status}");
             txt.AppendLine();
 
@@ -176,9 +176,9 @@ namespace DataTransferApp.Net.Services
                 {
                     txt.AppendLine($"\"{EscapeCsv(file.FileName)}\"," +
                                  $"{file.Extension}," +
-                                 $"{file.Size}," +
+                                 $"{file.Size.ToString(CultureInfo.InvariantCulture)}," +
                                  $"\"{FormatFileSize(file.Size)}\"," +
-                                 $"{file.Modified:yyyy-MM-dd HH:mm:ss}," +
+                                 $"{file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}," +
                                  $"{file.FileHash ?? "N/A"}," +
                                  $"\"{EscapeCsv(file.RelativePath)}\"," +
                                  $"{file.Status}");
@@ -194,13 +194,13 @@ namespace DataTransferApp.Net.Services
             {
                 TransferComplianceRecord = new
                 {
-                    Generated = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Generated = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                     TransferInformation = new
                     {
                         TransferId = transfer.Id.ToString(),
                         DataTransferAgent = transfer.TransferInfo.DTA,
                         EmployeeId = transfer.TransferInfo.Employee,
-                        TransferDate = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss"),
+                        TransferDate = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         FolderName = transfer.TransferInfo.FolderName,
                         SourcePath = transfer.TransferInfo.SourcePath,
                         DestinationPath = transfer.TransferInfo.DestinationPath,
@@ -212,8 +212,8 @@ namespace DataTransferApp.Net.Services
                         TotalFiles = transfer.Summary.TotalFiles,
                         TotalSizeBytes = transfer.Summary.TotalSize,
                         TotalSizeFormatted = FormatFileSize(transfer.Summary.TotalSize),
-                        TransferStarted = transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss"),
-                        TransferCompleted = transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss"),
+                        TransferStarted = transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                        TransferCompleted = transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         DurationSeconds = (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds,
                         Status = transfer.Summary.Status
                     },
@@ -223,7 +223,7 @@ namespace DataTransferApp.Net.Services
                         Extension = file.Extension,
                         SizeBytes = file.Size,
                         SizeFormatted = FormatFileSize(file.Size),
-                        ModifiedDate = file.Modified.ToString("yyyy-MM-dd HH:mm:ss"),
+                        ModifiedDate = file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         Hash = file.FileHash ?? "N/A",
                         RelativePath = file.RelativePath,
                         Status = file.Status
@@ -269,7 +269,7 @@ namespace DataTransferApp.Net.Services
             // File entries
             foreach (var file in transfer.Files)
             {
-                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
+                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
                 var fileName = EscapeCsv(file.FileName);
                 var fileFormat = file.Extension.TrimStart('.');
 
@@ -297,7 +297,7 @@ namespace DataTransferApp.Net.Services
             // File entries
             foreach (var file in transfer.Files)
             {
-                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
+                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
                 var fileName = $"\"{EscapeCsv(file.FileName)}\"";
                 var fileFormat = file.Extension.TrimStart('.');
 
@@ -332,7 +332,7 @@ namespace DataTransferApp.Net.Services
             var row = 2;
             foreach (var file in transfer.Files)
             {
-                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
+                var date = transfer.TransferInfo.Date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
                 var fileName = file.FileName;
                 var fileFormat = file.Extension.TrimStart('.');
 
@@ -369,7 +369,7 @@ namespace DataTransferApp.Net.Services
         {
             var records = transfer.Files.Select(file => new
             {
-                Date = transfer.TransferInfo.Date.ToString("yyyyMMdd"),
+                Date = transfer.TransferInfo.Date.ToString("yyyyMMdd", CultureInfo.InvariantCulture),
                 File = file.FileName,
                 FileFormat = file.Extension.TrimStart('.'),
 
@@ -420,7 +420,7 @@ namespace DataTransferApp.Net.Services
 
             // Generated timestamp
             sheet.Cells[row, 1].Value = "Generated:";
-            sheet.Cells[row, 2].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            sheet.Cells[row, 2].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             row += 2;
 
             // Transfer Information Section
@@ -432,7 +432,7 @@ namespace DataTransferApp.Net.Services
             AddInfoRow(sheet, ref row, "Transfer ID", transfer.Id.ToString());
             AddInfoRow(sheet, ref row, "Data Transfer Agent", transfer.TransferInfo.DTA);
             AddInfoRow(sheet, ref row, "Employee ID", transfer.TransferInfo.Employee);
-            AddInfoRow(sheet, ref row, "Transfer Date", transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss"));
+            AddInfoRow(sheet, ref row, "Transfer Date", transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Folder Name", transfer.TransferInfo.FolderName);
             AddInfoRow(sheet, ref row, "Source Path", transfer.TransferInfo.SourcePath);
             AddInfoRow(sheet, ref row, "Destination Path", transfer.TransferInfo.DestinationPath);
@@ -446,13 +446,13 @@ namespace DataTransferApp.Net.Services
             sheet.Cells[row, 1].Style.Font.Size = 12;
             row++;
 
-            AddInfoRow(sheet, ref row, "Total Files", transfer.Summary.TotalFiles.ToString());
-            AddInfoRow(sheet, ref row, "Total Size (bytes)", transfer.Summary.TotalSize.ToString());
+            AddInfoRow(sheet, ref row, "Total Files", transfer.Summary.TotalFiles.ToString(CultureInfo.InvariantCulture));
+            AddInfoRow(sheet, ref row, "Total Size (bytes)", transfer.Summary.TotalSize.ToString(CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Total Size", FormatFileSize(transfer.Summary.TotalSize));
-            AddInfoRow(sheet, ref row, "Transfer Started", transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss"));
-            AddInfoRow(sheet, ref row, "Transfer Completed", transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss"));
+            AddInfoRow(sheet, ref row, "Transfer Started", transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            AddInfoRow(sheet, ref row, "Transfer Completed", transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Duration (seconds)",
-                (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2"));
+                (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Status", transfer.Summary.Status);
 
             // Auto-fit columns
@@ -478,7 +478,7 @@ namespace DataTransferApp.Net.Services
                 sheet.Cells[row, 2].Value = file.Extension;
                 sheet.Cells[row, 3].Value = file.Size;
                 sheet.Cells[row, 4].Value = FormatFileSize(file.Size);
-                sheet.Cells[row, 5].Value = file.Modified.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, 5].Value = file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 sheet.Cells[row, 6].Value = file.FileHash ?? "N/A";
                 sheet.Cells[row, 7].Value = file.RelativePath;
                 sheet.Cells[row, 8].Value = file.Status;
@@ -502,9 +502,9 @@ namespace DataTransferApp.Net.Services
 
             // Header
             csv.AppendLine("Consolidated Transfer Compliance Report");
-            csv.AppendLine($"Period,{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
-            csv.AppendLine($"Generated,{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            csv.AppendLine($"Total Transfers,{transfers.Count()}");
+            csv.AppendLine($"Period,{startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)} to {endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
+            csv.AppendLine($"Generated,{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
+            csv.AppendLine($"Total Transfers,{transfers.Count().ToString(CultureInfo.InvariantCulture)}");
             csv.AppendLine();
 
             // Transfer list
@@ -514,13 +514,13 @@ namespace DataTransferApp.Net.Services
             {
                 var duration = (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds;
                 csv.AppendLine($"{transfer.Id}," +
-                             $"{transfer.TransferInfo.Date:yyyy-MM-dd HH:mm:ss}," +
+                             $"{transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}," +
                              $"{transfer.TransferInfo.DTA}," +
                              $"{transfer.TransferInfo.Employee}," +
                              $"\"{EscapeCsv(transfer.TransferInfo.FolderName)}\"," +
-                             $"{transfer.Summary.TotalFiles}," +
-                             $"{transfer.Summary.TotalSize}," +
-                             $"{duration:F2}," +
+                             $"{transfer.Summary.TotalFiles.ToString(CultureInfo.InvariantCulture)}," +
+                             $"{transfer.Summary.TotalSize.ToString(CultureInfo.InvariantCulture)}," +
+                             $"{duration.ToString("F2", CultureInfo.InvariantCulture)}," +
                              $"{transfer.Summary.Status}," +
                              $"\"{EscapeCsv(transfer.TransferInfo.SourcePath)}\"," +
                              $"\"{EscapeCsv(transfer.TransferInfo.DestinationPath)}\"");
@@ -539,13 +539,13 @@ namespace DataTransferApp.Net.Services
             {
                 ConsolidatedTransferComplianceReport = new
                 {
-                    Period = $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
-                    Generated = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Period = $"{startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)} to {endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}",
+                    Generated = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                     TotalTransfers = transfers.Count(),
                     Transfers = transfers.OrderBy(t => t.TransferInfo.Date).Select(transfer => new
                     {
                         TransferId = transfer.Id.ToString(),
-                        Date = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss"),
+                        Date = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         DTA = transfer.TransferInfo.DTA,
                         Employee = transfer.TransferInfo.Employee,
                         FolderName = transfer.TransferInfo.FolderName,
@@ -589,7 +589,7 @@ namespace DataTransferApp.Net.Services
             sheet.Cells[row, 2].Value = $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}";
             row++;
             sheet.Cells[row, 1].Value = "Generated:";
-            sheet.Cells[row, 2].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            sheet.Cells[row, 2].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             row++;
             sheet.Cells[row, 1].Value = "Total Transfers:";
             sheet.Cells[row, 2].Value = transfers.Count();
@@ -610,7 +610,7 @@ namespace DataTransferApp.Net.Services
             {
                 var duration = (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds;
                 sheet.Cells[row, 1].Value = transfer.Id.ToString();
-                sheet.Cells[row, 2].Value = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, 2].Value = transfer.TransferInfo.Date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 sheet.Cells[row, 3].Value = transfer.TransferInfo.DTA;
                 sheet.Cells[row, 4].Value = transfer.TransferInfo.Employee;
                 sheet.Cells[row, 5].Value = transfer.TransferInfo.FolderName;
@@ -646,7 +646,7 @@ namespace DataTransferApp.Net.Services
 
             Directory.CreateDirectory(directory);
 
-            var timestamp = transfer.TransferInfo.Date.ToString("yyyyMMdd_HHmmss");
+            var timestamp = transfer.TransferInfo.Date.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
 
             string extension;
             if (_settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase))
