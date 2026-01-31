@@ -246,104 +246,18 @@ namespace DataTransferApp.Net.Services
             {
                 try
                 {
-                    // System folders to skip
-                    var systemFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                    {
-                        "$RECYCLE.BIN",
-                        "System Volume Information",
-                        "$Recycle.Bin",
-                        "RECYCLER",
-                        "$WinREAgent"
-                    };
-
-                    var directories = Directory.GetDirectories(drivePath)
-                        .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
-                        .ToList();
-                    var files = Directory.GetFiles(drivePath);
+                    var (directories, files) = GetItemsToDelete(drivePath);
                     var totalItems = directories.Count + files.Length;
                     var completedItems = 0;
                     var skippedItems = 0;
 
-                    progress?.Report(new TransferProgress
-                    {
-                        CurrentFile = "Scanning drive...",
-                        CompletedFiles = 0,
-                        TotalFiles = totalItems,
-                        PercentComplete = 0
-                    });
+                    ReportInitialProgress(progress, totalItems);
 
-                    foreach (var dir in directories)
-                    {
-                        var dirName = Path.GetFileName(dir);
-                        progress?.Report(new TransferProgress
-                        {
-                            CurrentFile = $"Deleting folder: {dirName}",
-                            CompletedFiles = completedItems,
-                            TotalFiles = totalItems,
-                            PercentComplete = (int)((completedItems / (double)totalItems) * 100)
-                        });
+                    completedItems += DeleteDirectories(directories, progress, ref completedItems, totalItems, ref skippedItems);
+                    completedItems += DeleteFiles(files, progress, ref completedItems, totalItems, ref skippedItems);
 
-                        try
-                        {
-                            Directory.Delete(dir, true);
-                            completedItems++;
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            LoggingService.Warning($"Access denied to folder: {dirName} (skipped)");
-                            skippedItems++;
-                        }
-                        catch (IOException ex)
-                        {
-                            LoggingService.Warning($"Cannot delete folder: {dirName} - {ex.Message} (skipped)");
-                            skippedItems++;
-                        }
-                    }
-
-                    foreach (var file in files)
-                    {
-                        var fileName = Path.GetFileName(file);
-                        progress?.Report(new TransferProgress
-                        {
-                            CurrentFile = $"Deleting file: {fileName}",
-                            CompletedFiles = completedItems,
-                            TotalFiles = totalItems,
-                            PercentComplete = (int)((completedItems / (double)totalItems) * 100)
-                        });
-
-                        try
-                        {
-                            File.Delete(file);
-                            completedItems++;
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            LoggingService.Warning($"Access denied to file: {fileName} (skipped)");
-                            skippedItems++;
-                        }
-                        catch (IOException ex)
-                        {
-                            LoggingService.Warning($"Cannot delete file: {fileName} - {ex.Message} (skipped)");
-                            skippedItems++;
-                        }
-                    }
-
-                    progress?.Report(new TransferProgress
-                    {
-                        CurrentFile = "Complete",
-                        CompletedFiles = totalItems,
-                        TotalFiles = totalItems,
-                        PercentComplete = 100
-                    });
-
-                    if (skippedItems > 0)
-                    {
-                        LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted, {skippedItems} items skipped)");
-                    }
-                    else
-                    {
-                        LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted)");
-                    }
+                    ReportFinalProgress(progress, totalItems);
+                    LogClearResults(drivePath, completedItems, skippedItems);
                 }
                 catch (Exception ex)
                 {
@@ -351,6 +265,132 @@ namespace DataTransferApp.Net.Services
                     throw;
                 }
             });
+        }
+
+        private static (List<string> Directories, string[] Files) GetItemsToDelete(string drivePath)
+        {
+            // System folders to skip
+            var systemFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "$RECYCLE.BIN",
+                "System Volume Information",
+                "$Recycle.Bin",
+                "RECYCLER",
+                "$WinREAgent"
+            };
+
+            var directories = Directory.GetDirectories(drivePath)
+                .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
+                .ToList();
+            var files = Directory.GetFiles(drivePath);
+
+            return (directories, files);
+        }
+
+        private static void ReportInitialProgress(IProgress<TransferProgress>? progress, int totalItems)
+        {
+            progress?.Report(new TransferProgress
+            {
+                CurrentFile = "Scanning drive...",
+                CompletedFiles = 0,
+                TotalFiles = totalItems,
+                PercentComplete = 0
+            });
+        }
+
+        private static int DeleteDirectories(List<string> directories, IProgress<TransferProgress>? progress, ref int completedItems, int totalItems, ref int skippedItems)
+        {
+            var deletedCount = 0;
+
+            foreach (var dir in directories)
+            {
+                var dirName = Path.GetFileName(dir);
+                progress?.Report(new TransferProgress
+                {
+                    CurrentFile = $"Deleting folder: {dirName}",
+                    CompletedFiles = completedItems,
+                    TotalFiles = totalItems,
+                    PercentComplete = (int)((completedItems / (double)totalItems) * 100)
+                });
+
+                try
+                {
+                    Directory.Delete(dir, true);
+                    completedItems++;
+                    deletedCount++;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    LoggingService.Warning($"Access denied to folder: {dirName} (skipped)");
+                    skippedItems++;
+                }
+                catch (IOException ex)
+                {
+                    LoggingService.Warning($"Cannot delete folder: {dirName} - {ex.Message} (skipped)");
+                    skippedItems++;
+                }
+            }
+
+            return deletedCount;
+        }
+
+        private static int DeleteFiles(string[] files, IProgress<TransferProgress>? progress, ref int completedItems, int totalItems, ref int skippedItems)
+        {
+            var deletedCount = 0;
+
+            foreach (var file in files)
+            {
+                var fileName = Path.GetFileName(file);
+                progress?.Report(new TransferProgress
+                {
+                    CurrentFile = $"Deleting file: {fileName}",
+                    CompletedFiles = completedItems,
+                    TotalFiles = totalItems,
+                    PercentComplete = (int)((completedItems / (double)totalItems) * 100)
+                });
+
+                try
+                {
+                    File.Delete(file);
+                    completedItems++;
+                    deletedCount++;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    LoggingService.Warning($"Access denied to file: {fileName} (skipped)");
+                    skippedItems++;
+                }
+                catch (IOException ex)
+                {
+                    LoggingService.Warning($"Cannot delete file: {fileName} - {ex.Message} (skipped)");
+                    skippedItems++;
+                }
+            }
+
+            return deletedCount;
+        }
+
+        private static void ReportFinalProgress(IProgress<TransferProgress>? progress, int totalItems)
+        {
+            progress?.Report(new TransferProgress
+            {
+                CurrentFile = "Complete",
+                CompletedFiles = totalItems,
+                TotalFiles = totalItems,
+                PercentComplete = 100
+            });
+        }
+
+        private static void LogClearResults(string drivePath, int completedItems, int skippedItems)
+        {
+            if (skippedItems > 0)
+            {
+                LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted, {skippedItems} items skipped)");
+            }
+            else
+            {
+                LoggingService.Success($"Drive cleared: {drivePath} ({completedItems} items deleted)");
+            }
         }
 
         private static string GetSequencedPath(string destinationDrive, string folderName)

@@ -363,91 +363,12 @@ namespace DataTransferApp.Net.ViewModels
 
                 SelectedFolder.AuditResult = result;
 
-                // Update individual audit statuses
-                // Combine naming and dataset validation into naming status
-                bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
-                SelectedFolder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
-
-                // Combine failure reasons
-                var namingReasons = new List<string>();
-                if (result.NameValidation?.IsValid == false)
-                {
-                    namingReasons.Add(result.NameValidation.Message);
-                }
-
-                if (result.DatasetValidation?.IsValid == false)
-                {
-                    namingReasons.Add(result.DatasetValidation.Message);
-                }
-
-                SelectedFolder.NamingFailureReason = string.Join(". ", namingReasons);
-
-                SelectedFolder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
-                SelectedFolder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
-                SelectedFolder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
-                SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
-
-                // Count compressed files
-                var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-                var compressedCount = SelectedFolder.Files.Count(f =>
-                    compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
-                    f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
-                    f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
-                    f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
-                SelectedFolder.CompressedFileCount = compressedCount;
-                SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
-
-                // Determine overall status: if all checks pass but there are compressed files, set to Caution
-                if (result.OverallStatus == "Passed" && compressedCount > 0)
-                {
-                    SelectedFolder.AuditStatus = "Caution";
-                }
-                else
-                {
-                    SelectedFolder.AuditStatus = result.OverallStatus;
-                }
-
-                // Update file statuses and flags
-                // Reset all files first
-                foreach (var file in SelectedFolder.Files)
-                {
-                    file.IsBlacklisted = false;
-                    file.IsCompressed = false;
-                    file.Status = "Ready";
-                }
-
-                // Mark blacklisted files
-                if (result.ExtensionValidation?.Violations.Count > 0)
-                {
-                    foreach (var violation in result.ExtensionValidation.Violations)
-                    {
-                        var file = SelectedFolder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
-                        if (file != null)
-                        {
-                            file.Status = "Blacklisted";
-                            file.IsBlacklisted = true;
-                        }
-                    }
-                }
-
-                // Mark compressed files
-                foreach (var file in SelectedFolder.Files)
-                {
-                    var fileName = file.FileName.ToLowerInvariant();
-                    if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                        fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
-                        fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
-                        fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
-                    {
-                        file.IsCompressed = true;
-                        if (file.Status == "Ready")
-                        {
-                            file.Status = "Compressed";
-                        }
-                    }
-                }
-
+                UpdateAuditResults(result);
+                var compressedCount = CountCompressedFiles();
+                SelectedFolder.AuditStatus = DetermineOverallAuditStatus(result, compressedCount);
+                UpdateFileStatuses(result);
                 UpdateStatistics();
+
                 StatusMessage = $"Audit {result.OverallStatus}: {SelectedFolder.FolderName}";
             }
             catch (Exception ex)
@@ -458,6 +379,103 @@ namespace DataTransferApp.Net.ViewModels
             finally
             {
                 IsProcessing = false;
+            }
+        }
+
+        private void UpdateAuditResults(AuditResult result)
+        {
+            // Update individual audit statuses
+            // Combine naming and dataset validation into naming status
+            bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
+            SelectedFolder!.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
+
+            // Combine failure reasons
+            var namingReasons = new List<string>();
+            if (result.NameValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.NameValidation.Message);
+            }
+
+            if (result.DatasetValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.DatasetValidation.Message);
+            }
+
+            SelectedFolder.NamingFailureReason = string.Join(". ", namingReasons);
+
+            SelectedFolder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
+            SelectedFolder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
+            SelectedFolder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
+            SelectedFolder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
+        }
+
+        private int CountCompressedFiles()
+        {
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+            var compressedCount = SelectedFolder!.Files.Count(f =>
+                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
+            SelectedFolder.CompressedFileCount = compressedCount;
+            SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+            return compressedCount;
+        }
+
+        private string DetermineOverallAuditStatus(AuditResult result, int compressedCount)
+        {
+            // Determine overall status: if all checks pass but there are compressed files, set to Caution
+            if (result.OverallStatus == "Passed" && compressedCount > 0)
+            {
+                return "Caution";
+            }
+            else
+            {
+                return result.OverallStatus;
+            }
+        }
+
+        private void UpdateFileStatuses(AuditResult result)
+        {
+            // Update file statuses and flags
+            // Reset all files first
+            foreach (var file in SelectedFolder!.Files)
+            {
+                file.IsBlacklisted = false;
+                file.IsCompressed = false;
+                file.Status = "Ready";
+            }
+
+            // Mark blacklisted files
+            if (result.ExtensionValidation?.Violations.Count > 0)
+            {
+                foreach (var violation in result.ExtensionValidation.Violations)
+                {
+                    var file = SelectedFolder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
+                    if (file != null)
+                    {
+                        file.Status = "Blacklisted";
+                        file.IsBlacklisted = true;
+                    }
+                }
+            }
+
+            // Mark compressed files
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+            foreach (var file in SelectedFolder.Files)
+            {
+                var fileName = file.FileName.ToLowerInvariant();
+                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
+                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
+                {
+                    file.IsCompressed = true;
+                    if (file.Status == "Ready")
+                    {
+                        file.Status = "Compressed";
+                    }
+                }
             }
         }
 
@@ -477,91 +495,7 @@ namespace DataTransferApp.Net.ViewModels
                     completed++;
                     StatusMessage = $"Auditing {completed}/{total}: {folder.FolderName}";
 
-                    var result = await _auditService.AuditFolderAsync(folder.FolderPath, folder.FolderName);
-                    folder.AuditResult = result;
-
-                    // Update individual audit statuses
-                    // Combine naming and dataset validation into naming status
-                    bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
-                    folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
-
-                    // Combine failure reasons
-                    var namingReasons = new List<string>();
-                    if (result.NameValidation?.IsValid == false)
-                    {
-                        namingReasons.Add(result.NameValidation.Message);
-                    }
-
-                    if (result.DatasetValidation?.IsValid == false)
-                    {
-                        namingReasons.Add(result.DatasetValidation.Message);
-                    }
-
-                    folder.NamingFailureReason = string.Join(". ", namingReasons);
-
-                    folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
-                    folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
-                    folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
-                    folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
-
-                    // Count compressed files
-                    var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-                    var compressedCount = folder.Files.Count(f =>
-                        compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
-                        f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
-                        f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
-                        f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
-                    folder.CompressedFileCount = compressedCount;
-                    folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
-
-                    // Determine overall status: if all checks pass but there are compressed files, set to Caution
-                    if (result.OverallStatus == "Passed" && compressedCount > 0)
-                    {
-                        folder.AuditStatus = "Caution";
-                    }
-                    else
-                    {
-                        folder.AuditStatus = result.OverallStatus;
-                    }
-
-                    // Update file flags
-                    foreach (var file in folder.Files)
-                    {
-                        file.IsBlacklisted = false;
-                        file.IsCompressed = false;
-                        file.Status = "Ready";
-                    }
-
-                    // Mark blacklisted files
-                    if (result.ExtensionValidation?.Violations.Count > 0)
-                    {
-                        foreach (var violation in result.ExtensionValidation.Violations)
-                        {
-                            var file = folder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
-                            if (file != null)
-                            {
-                                file.Status = "Blacklisted";
-                                file.IsBlacklisted = true;
-                            }
-                        }
-                    }
-
-                    // Mark compressed files
-                    foreach (var file in folder.Files)
-                    {
-                        var fileName = file.FileName.ToLowerInvariant();
-                        if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                            fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
-                            fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
-                            fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
-                        {
-                            file.IsCompressed = true;
-                            if (file.Status == "Ready")
-                            {
-                                file.Status = "Compressed";
-                            }
-                        }
-                    }
+                    await ProcessSingleFolderAuditAsync(folder);
                 }
 
                 UpdateStatistics();
@@ -578,39 +512,167 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
+        private async Task ProcessSingleFolderAuditAsync(FolderData folder)
+        {
+            var result = await _auditService.AuditFolderAsync(folder.FolderPath, folder.FolderName);
+            folder.AuditResult = result;
+
+            UpdateFolderAuditStatuses(folder, result);
+            CountAndUpdateCompressedFiles(folder);
+            DetermineFolderOverallStatus(folder, result);
+            UpdateFileStatuses(folder, result);
+        }
+
+        private static void UpdateFolderAuditStatuses(FolderData folder, AuditResult result)
+        {
+            // Combine naming and dataset validation into naming status
+            bool namingPassed = result.NameValidation?.IsValid == true && result.DatasetValidation?.IsValid == true;
+            folder.NamingAuditStatus = namingPassed ? "Passed" : "Failed";
+
+            // Combine failure reasons
+            var namingReasons = new List<string>();
+            if (result.NameValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.NameValidation.Message);
+            }
+
+            if (result.DatasetValidation?.IsValid == false)
+            {
+                namingReasons.Add(result.DatasetValidation.Message);
+            }
+
+            folder.NamingFailureReason = string.Join(". ", namingReasons);
+
+            folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
+            folder.DatasetFailureReason = result.DatasetValidation?.IsValid == true ? string.Empty : result.DatasetValidation?.Message ?? "Unknown dataset error";
+            folder.BlacklistAuditStatus = result.ExtensionValidation?.IsValid == true ? "Passed" : "Failed";
+            folder.BlacklistViolationCount = result.ExtensionValidation?.Violations.Count ?? 0;
+        }
+
+        private static void CountAndUpdateCompressedFiles(FolderData folder)
+        {
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+            var compressedCount = folder.Files.Count(f =>
+                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
+                f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
+            folder.CompressedFileCount = compressedCount;
+            folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
+        }
+
+        private static void DetermineFolderOverallStatus(FolderData folder, AuditResult result)
+        {
+            // Determine overall status: if all checks pass but there are compressed files, set to Caution
+            if (result.OverallStatus == "Passed" && folder.CompressedFileCount > 0)
+            {
+                folder.AuditStatus = "Caution";
+            }
+            else
+            {
+                folder.AuditStatus = result.OverallStatus;
+            }
+        }
+
+        private static void UpdateFileStatuses(FolderData folder, AuditResult result)
+        {
+            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
+
+            // Reset file flags
+            foreach (var file in folder.Files)
+            {
+                file.IsBlacklisted = false;
+                file.IsCompressed = false;
+                file.Status = "Ready";
+            }
+
+            // Mark blacklisted files
+            if (result.ExtensionValidation?.Violations.Count > 0)
+            {
+                foreach (var violation in result.ExtensionValidation.Violations)
+                {
+                    var file = folder.Files.FirstOrDefault(f => f.RelativePath == violation.RelativePath);
+                    if (file != null)
+                    {
+                        file.Status = "Blacklisted";
+                        file.IsBlacklisted = true;
+                    }
+                }
+            }
+
+            // Mark compressed files
+            foreach (var file in folder.Files)
+            {
+                var fileName = file.FileName.ToLowerInvariant();
+                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
+                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
+                {
+                    file.IsCompressed = true;
+                    if (file.Status == "Ready")
+                    {
+                        file.Status = "Compressed";
+                    }
+                }
+            }
+        }
+
         [RelayCommand]
         private async Task TransferAllFoldersAsync()
         {
-            if (SelectedDrive == null)
+            if (!ValidateTransferPrerequisites(out var passedFolders))
             {
-                _ = ShowSnackbar("Please select a destination drive", "error");
                 return;
             }
 
-            var passedFolders = FolderList.Where(f => f.CanTransfer).ToList();
-            if (!passedFolders.Any())
-            {
-                _ = ShowSnackbar("No folders passed audit. Run audit first.", "warning");
-                return;
-            }
-
-            // Check drive contents if no transfers yet
-            var action = await CheckDriveContentsAsync();
+            var action = await HandleDrivePreparationAsync();
             if (action == DriveAction.Abort)
             {
                 return;
             }
-            else if (action == DriveAction.Clear)
+
+            await ProcessFolderTransfersAsync(passedFolders);
+        }
+
+        private bool ValidateTransferPrerequisites(out List<FolderData> passedFolders)
+        {
+            passedFolders = null!;
+
+            if (SelectedDrive == null)
+            {
+                _ = ShowSnackbar("Please select a destination drive", "error");
+                return false;
+            }
+
+            passedFolders = FolderList.Where(f => f.CanTransfer).ToList();
+            if (!passedFolders.Any())
+            {
+                _ = ShowSnackbar("No folders passed audit. Run audit first.", "warning");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<DriveAction> HandleDrivePreparationAsync()
+        {
+            var action = await CheckDriveContentsAsync();
+            if (action == DriveAction.Clear)
             {
                 // Clear drive first
                 await ClearDriveAsync();
                 if (IsProcessing)
                 {
-                    return; // If clear failed or is still running
+                    return DriveAction.Abort; // If clear failed or is still running
                 }
             }
 
-            // If Append, continue with transfer
+            return action;
+        }
+
+        private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
+        {
             IsProcessing = true;
             var total = passedFolders.Count;
             var completed = 0;
@@ -633,7 +695,7 @@ namespace DataTransferApp.Net.ViewModels
 
                     var result = await _transferService.TransferFolderAsync(
                         folder,
-                        SelectedDrive.DriveLetter,
+                        SelectedDrive!.DriveLetter,
                         progress);
 
                     if (result.Success)
@@ -654,13 +716,7 @@ namespace DataTransferApp.Net.ViewModels
                     }
                 }
 
-                UpdateStatistics();
-                var successCount = completed - failed;
-                StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed, {skipped} skipped";
-                _ = ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
-
-                // Auto-select first folder if available after transfers
-                AutoSelectFirstFolder();
+                UpdateTransferResults(total, completed, failed, skipped);
             }
             catch (Exception ex)
             {
@@ -676,33 +732,49 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
+        private void UpdateTransferResults(int total, int completed, int failed, int skipped)
+        {
+            UpdateStatistics();
+            var successCount = completed - failed;
+            StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed, {skipped} skipped";
+            _ = ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
+
+            // Auto-select first folder if available after transfers
+            AutoSelectFirstFolder();
+        }
+
         [RelayCommand(CanExecute = nameof(CanTransferFolder))]
         private async Task TransferFolderAsync()
         {
-            if (SelectedFolder == null || SelectedDrive == null)
+            if (!ValidateSingleTransferPrerequisites(out var folderName))
             {
                 return;
             }
 
-            var folderName = SelectedFolder.FolderName; // Store name before folder is removed
-
-            // Check drive contents if no transfers yet
-            var action = await CheckDriveContentsAsync();
+            var action = await HandleDrivePreparationAsync();
             if (action == DriveAction.Abort)
             {
                 return;
             }
-            else if (action == DriveAction.Clear)
+
+            await ProcessSingleTransferAsync(folderName);
+        }
+
+        private bool ValidateSingleTransferPrerequisites(out string folderName)
+        {
+            folderName = null!;
+
+            if (SelectedFolder == null || SelectedDrive == null)
             {
-                // Clear drive first
-                await ClearDriveAsync();
-                if (IsProcessing)
-                {
-                    return; // If clear failed or is still running
-                }
+                return false;
             }
 
-            // If Append, continue with transfer
+            folderName = SelectedFolder.FolderName; // Store name before folder is removed
+            return true;
+        }
+
+        private async Task ProcessSingleTransferAsync(string folderName)
+        {
             IsProcessing = true;
             ProgressPercent = 0;
 
@@ -715,31 +787,11 @@ namespace DataTransferApp.Net.ViewModels
                 });
 
                 var result = await _transferService.TransferFolderAsync(
-                    SelectedFolder,
-                    SelectedDrive.DriveLetter,
+                    SelectedFolder!,
+                    SelectedDrive!.DriveLetter,
                     progress);
 
-                if (result.Success)
-                {
-                    TransferredList.Add(SelectedFolder);
-                    FolderList.Remove(SelectedFolder);
-                    UpdateStatistics();
-
-                    var message = result.ErrorMessage == "Skipped - folder already exists"
-                        ? $"Skipped (already exists): {folderName}"
-                        : $"Transfer complete: {folderName}";
-
-                    StatusMessage = message;
-                    _ = ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
-
-                    // Auto-select first folder if available after transfer
-                    AutoSelectFirstFolder();
-                }
-                else
-                {
-                    StatusMessage = $"Transfer failed: {result.ErrorMessage}";
-                    _ = ShowSnackbar($"Transfer failed: {result.ErrorMessage}", "error");
-                }
+                UpdateSingleTransferResults(result, folderName);
             }
             catch (Exception ex)
             {
@@ -755,6 +807,31 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
+        private void UpdateSingleTransferResults(TransferResult result, string folderName)
+        {
+            if (result.Success)
+            {
+                TransferredList.Add(SelectedFolder!);
+                FolderList.Remove(SelectedFolder!);
+                UpdateStatistics();
+
+                var message = result.ErrorMessage == "Skipped - folder already exists"
+                    ? $"Skipped (already exists): {folderName}"
+                    : $"Transfer complete: {folderName}";
+
+                StatusMessage = message;
+                _ = ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
+
+                // Auto-select first folder if available after transfer
+                AutoSelectFirstFolder();
+            }
+            else
+            {
+                StatusMessage = $"Transfer failed: {result.ErrorMessage}";
+                _ = ShowSnackbar($"Transfer failed: {result.ErrorMessage}", "error");
+            }
+        }
+
         private bool CanTransferFolder() =>
             SelectedFolder != null &&
             SelectedFolder.CanTransfer &&
@@ -764,41 +841,38 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()
         {
-            if (SelectedFolder == null || SelectedDrive == null)
+            if (!ValidateSingleTransferPrerequisites(out var folderName))
             {
                 return;
             }
 
-            var folderName = SelectedFolder.FolderName; // Store name before folder is removed
-
-            var result = MessageBox.Show(
-                $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {SelectedFolder.AuditStatus}",
-                "Override Audit - Confirm Transfer",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
+            if (!ShowOverrideConfirmation(folderName))
             {
                 return;
             }
 
-            // Check drive contents if no transfers yet
-            var action = await CheckDriveContentsAsync();
+            var action = await HandleDrivePreparationAsync();
             if (action == DriveAction.Abort)
             {
                 return;
             }
-            else if (action == DriveAction.Clear)
-            {
-                // Clear drive first
-                await ClearDriveAsync();
-                if (IsProcessing)
-                {
-                    return; // If clear failed or is still running
-                }
-            }
 
-            // If Append, continue with transfer
+            await ProcessOverrideTransferAsync(folderName);
+        }
+
+        private bool ShowOverrideConfirmation(string folderName)
+        {
+            var result = MessageBox.Show(
+                $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {SelectedFolder!.AuditStatus}",
+                "Override Audit - Confirm Transfer",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            return result == MessageBoxResult.Yes;
+        }
+
+        private async Task ProcessOverrideTransferAsync(string folderName)
+        {
             IsProcessing = true;
             ProgressPercent = 0;
 
@@ -811,26 +885,11 @@ namespace DataTransferApp.Net.ViewModels
                 });
 
                 var transferResult = await _transferService.TransferFolderAsync(
-                    SelectedFolder,
-                    SelectedDrive.DriveLetter,
+                    SelectedFolder!,
+                    SelectedDrive!.DriveLetter,
                     progress);
 
-                if (transferResult.Success)
-                {
-                    TransferredList.Add(SelectedFolder);
-                    FolderList.Remove(SelectedFolder);
-                    UpdateStatistics();
-                    StatusMessage = $"Transfer complete (Override): {folderName}";
-                    _ = ShowSnackbar($"Override transfer completed", "warning");
-
-                    // Auto-select first folder if available after transfer
-                    AutoSelectFirstFolder();
-                }
-                else
-                {
-                    StatusMessage = $"Transfer failed: {transferResult.ErrorMessage}";
-                    _ = ShowSnackbar($"Transfer failed: {transferResult.ErrorMessage}", "error");
-                }
+                UpdateOverrideResults(transferResult, folderName);
             }
             catch (Exception ex)
             {
@@ -843,6 +902,26 @@ namespace DataTransferApp.Net.ViewModels
                 IsProcessing = false;
                 ProgressPercent = 0;
                 ProgressText = "Ready";
+            }
+        }
+
+        private void UpdateOverrideResults(TransferResult transferResult, string folderName)
+        {
+            if (transferResult.Success)
+            {
+                TransferredList.Add(SelectedFolder!);
+                FolderList.Remove(SelectedFolder!);
+                UpdateStatistics();
+                StatusMessage = $"Transfer complete (Override): {folderName}";
+                _ = ShowSnackbar($"Override transfer completed", "warning");
+
+                // Auto-select first folder if available after transfer
+                AutoSelectFirstFolder();
+            }
+            else
+            {
+                StatusMessage = $"Transfer failed: {transferResult.ErrorMessage}";
+                _ = ShowSnackbar($"Transfer failed: {transferResult.ErrorMessage}", "error");
             }
         }
 
