@@ -5,7 +5,7 @@ using System.Windows.Threading;
 namespace DataTransferApp.Net.Views;
 
 /// <summary>
-/// Interaction logic for SplashScreenWindow.xaml
+/// Interaction logic for SplashScreenWindow.xaml.
 /// </summary>
 public partial class SplashScreenWindow : Window
 {

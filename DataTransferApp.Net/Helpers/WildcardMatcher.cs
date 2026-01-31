@@ -20,8 +20,11 @@ namespace DataTransferApp.Net.Helpers
             foreach (var pattern in patterns)
             {
                 if (WildcardToRegex(pattern).IsMatch(input))
+                {
                     return true;
+                }
             }
+
             return false;
         }
     }

@@ -17,6 +17,7 @@ namespace DataTransferApp.Net.Helpers
                     ? (invert ? Visibility.Visible : Visibility.Collapsed)
                     : (invert ? Visibility.Collapsed : Visibility.Visible);
             }
+
             return value == null
                 ? (invert ? Visibility.Visible : Visibility.Collapsed)
                 : (invert ? Visibility.Collapsed : Visibility.Visible);

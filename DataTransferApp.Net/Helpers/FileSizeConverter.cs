@@ -12,6 +12,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return FormatFileSize(bytes);
             }
+
             return "0 B";
         }
 
@@ -27,11 +28,19 @@ namespace DataTransferApp.Net.Helpers
             const long KB = 1024L;
 
             if (bytes >= GB)
+            {
                 return $"{bytes / (double)GB:N2} GB";
+            }
+
             if (bytes >= MB)
+            {
                 return $"{bytes / (double)MB:N2} MB";
+            }
+
             if (bytes >= KB)
+            {
                 return $"{bytes / (double)KB:N2} KB";
+            }
 
             return $"{bytes} B";
         }

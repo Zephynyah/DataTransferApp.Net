@@ -1,10 +1,10 @@
-using DataTransferApp.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
 {
@@ -140,7 +140,7 @@ namespace DataTransferApp.Net.Services
             }
             else if (parts.Length == 3)
             {
-                 var result = new NameValidation
+                var result = new NameValidation
                 {
                     IsValid = false,
                     EmployeeId = parts[0],
@@ -149,7 +149,7 @@ namespace DataTransferApp.Net.Services
                     Message = "Invalid format detected in folder name"
                 };
 
-                 // Validate date format
+                // Validate date format
                 try
                 {
                     var dateStr = parts[1];
@@ -227,7 +227,7 @@ namespace DataTransferApp.Net.Services
                         {
                             File = file,
                             Extension = ext,
-                            RelativePath = file.Replace(folderPath, "").TrimStart(Path.DirectorySeparatorChar)
+                            RelativePath = file.Replace(folderPath, string.Empty).TrimStart(Path.DirectorySeparatorChar)
                         });
                     }
                 }

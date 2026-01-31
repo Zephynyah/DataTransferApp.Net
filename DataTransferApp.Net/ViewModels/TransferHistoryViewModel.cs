@@ -1,12 +1,12 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DataTransferApp.Net.Models;
-using DataTransferApp.Net.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DataTransferApp.Net.Models;
+using DataTransferApp.Net.Services;
 
 namespace DataTransferApp.Net.ViewModels
 {
@@ -150,6 +150,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 TransferFiles.Clear();
             }
+
             IsDeleteEnabled = value != null;
         }
 
@@ -169,7 +170,10 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand]
         private async Task DeleteTransferAsync()
         {
-            if (SelectedTransfer == null) return;
+            if (SelectedTransfer == null)
+            {
+                return;
+            }
 
             var result = System.Windows.MessageBox.Show(
                 $"Are you sure you want to delete the transfer record for '{SelectedTransfer.TransferInfo.FolderName}'?",

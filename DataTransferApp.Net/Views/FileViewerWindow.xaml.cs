@@ -7,7 +7,7 @@ namespace DataTransferApp.Net.Views
         public FileViewerWindow(string fileName, string filePath, string content)
         {
             InitializeComponent();
-            
+
             FileNameText.Text = fileName;
             FilePathText.Text = filePath;
             FileContentTextBox.Text = content;

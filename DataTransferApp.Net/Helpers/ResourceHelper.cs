@@ -26,6 +26,7 @@ namespace DataTransferApp.Net.Helpers
                     }
                 }
             }
+
             return string.Empty;
         }
     }

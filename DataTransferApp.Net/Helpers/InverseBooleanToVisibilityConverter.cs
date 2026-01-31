@@ -13,6 +13,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return boolValue ? Visibility.Collapsed : Visibility.Visible;
             }
+
             return Visibility.Collapsed;
         }
 
@@ -22,6 +23,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return visibility == Visibility.Collapsed;
             }
+
             return false;
         }
     }

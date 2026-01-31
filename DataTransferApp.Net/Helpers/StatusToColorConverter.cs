@@ -23,6 +23,7 @@ namespace DataTransferApp.Net.Helpers
                         return Brushes.Black; // Default brush for unknown status
                 }
             }
+
             return Brushes.Gray; // Default brush if value is null or not a string
         }
 

@@ -1,6 +1,6 @@
+using System.Windows;
 using DataTransferApp.Net.Models;
 using DataTransferApp.Net.Services;
-using System.Windows;
 
 namespace DataTransferApp.Net.Views
 {
@@ -22,13 +22,13 @@ namespace DataTransferApp.Net.Views
             try
             {
                 _settingsService.SaveSettings(_settings);
-                
+
                 // Update logging level
                 var logLevel = LoggingService.ParseLogLevel(_settings.LogLevel);
-                
+
                 MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoggingService.Info("Settings saved by user");
-                
+
                 DialogResult = true;
                 Close();
             }

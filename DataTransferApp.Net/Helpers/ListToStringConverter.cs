@@ -14,6 +14,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return string.Join(", ", list);
             }
+
             return string.Empty;
         }
 
@@ -26,6 +27,7 @@ namespace DataTransferApp.Net.Helpers
                     .Where(s => !string.IsNullOrEmpty(s))
                     .ToList();
             }
+
             return new List<string>();
         }
     }

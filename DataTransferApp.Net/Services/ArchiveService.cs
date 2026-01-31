@@ -1,11 +1,11 @@
-using SharpCompress.Archives;
-using SharpCompress.Archives.Tar;
-using SharpCompress.Readers;
-using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Tar;
+using SharpCompress.Common;
+using SharpCompress.Readers;
 
 namespace DataTransferApp.Net.Services
 {
@@ -16,15 +16,15 @@ namespace DataTransferApp.Net.Services
         public bool IsArchive(string filePath)
         {
             var fileName = filePath.ToLower();
-            
+
             // Check for compound extensions first (.tar.gz, .tar.xz, etc.)
-            if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
-                fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
-                fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+            if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
             {
                 return true;
             }
-            
+
             // Then check single extensions
             var ext = Path.GetExtension(filePath).ToLower();
             return ArchiveExtensions.Contains(ext);
@@ -37,15 +37,15 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var fileName = archiveFilePath.ToLower();
-                
+
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
-                if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
-                    fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
-                    fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+                if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
                 {
                     using var stream = File.OpenRead(archiveFilePath);
                     using var reader = ReaderFactory.Open(stream);
-                    
+
                     while (reader.MoveToNextEntry())
                     {
                         if (!reader.Entry.IsDirectory)
@@ -65,7 +65,7 @@ namespace DataTransferApp.Net.Services
                 {
                     // For regular archives, use ArchiveFactory
                     using var archive = ArchiveFactory.Open(archiveFilePath);
-                    
+
                     foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                     {
                         entries.Add(new ArchiveEntry
@@ -97,15 +97,15 @@ namespace DataTransferApp.Net.Services
                 Directory.CreateDirectory(destinationPath);
 
                 var fileName = archiveFilePath.ToLower();
-                
+
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
-                if (fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
-                    fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
-                    fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+                if (fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
                 {
                     using var stream = File.OpenRead(archiveFilePath);
                     using var reader = ReaderFactory.Open(stream);
-                    
+
                     while (reader.MoveToNextEntry())
                     {
                         if (!reader.Entry.IsDirectory)
@@ -122,7 +122,7 @@ namespace DataTransferApp.Net.Services
                 {
                     // For regular archives, use ArchiveFactory
                     using var archive = ArchiveFactory.Open(archiveFilePath);
-                    
+
                     foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                     {
                         entry.WriteToDirectory(destinationPath, new ExtractionOptions
@@ -146,12 +146,17 @@ namespace DataTransferApp.Net.Services
     public class ArchiveEntry
     {
         public string Name { get; set; } = string.Empty;
+
         public string Path { get; set; } = string.Empty;
+
         public long Size { get; set; }
+
         public long CompressedSize { get; set; }
+
         public string Modified { get; set; } = string.Empty;
 
         public string SizeFormatted => FormatFileSize(Size);
+
         public string CompressedSizeFormatted => FormatFileSize(CompressedSize);
 
         private static string FormatFileSize(long bytes)
@@ -161,11 +166,19 @@ namespace DataTransferApp.Net.Services
             const long KB = 1024;
 
             if (bytes >= GB)
+            {
                 return $"{bytes / (double)GB:N2} GB";
+            }
+
             if (bytes >= MB)
+            {
                 return $"{bytes / (double)MB:N2} MB";
+            }
+
             if (bytes >= KB)
+            {
                 return $"{bytes / (double)KB:N2} KB";
+            }
 
             return $"{bytes} bytes";
         }

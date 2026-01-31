@@ -1,6 +1,6 @@
+using System.Windows;
 using DataTransferApp.Net.Services;
 using DataTransferApp.Net.ViewModels;
-using System.Windows;
 
 namespace DataTransferApp.Net.Views
 {

@@ -7,7 +7,7 @@ using DataTransferApp.Net.ViewModels;
 namespace DataTransferApp.Net.Views
 {
     /// <summary>
-    /// Interaction logic for ChangesWindow.xaml
+    /// Interaction logic for ChangesWindow.xaml.
     /// </summary>
     public partial class ChangesWindow : Window
     {
@@ -20,7 +20,6 @@ namespace DataTransferApp.Net.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-
             // Thickness(0, 0, 0, 5):
             //-------------------------
             // Left: 0 (no margin/padding on the left side)
@@ -39,11 +38,13 @@ namespace DataTransferApp.Net.Views
                         para.Margin = new Thickness(0, 0, 0, 5); // Reduce bottom margin
                         para.LineHeight = 1.2; // Adjust line height
                     }
+
                     // Remove margins for sections (major structural elements like headings) to eliminate extra spacing
                     else if (block is Section section)
                     {
                         section.Margin = new Thickness(0);
                     }
+
                     // Adjust margins for lists (bullet points and numbered lists in markdown) to compact list items
                     else if (block is List list)
                     {

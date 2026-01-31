@@ -7,7 +7,7 @@ namespace DataTransferApp.Net.Views
         public AboutViewWindow(object dataContext)
         {
             InitializeComponent();
-            
+
             DataContext = dataContext;
         }
 

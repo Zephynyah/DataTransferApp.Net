@@ -1,18 +1,19 @@
-using DataTransferApp.Net.Models;
-using DataTransferApp.Net.Services;
-using DataTransferApp.Net.ViewModels;
 using System;
 using System.IO;
 using System.Windows;
+using DataTransferApp.Net.Models;
+using DataTransferApp.Net.Services;
+using DataTransferApp.Net.ViewModels;
 
 namespace DataTransferApp.Net;
 
 /// <summary>
-/// Interaction logic for App.xaml
+/// Interaction logic for App.xaml.
 /// </summary>
 public partial class App : Application
 {
     public static SettingsService? SettingsService { get; private set; }
+
     public static AppSettings? Settings { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
@@ -21,13 +22,13 @@ public partial class App : Application
 
         try
         {
-            #if DEBUG
+#if DEBUG
             // Set debug working directory to project root for easier debugging
             var appDataPath = Path.Combine("appDataPath", "DataTransferApp");
-            #else
+#else
             // Set application data path
             var appDataPath = Path.Combine(  Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"DataTransferApp");
-            #endif
+#endif
 
             // Ensure directory exists
             Directory.CreateDirectory(appDataPath);
@@ -47,7 +48,7 @@ public partial class App : Application
             LoggingService.Info($"DTA: {Settings.DataTransferAgent}");
             LoggingService.Info($"AppData: {appDataPath}");
 
-            #if DEBUG
+#if DEBUG
             // Create main window with ViewModel
             var mainWindow = new Views.MainWindow
             {
@@ -56,7 +57,7 @@ public partial class App : Application
 
             mainWindow.Show();
             Application.Current.MainWindow = mainWindow;
-            #else
+#else
             // Create splash screen
             var splash = new Views.SplashScreenWindow(() =>
             {
@@ -72,7 +73,7 @@ public partial class App : Application
 
             Application.Current.MainWindow = splash;
             splash.Show();
-            #endif
+#endif
         }
         catch (Exception ex)
         {
@@ -103,4 +104,3 @@ public partial class App : Application
         base.OnExit(e);
     }
 }
-

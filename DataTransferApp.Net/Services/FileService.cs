@@ -1,18 +1,19 @@
-using DataTransferApp.Net.Models;
-using DataTransferApp.Net.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Helpers;
+using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
 {
     public class FileService
     {
         private readonly ArchiveService _archiveService;
-        
-        private static readonly string[] ViewableExtensions = {
+
+        private static readonly string[] ViewableExtensions =
+        {
             ".txt", ".log", ".csv", ".xml", ".json", ".ps1", ".psm1", ".psd1",
             ".md", ".html", ".htm", ".css", ".js", ".ini", ".conf", ".config",
             ".sql", ".bat", ".cmd", ".sh", ".py", ".java", ".c", ".cpp", ".h",
@@ -42,7 +43,7 @@ namespace DataTransferApp.Net.Services
                 }
 
                 var directories = Directory.GetDirectories(stagingPath);
-                
+
                 // Get excluded folder names (case-insensitive)
                 // var excludedFolders = App.Settings?.ExcludedFolders?
                 //     .Select(f => f.ToLowerInvariant())
@@ -56,17 +57,17 @@ namespace DataTransferApp.Net.Services
                     try
                     {
                         var folderName = Path.GetFileName(dir);
-                        
+
                         // // Skip if folder is in exclusion list (case-insensitive)
                         // if (excludedFolders.Contains(folderName.ToLowerInvariant()))
-                        
+
                         // Skip if folder matches any exclusion pattern (supports wildcards)
                         if (Helpers.WildcardMatcher.IsMatch(folderName, excludedPatterns))
                         {
                             LoggingService.Info($"Skipping excluded folder: {folderName}");
                             continue;
                         }
-                        
+
                         var folderData = CreateFolderData(dir);
                         folders.Add(folderData);
                     }
@@ -137,8 +138,9 @@ namespace DataTransferApp.Net.Services
                             Size = fileInfo.Length,
                             Modified = fileInfo.LastWriteTime,
                             FullPath = fileInfo.FullName,
-                            RelativePath = file.Replace(folderPath, "").TrimStart(Path.DirectorySeparatorChar),
+                            RelativePath = file.Replace(folderPath, string.Empty).TrimStart(Path.DirectorySeparatorChar),
                             Status = "Ready",
+
                             // IsViewable = IsFileViewable(fileInfo.FullName, ext),
                             IsViewable = IsFileViewable(ext),
                             IsArchive = _archiveService.IsArchive(file)
@@ -170,7 +172,7 @@ namespace DataTransferApp.Net.Services
                 if (fileInfo.Length > maxSize)
                 {
                     var lines = File.ReadLines(filePath).Take(maxLines);
-                    return string.Join(Environment.NewLine, lines) + 
+                    return string.Join(Environment.NewLine, lines) +
                            $"{Environment.NewLine}{Environment.NewLine}[File truncated - showing first {maxLines} lines]";
                 }
 
@@ -186,9 +188,11 @@ namespace DataTransferApp.Net.Services
         private string GetRelativePath(string? directoryPath, string basePath)
         {
             if (string.IsNullOrEmpty(directoryPath))
+            {
                 return "\\";
+            }
 
-            var relativePath = directoryPath.Replace(basePath, "");
+            var relativePath = directoryPath.Replace(basePath, string.Empty);
             return string.IsNullOrEmpty(relativePath) ? "\\" : relativePath.TrimEnd('\\') + "\\";
         }
 
@@ -198,17 +202,22 @@ namespace DataTransferApp.Net.Services
         }
 
         /// <summary>
-        /// Enhanced file viewability check that combines extension filtering with content analysis
+        /// Enhanced file viewability check that combines extension filtering with content analysis.
         /// </summary>
+        /// <returns></returns>
         public bool IsFileViewable(string filePath, string extension)
         {
             // Archives are always "viewable" because we can show their contents
             if (_archiveService.IsArchive(extension))
+            {
                 return true;
+            }
 
             // For known text extensions, verify content is actually text
             if (ViewableExtensions.Contains(extension.ToLower()))
+            {
                 return FileEncodingHelper.IsTextFile(filePath);
+            }
 
             // For unknown extensions, check if file is actually text-based
             return FileEncodingHelper.IsTextFile(filePath);

@@ -12,6 +12,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return !boolValue;
             }
+
             return false;
         }
 
@@ -21,6 +22,7 @@ namespace DataTransferApp.Net.Helpers
             {
                 return !boolValue;
             }
+
             return false;
         }
     }

@@ -7,7 +7,7 @@ using FontAwesome.Sharp;
 namespace DataTransferApp.Net.Helpers
 {
     /// <summary>
-    /// Converter to provide FontAwesome icon based on file type
+    /// Converter to provide FontAwesome icon based on file type.
     /// </summary>
     public class FileToFontAwesomeConverter : IValueConverter
     {

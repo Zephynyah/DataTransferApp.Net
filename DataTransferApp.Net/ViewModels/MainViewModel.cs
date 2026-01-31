@@ -1,9 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DataTransferApp.Net.Helpers;
-using DataTransferApp.Net.Models;
-using DataTransferApp.Net.Services;
-using DataTransferApp.Net.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,12 +5,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DataTransferApp.Net.Helpers;
+using DataTransferApp.Net.Models;
+using DataTransferApp.Net.Services;
+using DataTransferApp.Net.Views;
 
 namespace DataTransferApp.Net.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        private enum DriveAction { Append, Clear, Abort }
+        private enum DriveAction
+        {
+            Append,
+            Clear,
+            Abort
+        }
 
         private readonly FileService _fileService;
         private readonly AuditService _auditService;
@@ -108,7 +113,6 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _appDescription = "Collateral L2H Data Transfer Application";
 
-        
         [ObservableProperty]
         private string _appFooter = $"Data Transfer Application ({VersionHelper.GetVersionWithPrefix()})";
 
@@ -245,7 +249,6 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     LoggingService.Info("Auto-audit on startup not enabled or no folders to audit.");
                 }
-
             }
             catch (Exception ex)
             {
@@ -279,6 +282,7 @@ namespace DataTransferApp.Net.ViewModels
                         {
                             SelectedDrive = drives[0];
                         }
+
                         // Clear selection if selected drive was removed
                         else if (SelectedDrive != null && !drives.Any(d => d.DriveLetter == SelectedDrive.DriveLetter))
                         {
@@ -298,7 +302,10 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanAuditFolder))]
         private async Task AuditFolderAsync()
         {
-            if (SelectedFolder == null) return;
+            if (SelectedFolder == null)
+            {
+                return;
+            }
 
             IsProcessing = true;
             StatusMessage = $"Auditing {SelectedFolder.FolderName}...";
@@ -319,9 +326,15 @@ namespace DataTransferApp.Net.ViewModels
                 // Combine failure reasons
                 var namingReasons = new List<string>();
                 if (result.NameValidation?.IsValid == false)
+                {
                     namingReasons.Add(result.NameValidation.Message);
+                }
+
                 if (result.DatasetValidation?.IsValid == false)
+                {
                     namingReasons.Add(result.DatasetValidation.Message);
+                }
+
                 SelectedFolder.NamingFailureReason = string.Join(". ", namingReasons);
 
                 SelectedFolder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
@@ -333,9 +346,9 @@ namespace DataTransferApp.Net.ViewModels
                 var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
                 var compressedCount = SelectedFolder.Files.Count(f =>
                     compressedExtensions.Contains(f.Extension.ToLower()) ||
-                    f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
-                    f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
-                    f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
+                    f.FileName.ToLower().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tgz", StringComparison.Ordinal) ||
+                    f.FileName.ToLower().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".txz", StringComparison.Ordinal) ||
+                    f.FileName.ToLower().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tbz2", StringComparison.Ordinal));
                 SelectedFolder.CompressedFileCount = compressedCount;
                 SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
@@ -377,9 +390,9 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     var fileName = file.FileName.ToLower();
                     if (compressedExtensions.Contains(file.Extension.ToLower()) ||
-                        fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
-                        fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
-                        fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+                        fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                        fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                        fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
                     {
                         file.IsCompressed = true;
                         if (file.Status == "Ready")
@@ -430,9 +443,15 @@ namespace DataTransferApp.Net.ViewModels
                     // Combine failure reasons
                     var namingReasons = new List<string>();
                     if (result.NameValidation?.IsValid == false)
+                    {
                         namingReasons.Add(result.NameValidation.Message);
+                    }
+
                     if (result.DatasetValidation?.IsValid == false)
+                    {
                         namingReasons.Add(result.DatasetValidation.Message);
+                    }
+
                     folder.NamingFailureReason = string.Join(". ", namingReasons);
 
                     folder.DatasetAuditStatus = result.DatasetValidation?.IsValid == true ? "Passed" : "Failed";
@@ -444,9 +463,9 @@ namespace DataTransferApp.Net.ViewModels
                     var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
                     var compressedCount = folder.Files.Count(f =>
                         compressedExtensions.Contains(f.Extension.ToLower()) ||
-                        f.FileName.ToLower().EndsWith(".tar.gz") || f.FileName.ToLower().EndsWith(".tgz") ||
-                        f.FileName.ToLower().EndsWith(".tar.xz") || f.FileName.ToLower().EndsWith(".txz") ||
-                        f.FileName.ToLower().EndsWith(".tar.bz2") || f.FileName.ToLower().EndsWith(".tbz2"));
+                        f.FileName.ToLower().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tgz", StringComparison.Ordinal) ||
+                        f.FileName.ToLower().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".txz", StringComparison.Ordinal) ||
+                        f.FileName.ToLower().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tbz2", StringComparison.Ordinal));
                     folder.CompressedFileCount = compressedCount;
                     folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
@@ -487,9 +506,9 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         var fileName = file.FileName.ToLower();
                         if (compressedExtensions.Contains(file.Extension.ToLower()) ||
-                            fileName.EndsWith(".tar.gz") || fileName.EndsWith(".tgz") ||
-                            fileName.EndsWith(".tar.xz") || fileName.EndsWith(".txz") ||
-                            fileName.EndsWith(".tar.bz2") || fileName.EndsWith(".tbz2"))
+                            fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
+                            fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
+                            fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
                         {
                             file.IsCompressed = true;
                             if (file.Status == "Ready")
@@ -540,10 +559,13 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Clear drive first
                 await ClearDriveAsync();
-                if (IsProcessing) return; // If clear failed or is still running
+                if (IsProcessing)
+                {
+                    return; // If clear failed or is still running
+                }
             }
-            // If Append, continue with transfer
 
+            // If Append, continue with transfer
             IsProcessing = true;
             var total = passedFolders.Count;
             var completed = 0;
@@ -611,7 +633,10 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanTransferFolder))]
         private async Task TransferFolderAsync()
         {
-            if (SelectedFolder == null || SelectedDrive == null) return;
+            if (SelectedFolder == null || SelectedDrive == null)
+            {
+                return;
+            }
 
             var folderName = SelectedFolder.FolderName; // Store name before folder is removed
 
@@ -625,10 +650,13 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Clear drive first
                 await ClearDriveAsync();
-                if (IsProcessing) return; // If clear failed or is still running
+                if (IsProcessing)
+                {
+                    return; // If clear failed or is still running
+                }
             }
-            // If Append, continue with transfer
 
+            // If Append, continue with transfer
             IsProcessing = true;
             ProgressPercent = 0;
 
@@ -690,7 +718,10 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()
         {
-            if (SelectedFolder == null || SelectedDrive == null) return;
+            if (SelectedFolder == null || SelectedDrive == null)
+            {
+                return;
+            }
 
             var folderName = SelectedFolder.FolderName; // Store name before folder is removed
 
@@ -700,8 +731,10 @@ namespace DataTransferApp.Net.ViewModels
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result != MessageBoxResult.Yes) return;
-
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
 
             // Check drive contents if no transfers yet
             var action = await CheckDriveContentsAsync();
@@ -713,11 +746,13 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Clear drive first
                 await ClearDriveAsync();
-                if (IsProcessing) return; // If clear failed or is still running
+                if (IsProcessing)
+                {
+                    return; // If clear failed or is still running
+                }
             }
+
             // If Append, continue with transfer
-
-
             IsProcessing = true;
             ProgressPercent = 0;
 
@@ -771,13 +806,15 @@ namespace DataTransferApp.Net.ViewModels
             SelectedDrive != null &&
             !IsProcessing;
 
-
-        private bool CanClearDrive() => SelectedDrive != null && !IsProcessing; 
+        private bool CanClearDrive() => SelectedDrive != null && !IsProcessing;
 
         [RelayCommand(CanExecute = nameof(CanClearDrive))]
         private async Task ClearDriveAsync()
         {
-            if (SelectedDrive == null) return;
+            if (SelectedDrive == null)
+            {
+                return;
+            }
 
             var result = MessageBox.Show(
                 $"Are you sure you want to clear all data from {SelectedDrive.DisplayText}?",
@@ -785,7 +822,10 @@ namespace DataTransferApp.Net.ViewModels
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result != MessageBoxResult.Yes) return;
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
 
             IsProcessing = true;
             ProgressPercent = 0;
@@ -822,7 +862,10 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand]
         private void ViewFileContents(FileData? file)
         {
-            if (file == null) return;
+            if (file == null)
+            {
+                return;
+            }
 
             try
             {
@@ -888,7 +931,6 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var aboutWindow = new AboutViewWindow(this);
                 aboutWindow.ShowDialog();
-
             }
             catch (Exception ex)
             {
@@ -1005,7 +1047,10 @@ namespace DataTransferApp.Net.ViewModels
 
         private async Task<DriveAction> CheckDriveContentsAsync()
         {
-            if (SelectedDrive == null) return DriveAction.Append;
+            if (SelectedDrive == null)
+            {
+                return DriveAction.Append;
+            }
 
             if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
             {
@@ -1045,9 +1090,14 @@ namespace DataTransferApp.Net.ViewModels
             const long MB = 1024 * 1024;
 
             if (bytes >= GB)
+            {
                 return $"{bytes / (double)GB:N2} GB";
+            }
+
             if (bytes >= MB)
+            {
                 return $"{bytes / (double)MB:N2} MB";
+            }
 
             return $"{bytes / 1024.0:N2} KB";
         }

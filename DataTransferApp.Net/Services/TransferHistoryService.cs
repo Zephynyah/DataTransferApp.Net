@@ -1,10 +1,10 @@
-using DataTransferApp.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
 {
@@ -24,6 +24,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets all transfers from the database.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<List<TransferLog>> GetAllTransfersAsync()
         {
             return await Task.Run(() => _databaseService.GetAllTransfers());
@@ -32,6 +33,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Searches for transfers matching the search term.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<List<TransferLog>> SearchTransfersAsync(string searchTerm)
         {
             return await Task.Run(() => _databaseService.SearchTransfers(searchTerm));
@@ -40,6 +42,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets a transfer by its ID.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<TransferLog?> GetTransferByIdAsync(string id)
         {
             return await Task.Run(() =>
@@ -59,6 +62,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets transfers within a date range.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<List<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await Task.Run(() => _databaseService.GetTransfersByDateRange(startDate, endDate));
@@ -67,6 +71,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the most recent transfers.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<List<TransferLog>> GetRecentTransfersAsync(int count = 10)
         {
             return await Task.Run(() => _databaseService.GetRecentTransfers(count));
@@ -75,6 +80,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets transfer statistics.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<Dictionary<string, int>> GetTransferStatisticsAsync()
         {
             return await Task.Run(() => _databaseService.GetTransferStatistics());
@@ -83,6 +89,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Deletes a transfer by its ID.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<bool> DeleteTransferAsync(string id)
         {
             return await Task.Run(() =>
@@ -102,6 +109,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Migrates existing JSON transfer logs to the database.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<int> MigrateJsonLogsToDatabase(string transferRecordsDirectory)
         {
             var migratedCount = 0;
@@ -161,6 +169,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the database file path.
         /// </summary>
+        /// <returns></returns>
         public string GetDatabasePath()
         {
             return _databaseService.GetDatabasePath();
@@ -169,6 +178,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Cleans up old transfer records from database.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<int> CleanupOldRecordsAsync(int retentionDays)
         {
             return await Task.Run(() => _databaseService.CleanupOldTransfers(retentionDays));
@@ -177,6 +187,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Optimizes the database.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task OptimizeDatabaseAsync()
         {
             await Task.Run(() => _databaseService.OptimizeDatabase());

@@ -1,5 +1,3 @@
-using DataTransferApp.Net.Models;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Models;
+using OfficeOpenXml;
 
 namespace DataTransferApp.Net.Services
 {
@@ -21,7 +21,7 @@ namespace DataTransferApp.Net.Services
         public ComplianceRecordService(AppSettings settings)
         {
             _settings = settings;
-            
+
             // Set EPPlus license (required for non-commercial use)
             ExcelPackage.License.SetNonCommercialPersonal("DataTransferApp.Net");
         }
@@ -29,6 +29,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates a compliance record for a transfer.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<string?> GenerateComplianceRecordAsync(TransferLog transfer)
         {
             if (!_settings.GenerateComplianceRecords)
@@ -39,7 +40,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var outputPath = GetComplianceRecordPath(transfer);
-                
+
                 if (_settings.ComplianceRecordType.Equals("Standard", StringComparison.OrdinalIgnoreCase))
                 {
                     await GenerateStandardRecordAsync(transfer, outputPath);
@@ -62,6 +63,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates compliance records for multiple transfers.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<List<string>> GenerateBatchComplianceRecordsAsync(IEnumerable<TransferLog> transfers)
         {
             var generatedFiles = new List<string>();
@@ -81,6 +83,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Generates a consolidated compliance report for multiple transfers.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<string?> GenerateConsolidatedReportAsync(
             IEnumerable<TransferLog> transfers,
             DateTime startDate,
@@ -269,6 +272,7 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = EscapeCsv(file.FileName);
                 var fileFormat = file.Extension.TrimStart('.');
+
                 // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
@@ -296,6 +300,7 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = $"\"{EscapeCsv(file.FileName)}\"";
                 var fileFormat = file.Extension.TrimStart('.');
+
                 // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
@@ -330,6 +335,7 @@ namespace DataTransferApp.Net.Services
                 var date = transfer.TransferInfo.Date.ToString("yyyyMMdd");
                 var fileName = file.FileName;
                 var fileFormat = file.Extension.TrimStart('.');
+
                 // var originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}";
                 var originator = $"{transfer.TransferInfo.FolderName}";
                 var dta = transfer.TransferInfo.DTA;
@@ -366,6 +372,7 @@ namespace DataTransferApp.Net.Services
                 Date = transfer.TransferInfo.Date.ToString("yyyyMMdd"),
                 File = file.FileName,
                 FileFormat = file.Extension.TrimStart('.'),
+
                 // Originator = $"{transfer.TransferInfo.Employee}_{transfer.TransferInfo.Date:yyyyMMdd}_{transfer.TransferInfo.Origin}",
                 Originator = $"{transfer.TransferInfo.FolderName}",
                 DTA = transfer.TransferInfo.DTA,
@@ -444,7 +451,7 @@ namespace DataTransferApp.Net.Services
             AddInfoRow(sheet, ref row, "Total Size", FormatFileSize(transfer.Summary.TotalSize));
             AddInfoRow(sheet, ref row, "Transfer Started", transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss"));
             AddInfoRow(sheet, ref row, "Transfer Completed", transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss"));
-            AddInfoRow(sheet, ref row, "Duration (seconds)", 
+            AddInfoRow(sheet, ref row, "Duration (seconds)",
                 (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2"));
             AddInfoRow(sheet, ref row, "Status", transfer.Summary.Status);
 
@@ -595,6 +602,7 @@ namespace DataTransferApp.Net.Services
                 sheet.Cells[row, i + 1].Value = headers[i];
                 sheet.Cells[row, i + 1].Style.Font.Bold = true;
             }
+
             row++;
 
             // Data
@@ -639,7 +647,7 @@ namespace DataTransferApp.Net.Services
             Directory.CreateDirectory(directory);
 
             var timestamp = transfer.TransferInfo.Date.ToString("yyyyMMdd_HHmmss");
-            
+
             string extension;
             if (_settings.ComplianceRecordFormat.Equals("Excel", StringComparison.OrdinalIgnoreCase))
             {
@@ -703,6 +711,7 @@ namespace DataTransferApp.Net.Services
                     }
                 }
             }
+
             return "Unknown";
         }
 
@@ -712,6 +721,7 @@ namespace DataTransferApp.Net.Services
             {
                 return value.Replace("\"", "\"\"");
             }
+
             return value;
         }
 
@@ -722,11 +732,19 @@ namespace DataTransferApp.Net.Services
             const long KB = 1024;
 
             if (bytes >= GB)
+            {
                 return $"{bytes / (double)GB:N2} GB";
+            }
+
             if (bytes >= MB)
+            {
                 return $"{bytes / (double)MB:N2} MB";
+            }
+
             if (bytes >= KB)
+            {
                 return $"{bytes / (double)KB:N2} KB";
+            }
 
             return $"{bytes} bytes";
         }

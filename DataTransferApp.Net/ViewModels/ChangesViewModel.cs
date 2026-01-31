@@ -1,19 +1,23 @@
 using System.ComponentModel;
-using System.IO;
-using Markdig;
-using DataTransferApp.Net.Helpers;
 using System.Diagnostics;
-
+using System.IO;
+using DataTransferApp.Net.Helpers;
+using Markdig;
 
 namespace DataTransferApp.Net.ViewModels
 {
     public class ChangesViewModel : ViewModelBase
     {
         private string _markdownContent = string.Empty;
+
         public string MarkdownContent
         {
             get => _markdownContent;
-            set { _markdownContent = value; OnPropertyChanged(nameof(MarkdownContent)); }
+            set
+            {
+                _markdownContent = value;
+                OnPropertyChanged(nameof(MarkdownContent));
+            }
         }
 
         public MarkdownPipeline Pipeline { get; }

@@ -1,4 +1,3 @@
-using DataTransferApp.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
 {
@@ -263,6 +263,7 @@ namespace DataTransferApp.Net.Services
             catch (Exception ex)
             {
                 LoggingService.Error($"Failed to move folder to retention: {folderName}", ex);
+
                 // Don't throw - transfer was successful, this is just cleanup
             }
         }
@@ -321,7 +322,6 @@ namespace DataTransferApp.Net.Services
         {
             await Task.Run(() =>
             {
-
 #if DEBUG
                 LoggingService.Info("DEBUG MODE: Retention cleanup simulated - no folders will be deleted.");
 
@@ -584,7 +584,7 @@ namespace DataTransferApp.Net.Services
                 using (var stream = File.OpenRead(filePath))
                 {
                     var hash = await Task.Run(() => hashAlgorithm.ComputeHash(stream), cancellationToken);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                    return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
                 }
             }
             catch (Exception ex)
@@ -601,11 +601,19 @@ namespace DataTransferApp.Net.Services
             const long KB = 1024;
 
             if (bytes >= GB)
+            {
                 return $"{bytes / (double)GB:N2} GB";
+            }
+
             if (bytes >= MB)
+            {
                 return $"{bytes / (double)MB:N2} MB";
+            }
+
             if (bytes >= KB)
+            {
                 return $"{bytes / (double)KB:N2} KB";
+            }
 
             return $"{bytes} bytes";
         }
@@ -614,18 +622,26 @@ namespace DataTransferApp.Net.Services
     public class TransferProgress
     {
         public string CurrentFile { get; set; } = string.Empty;
+
         public int CompletedFiles { get; set; }
+
         public int TotalFiles { get; set; }
+
         public int PercentComplete { get; set; }
     }
 
     public class TransferResult
     {
         public bool Success { get; set; }
+
         public string? ErrorMessage { get; set; }
+
         public DateTime StartTime { get; set; }
+
         public DateTime EndTime { get; set; }
+
         public string? DestinationPath { get; set; }
+
         public TransferLog? TransferLog { get; set; }
     }
 }
