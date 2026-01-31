@@ -9,6 +9,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DataTransferApp.Net.Services;
+using DataTransferApp.Net.ViewModels;
 
 namespace DataTransferApp.Net.Views;
 
@@ -19,6 +21,7 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
+        LoggingService.Info("MainWindow constructor called");
         InitializeComponent();
         this.Loaded += MainWindow_Loaded;
 
@@ -41,11 +44,25 @@ public partial class MainWindow : Window
         }
     }
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        LoggingService.Info("MainWindow_Loaded fired");
+        LoggingService.Info($"DataContext type: {DataContext?.GetType().Name}");
+
         // Find the storyboard resource and begin the animation
         // Storyboard storyboard = (Storyboard)FindResource("RotateStoryboard");
         // storyboard.Begin();
+
+        // Run retention cleanup after window is loaded
+        if (DataContext is MainViewModel vm)
+        {
+            LoggingService.Info("Calling RunRetentionCleanupAsync");
+            await vm.RunRetentionCleanupAsync();
+        }
+        else
+        {
+            LoggingService.Info("DataContext is not MainViewModel");
+        }
     }
 
     private void UpdateFullScreenUI(bool isFullScreen)

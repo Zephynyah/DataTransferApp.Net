@@ -59,6 +59,11 @@ namespace DataTransferApp.Net.ViewModels
         private int _readyFolders = 0;
 
         [ObservableProperty]
+        private bool _isRetentionCleanupRunning = false;
+
+        public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
+
+        [ObservableProperty]
         private int _cautionFolders = 0;
 
         [ObservableProperty]
@@ -98,11 +103,14 @@ namespace DataTransferApp.Net.ViewModels
         private string _appTitle = "Data Transfer Application";
 
         [ObservableProperty]
+        private string _retentionStatus = "Idle";
+
+        [ObservableProperty]
         private string _appDescription = "Collateral L2H Data Transfer Application";
 
         
         [ObservableProperty]
-        private string _appFooter = $"© 2026 Data Transfer Application ({VersionHelper.GetVersionWithPrefix()}). All rights reserved.";
+        private string _appFooter = $"Data Transfer Application ({VersionHelper.GetVersionWithPrefix()})";
 
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
@@ -142,6 +150,9 @@ namespace DataTransferApp.Net.ViewModels
 
             // Initial drive detection
             _ = DetectDrives();
+
+            // Initialize commands
+            RunRetentionCleanupAsyncCommand = new AsyncRelayCommand(RunRetentionCleanupAsync, () => !IsRetentionCleanupRunning);
         }
 
         partial void OnSelectedFolderChanged(FolderData? oldValue, FolderData? newValue)
@@ -932,6 +943,28 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
+        public async Task RunRetentionCleanupAsync()
+        {
+            LoggingService.Info("RunRetentionCleanupAsync command triggered");
+            RetentionStatus = "Running...";
+            IsRetentionCleanupRunning = true;
+            try
+            {
+                await _transferService.CleanupRetentionAsync();
+                RetentionStatus = "Idle";
+            }
+            catch (Exception ex)
+            {
+                RetentionStatus = "Error";
+                ShowSnackbar($"Retention cleanup failed: {ex.Message}", "error");
+                LoggingService.Error("Retention cleanup failed", ex);
+            }
+            finally
+            {
+                IsRetentionCleanupRunning = false;
+            }
+        }
+
         private void UpdateStatistics()
         {
             TotalFolders = FolderList.Count;
@@ -1015,6 +1048,11 @@ namespace DataTransferApp.Net.ViewModels
                 return $"{bytes / (double)MB:N2} MB";
 
             return $"{bytes / 1024.0:N2} KB";
+        }
+
+        partial void OnIsRetentionCleanupRunningChanged(bool value)
+        {
+            RunRetentionCleanupAsyncCommand?.NotifyCanExecuteChanged();
         }
     }
 }

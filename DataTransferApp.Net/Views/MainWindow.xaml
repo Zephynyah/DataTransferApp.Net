@@ -17,6 +17,7 @@
     <Window.Resources>
         <!-- Converters -->
         <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
+        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <helpers:StatusToColorConverter x:Key="StatusToColorConverter"/>
         <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
@@ -127,6 +128,11 @@
                             <MenuItem Header="What's New" Command="{Binding OpenChangesCommand}">
                                 <MenuItem.Icon>
                                     <fa:IconBlock Icon="Newspaper" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Run Retention Cleanup" Command="{Binding RunRetentionCleanupAsyncCommand}" IsEnabled="{Binding IsRetentionCleanupRunning, Converter={StaticResource InverseBoolConverter}}">
+                                <MenuItem.Icon>
+                                    <fa:IconBlock Icon="Trash" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
@@ -824,7 +830,6 @@
         
          <!-- Status Bar -->
         <Border Grid.Row="3" Background="{StaticResource SecondaryBrush}" Padding="10,5">
-            <!-- Main Content -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -832,6 +837,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                    <TextBlock Foreground="{StaticResource BackgroundBrush}" Text="Retention Cleanup:" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding RetentionStatus}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Margin="0,0,0,0"/>
+                    <ProgressBar IsIndeterminate="True" Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Width="120" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+                </StackPanel>
                 <TextBlock Text="{Binding AppFooter}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="2"/>
             </Grid>
         </Border>

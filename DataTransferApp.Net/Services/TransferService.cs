@@ -255,6 +255,9 @@ namespace DataTransferApp.Net.Services
                 // Move folder to retention
                 await Task.Run(() => Directory.Move(sourcePath, retentionPath));
 
+                // Preserve original creation time
+                Directory.SetCreationTime(retentionPath, Directory.GetCreationTime(sourcePath));
+
                 LoggingService.Info($"Moved to retention: {folderName} -> {retentionPath}");
             }
             catch (Exception ex)
@@ -320,6 +323,7 @@ namespace DataTransferApp.Net.Services
             {
                 try
                 {
+                    LoggingService.Info("Starting retention cleanup");
                     if (!Directory.Exists(_settings.RetentionDirectory))
                     {
                         LoggingService.Info("Retention directory does not exist, skipping cleanup");
@@ -328,18 +332,23 @@ namespace DataTransferApp.Net.Services
 
                     var cutoffDate = DateTime.Now.AddDays(-_settings.RetentionDays);
                     var folders = Directory.GetDirectories(_settings.RetentionDirectory);
+                    LoggingService.Info($"Found {folders.Length} folders in retention directory");
                     var deletedCount = 0;
 
                     foreach (var folder in folders)
                     {
                         var folderInfo = new DirectoryInfo(folder);
-                        if (folderInfo.CreationTime < cutoffDate)
+                        bool shouldDelete = _settings.RetentionDays == 0 || folderInfo.CreationTime < cutoffDate;
+                        LoggingService.Info($"Checking retention folder: {folderInfo.Name}, Created: {folderInfo.CreationTime:yyyy-MM-dd HH:mm:ss}, RetentionDays: {_settings.RetentionDays}, Cutoff: {cutoffDate:yyyy-MM-dd HH:mm:ss}, ShouldDelete: {shouldDelete}");
+                        if (shouldDelete)
                         {
+                            LoggingService.Info($"Attempting to delete retention folder: {folderInfo.Name}");
                             try
                             {
                                 Directory.Delete(folder, true);
                                 deletedCount++;
-                                LoggingService.Info($"Deleted old retention folder: {folderInfo.Name} (Created: {folderInfo.CreationTime:yyyy-MM-dd})");
+                                string reason = _settings.RetentionDays == 0 ? "Zero retention days" : $"Older than {_settings.RetentionDays} days (Created: {folderInfo.CreationTime:yyyy-MM-dd})";
+                                LoggingService.Info($"Deleted retention folder: {folderInfo.Name} ({reason})");
                             }
                             catch (Exception ex)
                             {
