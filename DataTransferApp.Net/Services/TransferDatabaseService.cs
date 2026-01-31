@@ -88,6 +88,22 @@ namespace DataTransferApp.Net.Services
                 "TransferHistory.db");
         }
 
+        private void InitializeDatabase()
+        {
+            try
+            {
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+                collection.EnsureIndex(x => x.TransferInfo.Date);
+                collection.EnsureIndex(x => x.TransferInfo.FolderName);
+                collection.EnsureIndex(x => x.TransferInfo.DTA);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Error initializing database indexes", ex);
+            }
+        }
+
         /// <summary>
         /// Adds a new transfer record to the database.
         /// </summary>
@@ -489,25 +505,6 @@ namespace DataTransferApp.Net.Services
         {
             // No persistent connection to dispose with connection-per-operation pattern
             // No unmanaged resources to release
-        }
-
-        private void InitializeDatabase()
-        {
-            try
-            {
-                using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
-
-                // Create indexes for better query performance
-                collection.EnsureIndex(x => x.TransferInfo.Date);
-                collection.EnsureIndex(x => x.TransferInfo.FolderName);
-                collection.EnsureIndex(x => x.TransferInfo.Employee);
-                collection.EnsureIndex(x => x.TransferInfo.DTA);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Error("Error initializing database indexes", ex);
-            }
         }
     }
 }
