@@ -615,30 +615,4 @@ namespace DataTransferApp.Net.Services
             }
         }
     }
-
-    public class TransferProgress
-    {
-        public string CurrentFile { get; set; } = string.Empty;
-
-        public int CompletedFiles { get; set; }
-
-        public int TotalFiles { get; set; }
-
-        public int PercentComplete { get; set; }
-    }
-
-    public class TransferResult
-    {
-        public bool Success { get; set; }
-
-        public string? ErrorMessage { get; set; }
-
-        public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
-
-        public string? DestinationPath { get; set; }
-
-        public TransferLog? TransferLog { get; set; }
-    }
 }

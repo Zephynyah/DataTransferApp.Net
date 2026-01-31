@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace DataTransferApp.Net.Helpers
 {
     /// <summary>
-    /// Converts audit status strings to colored brushes.
+    /// Converts audit status strings to colored brushes for icons/foreground.
     /// </summary>
     public class AuditStatusToBrushIconConverter : IValueConverter
     {
@@ -22,13 +22,10 @@ namespace DataTransferApp.Net.Helpers
 
                     case "failed":
                     case "fail":
-                        // return new SolidColorBrush(Color.FromRgb(231, 76, 60)); // Red
-                        return new SolidColorBrush(Color.FromRgb(236, 125, 125)); // Red
+                        return new SolidColorBrush(Color.FromRgb(231, 76, 60)); // Red
 
                     case "caution":
                     case "warning":
-                        // return new SolidColorBrush(Color.FromRgb(241, 196, 15)); // Yellow
-                        // return new SolidColorBrush(Color.FromRgb(243, 156, 18)); // Orange
                         return new SolidColorBrush(Color.FromRgb(255, 131, 3)); // Orange
 
                     case "not audited":

@@ -81,43 +81,16 @@ namespace DataTransferApp.Net.Helpers
 
         private static bool IsTextBuffer(byte[] buffer, int length)
         {
-            // Check for BOM (Byte Order Mark)
-            if (length >= 3 && buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
-            {
-                // UTF-8 BOM, skip it
-                buffer = buffer.Skip(3).ToArray();
-                length -= 3;
-            }
-            else if (length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE)
-            {
-                // UTF-16 LE BOM, likely binary
-                return false;
-            }
-            else if (length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF)
-            {
-                // UTF-16 BE BOM, likely binary
-                return false;
-            }
+            byte[] processedBuffer = HandleBOM(buffer, ref length);
 
             // Count null bytes (common in binary files)
-            int nullByteCount = 0;
-            int totalChars = 0;
+            int nullByteCount = CountNullBytes(processedBuffer, length);
+            int totalChars = length;
 
-            for (int i = 0; i < length; i++)
+            // Check for non-ASCII control characters
+            if (ContainsInvalidControlChars(processedBuffer, length))
             {
-                if (buffer[i] == 0)
-                {
-                    nullByteCount++;
-                }
-
-                // Check for non-ASCII characters
-                // Control characters in extended range
-                if (buffer[i] > 127 && buffer[i] < 160)
-                {
-                    return false;
-                }
-
-                totalChars++;
+                return false;
             }
 
             // If more than 10% null bytes, likely binary
@@ -126,6 +99,62 @@ namespace DataTransferApp.Net.Helpers
                 return false;
             }
 
+            // Validate UTF-8 decoding
+            return IsValidUTF8Text(processedBuffer, length);
+        }
+
+        private static byte[] HandleBOM(byte[] buffer, ref int length)
+        {
+            // Check for BOM (Byte Order Mark)
+            if (length >= 3 && buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+            {
+                // UTF-8 BOM, skip it
+                return buffer.Skip(3).ToArray();
+            }
+            else if (length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE)
+            {
+                // UTF-16 LE BOM, likely binary
+                length = 0;
+                return Array.Empty<byte>();
+            }
+            else if (length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF)
+            {
+                // UTF-16 BE BOM, likely binary
+                length = 0;
+                return Array.Empty<byte>();
+            }
+
+            return buffer;
+        }
+
+        private static int CountNullBytes(byte[] buffer, int length)
+        {
+            int nullByteCount = 0;
+            for (int i = 0; i < length; i++)
+            {
+                if (buffer[i] == 0)
+                {
+                    nullByteCount++;
+                }
+            }
+            return nullByteCount;
+        }
+
+        private static bool ContainsInvalidControlChars(byte[] buffer, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                // Control characters in extended range
+                if (buffer[i] > 127 && buffer[i] < 160)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool IsValidUTF8Text(byte[] buffer, int length)
+        {
             // Try to decode as UTF-8 and validate
             try
             {

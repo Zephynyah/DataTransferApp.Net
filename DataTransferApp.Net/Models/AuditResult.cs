@@ -23,46 +23,4 @@ namespace DataTransferApp.Net.Models
 
         public IList<string> Issues { get; set; } = new List<string>();
     }
-
-    public class NameValidation
-    {
-        public bool IsValid { get; set; }
-
-        public string? EmployeeId { get; set; }
-
-        public string? Date { get; set; }
-
-        public string? Dataset { get; set; }
-
-        public string? Sequence { get; set; }
-
-        public string Message { get; set; } = string.Empty;
-    }
-
-    public class ExtensionValidation
-    {
-        public bool IsValid { get; set; }
-
-        public IList<FileViolation> Violations { get; set; } = new List<FileViolation>();
-
-        public string Message { get; set; } = string.Empty;
-    }
-
-    public class FileViolation
-    {
-        public string File { get; set; } = string.Empty;
-
-        public string Extension { get; set; } = string.Empty;
-
-        public string RelativePath { get; set; } = string.Empty;
-    }
-
-    public class DatasetValidation
-    {
-        public bool IsValid { get; set; }
-
-        public string? Dataset { get; set; }
-
-        public string Message { get; set; } = string.Empty;
-    }
 }
