@@ -20,6 +20,14 @@ namespace DataTransferApp.Net.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+
+            // Thickness(0, 0, 0, 5):
+            //-------------------------
+            // Left: 0 (no margin/padding on the left side)
+            // Top: 0 (no margin/padding on the top side)
+            // Right: 0 (no margin/padding on the right side)
+            // Bottom: 5 (5 units of margin/padding on the bottom side)
+            //-------------------------
             // Customize the FlowDocument styles to reduce vertical gaps
             if (MarkdownViewer.Document != null)
             {
