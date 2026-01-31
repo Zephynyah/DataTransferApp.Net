@@ -331,20 +331,12 @@
                                         <!-- Folder Info -->
                                         <StackPanel Grid.Column="1">
                                             <!-- Folder Name -->
-                                            <TextBlock Text="{Binding FolderName}" 
-                                                       TextWrapping="Wrap"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="12"/>
+                                            <TextBlock Text="{Binding FolderName}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="12"/>
                                             
                                             <!-- Stats: Size | File Count -->
                                             <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                                                <TextBlock Text="{Binding SizeFormatted}" 
-                                                           FontSize="10"
-                                                           Foreground="#7f8c8d"/>
-                                                <TextBlock Text=" | " 
-                                                           FontSize="10"
-                                                           Foreground="#bdc3c7"
-                                                           Margin="3,0"/>
+                                                <TextBlock Text="{Binding SizeFormatted}" FontSize="10" Foreground="#7f8c8d"/>
+                                                <TextBlock Text=" | " FontSize="10" Foreground="#bdc3c7" Margin="3,0"/>
                                                 <TextBlock FontSize="10" Foreground="#7f8c8d">
                                                     <Run Text="{Binding FileCount, Mode=OneWay}"/>
                                                     <Run Text=" files"/>
@@ -353,9 +345,7 @@
                                         </StackPanel>
                                         
                                         <!-- Information Icon with Details (shown when audited and has issues) -->
-                                        <Border Grid.Column="2" 
-                                                VerticalAlignment="Center"
-                                                Margin="5,0,0,0">
+                                        <Border Grid.Column="2" VerticalAlignment="Center" Margin="5,0,0,0">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -389,9 +379,7 @@
                                                             <!-- Blacklist Status -->
                                                             <StackPanel Orientation="Horizontal" Margin="0,2">
                                                                 <TextBlock Text="• Blacklist: " FontSize="11"/>
-                                                                <TextBlock Text="{Binding BlacklistAuditStatus}" 
-                                                                           FontSize="11"
-                                                                           FontWeight="SemiBold"
+                                                                <TextBlock Text="{Binding BlacklistAuditStatus}" FontSize="11" FontWeight="SemiBold"
                                                                            Foreground="{Binding BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
                                                                 <TextBlock Text="{Binding BlacklistViolationCount, StringFormat=' ({0} violations)'}" 
                                                                            FontSize="11"
@@ -412,9 +400,7 @@
                                                             <!-- Compressed Status -->
                                                             <StackPanel Orientation="Horizontal" Margin="0,2">
                                                                 <TextBlock Text="• Compressed: " FontSize="11"/>
-                                                                <TextBlock Text="{Binding CompressedAuditStatus}" 
-                                                                           FontSize="11"
-                                                                           FontWeight="SemiBold"
+                                                                <TextBlock Text="{Binding CompressedAuditStatus}" FontSize="11" FontWeight="SemiBold"
                                                                            Foreground="{Binding CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
                                                                 <TextBlock Text="{Binding CompressedFileCount, StringFormat=' ({0} files)'}" 
                                                                            FontSize="11"
@@ -446,7 +432,6 @@
                     </ListBox>
                     
                     <StackPanel Grid.Row="2" Margin="10,5">
-
                         <Button Style="{StaticResource ButtonStyle}"  Command="{Binding AuditAllFoldersCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:IconBlock Icon="Search" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
@@ -668,31 +653,40 @@
                                             </Style.Triggers>
                                         </Style>
                                     </StackPanel.Style>
-                                    <fa:IconBlock Icon="Share" Foreground="{StaticResource DangerBrush}" Margin="0,0,5,0" FontSize="14"/>
+                                    <fa:IconBlock Icon="ReplyAll" Foreground="{StaticResource DangerBrush}" Margin="0,0,5,0" FontSize="14">
+                                        <fa:IconBlock.RenderTransform>
+                                            <RotateTransform Angle="180" />
+                                        </fa:IconBlock.RenderTransform>
+                                        <fa:IconBlock.RenderTransformOrigin>0.5,0.5</fa:IconBlock.RenderTransformOrigin>
+                                    </fa:IconBlock>
                                     <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" Text="{Binding SelectedFolder.NamingFailureReason}" />
                                 </StackPanel>
                             </StackPanel>
                             
                         </StackPanel>
-
-                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
-                            <!-- Destination Label -->
-                            <TextBlock Text="Destination:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <!-- Select Drive -->
-                            <ComboBox ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" Margin="0,0,10,0"/>
-                            <!-- Refresh Drives -->
-                            <Button  Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0,0,10,0" ToolTip="Detect Drives">
-                                 <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
-                            </Button>
-                            <!-- Clear Drive -->
-                            <Button Command="{Binding ClearDriveCommand}" Style="{StaticResource DangerButtonStyle}" Padding="10,5" Margin="0,0,10,0">
-                                <StackPanel Orientation="Horizontal">
-                                     <fa:IconBlock Icon="Trash" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
-                                    <TextBlock Text="Clear Drive" VerticalAlignment="Center"/>
+                
+                        <Border Grid.Column="1" Grid.Row="0" x:Name="Border" Background="White" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,0" Border.CornerRadius="3" Padding="0" Height="30" VerticalAlignment="Center">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- 1. Left IconBlock -->
+                                <fa:IconBlock Grid.Column="0" Icon="Hdd" Foreground="{StaticResource AnimationBlueBrush}" FontSize="14" VerticalAlignment="Center" Margin="5,0" ToolTip="Select External Drive" />
+                                <!-- 2. Center ComboBox -->
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" BorderThickness="1,0,1,0" />
+                                <!-- 2. Right Buttons -->
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="5,0">
+                                    <Button Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,10,0" ToolTip="Detect Drives" Background="Transparent" BorderBrush="Transparent">
+                                        <fa:IconBlock Icon="Refresh" Foreground="{StaticResource AnimationBlueBrush}" Margin="0" FontSize="14"/>
+                                    </Button>
+                                    <Button  Command="{Binding ClearDriveCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,5,0" ToolTip="Clear Drive Contents" Background="Transparent" BorderBrush="Transparent">
+                                        <fa:IconBlock Icon="Trash" Foreground="{StaticResource DangerBrush}" Margin="0" FontSize="14" />
+                                    </Button>
                                 </StackPanel>
-                            </Button>
-                        </StackPanel>
-
+                            </Grid>
+                        </Border>
                                                 
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right" Height="40">
                             <Button Command="{Binding AuditFolderCommand}" Style="{StaticResource ButtonStyle}">

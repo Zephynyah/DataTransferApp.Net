@@ -1,6 +1,33 @@
-# Code Quality Check Script for Data Transfer Application
-# This script runs various code quality tools similar to Rubocop
-
+<#
+.SYNOPSIS
+    Runs code quality checks and formatting for the Data Transfer Application.
+.DESCRIPTION
+    This PowerShell script performs code quality checks using Roslyn analyzers,
+    formats code with dotnet-format, and runs tests if available.
+.PARAMETER Fix
+    If specified, the script will attempt to fix formatting issues.
+.PARAMETER Build
+    If specified, the script will build the project to trigger analyzers.
+.PARAMETER All
+    If specified, the script will run all checks including formatting and building.
+.EXAMPLE
+    .\check-quality.ps1 -Fix
+    Runs the code quality checks and attempts to fix formatting issues.
+.EXAMPLE
+    .\check-quality.ps1 -Build
+    Runs the code quality checks and builds the project to trigger analyzers.
+.EXAMPLE
+    .\check-quality.ps1 -All
+    Runs all code quality checks including formatting and building.
+.NOTES
+    This script requires the .NET SDK to be installed.
+    It uses Roslyn analyzers, dotnet-format, and dotnet test.
+    Ensure you have the necessary permissions to run these commands.
+.INPUTS
+    None.
+.OUTPUTS
+    Console output indicating the results of the code quality checks.
+#>
 param(
     [switch]$Fix,
     [switch]$Build,
