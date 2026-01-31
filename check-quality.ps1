@@ -37,8 +37,8 @@ dotnet build /p:RunAnalyzersDuringBuild=true --verbosity quiet
 
 # Check for warnings/errors
 $buildOutput = dotnet build 2>&1
-$warnings = $buildOutput | Select-String "warning"
-$errors = $buildOutput | Select-String "error"
+$warnings = $buildOutput | Select-String ":\s*warning\s" | Where-Object { $_ -notmatch "^\s*\d+\s+Warning\(s\)$" }
+$errors = $buildOutput | Select-String ":\s*error\s" | Where-Object { $_ -notmatch "^\s*\d+\s+Error\(s\)$" }
 
 Write-Host "`n📊 Analysis Results:" -ForegroundColor Cyan
 Write-Host "Warnings found: $($warnings.Count)" -ForegroundColor Yellow
@@ -56,7 +56,7 @@ if ($errors.Count -gt 0) {
 }
 
 # Run tests if they exist
-if (Test-Path "tests" -or (Get-ChildItem -Filter "*Test*.csproj" -Recurse)) {
+if ((Test-Path "tests") -or (Get-ChildItem -Filter "*Test*.csproj" -Recurse)) {
     Write-Host "`n🧪 Running tests..." -ForegroundColor Yellow
     dotnet test --verbosity quiet
     if ($LASTEXITCODE -ne 0) {
