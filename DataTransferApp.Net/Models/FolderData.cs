@@ -18,8 +18,6 @@ namespace DataTransferApp.Net.Models
         [NotifyPropertyChangedFor(nameof(SizeFormatted))]
         private long _totalSize;
 
-        public string SizeFormatted => FormatFileSize(TotalSize);
-
         [ObservableProperty]
         private int _fileCount;
 
@@ -61,8 +59,6 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private string _datasetFailureReason = string.Empty;
 
-        public bool CanTransfer => AuditStatus == "Passed";
-
         [ObservableProperty]
         private string? _employeeId;
 
@@ -74,6 +70,10 @@ namespace DataTransferApp.Net.Models
 
         [ObservableProperty]
         private string? _sequence;
+
+        public string SizeFormatted => FormatFileSize(TotalSize);
+
+        public bool CanTransfer => AuditStatus == "Passed";
 
         private static string FormatFileSize(long bytes)
         {

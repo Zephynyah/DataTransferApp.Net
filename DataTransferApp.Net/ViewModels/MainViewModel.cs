@@ -30,6 +30,7 @@ namespace DataTransferApp.Net.ViewModels
         private readonly ArchiveService _archiveService;
         private readonly AppSettings _settings;
         private readonly DispatcherTimer _driveDetectionTimer;
+        private readonly DispatcherTimer _timeUpdateTimer;
 
         [ObservableProperty]
         private ObservableCollection<FolderData> _folderList = new();
@@ -117,8 +118,6 @@ namespace DataTransferApp.Net.ViewModels
 
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
-
-        private readonly DispatcherTimer _timeUpdateTimer;
 
         public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
 

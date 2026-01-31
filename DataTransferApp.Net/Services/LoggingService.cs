@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using Serilog;
 using Serilog.Events;
 
@@ -7,12 +8,12 @@ namespace DataTransferApp.Net.Services
 {
     public static class LoggingService
     {
+        private static readonly Lock _lock = new();
         private static ILogger? _logger;
-        private static readonly object _lock = new();
 
         public static void Initialize(string logFilePath, LogEventLevel minLevel = LogEventLevel.Information)
         {
-            lock (_lock)
+            using (_lock.EnterScope())
             {
                 if (_logger != null)
                 {
@@ -71,7 +72,7 @@ namespace DataTransferApp.Net.Services
             _logger?.Information("✓ {Message}", message);
         }
 
-        public static void Dispose()
+        public static void Shutdown()
         {
             (_logger as IDisposable)?.Dispose();
         }

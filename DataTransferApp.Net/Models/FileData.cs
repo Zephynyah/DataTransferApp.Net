@@ -17,8 +17,6 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private long _size;
 
-        public string SizeFormatted => FormatFileSize(Size);
-
         [ObservableProperty]
         private DateTime _modified;
 
@@ -45,6 +43,8 @@ namespace DataTransferApp.Net.Models
 
         [ObservableProperty]
         private bool _isBlacklisted;
+
+        public string SizeFormatted => FormatFileSize(Size);
 
         private static string FormatFileSize(long bytes)
         {

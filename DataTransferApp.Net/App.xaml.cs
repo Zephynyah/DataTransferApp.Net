@@ -39,7 +39,7 @@ public partial class App : Application
         {
             LoggingService.Info("=== Application Exiting ===");
             SettingsService?.Dispose();
-            LoggingService.Dispose();
+            LoggingService.Shutdown();
         }
         catch (Exception ex)
         {
