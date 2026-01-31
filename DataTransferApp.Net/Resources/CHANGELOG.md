@@ -16,16 +16,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Animation support with Loaded event in MainWindow
 - Moved CHANGELOG.md to Resources directory for better organization
 - Updated project file to reference local CHANGELOG.md
+- Background retention cleanup functionality with UI status indicators
+- PluralizationConverter for proper singular/plural text display (e.g., "1 Day" vs "7 Days")
+- InverseBooleanToVisibilityConverter for improved UI binding logic
+- Debug logging for retention cleanup operations and simulation
 
 ### Changed
 - Refactored ViewModels to inherit from ViewModelBase for consistency
 - Enhanced UI styles and layouts in various windows (HelpWindow, SettingsWindow, etc.)
 - Improved icon usage with FontAwesome instead of Path elements
+- Enhanced ChangesWindow with improved MarkdownViewer styling and margins
+- Better FlowDocument styling in ChangesWindow for improved layout
+- Updated retention cleanup UI with animated status indicators and proper pluralization
 
 ### Fixed
 - HelpWindow icon path for correct display
 - File viewability check in FileService
 - Various UI alignment and styling issues
+- Retention cleanup status display and animation timing
 
 ## [1.3.2] - 2024-10-XX
 
