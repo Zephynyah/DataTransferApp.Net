@@ -20,14 +20,14 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        public MarkdownPipeline Pipeline { get; }
-
         public ChangesViewModel()
         {
             // Enable advanced extensions for GitHub-style rendering
             Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             LoadReadme();
         }
+
+        public MarkdownPipeline Pipeline { get; }
 
         private void LoadReadme()
         {

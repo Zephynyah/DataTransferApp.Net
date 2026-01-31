@@ -7,13 +7,13 @@ namespace DataTransferApp.Net.Models
 {
     public class AppSettings
     {
+        public static string ApplicationVersion => VersionHelper.GetVersion();
+
         [BsonId]
         public int Id { get; set; } = 1;
 
         // Application Settings
         public string DataTransferAgent { get; set; } = Environment.UserName;
-
-        public static string ApplicationVersion => VersionHelper.GetVersion();
 
         // Directory Paths
         public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";

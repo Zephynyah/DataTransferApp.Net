@@ -24,16 +24,16 @@ public partial class SplashScreenWindow : Window
         _timer.Tick += Timer_Tick;
     }
 
+    protected override void OnContentRendered(EventArgs e)
+    {
+        base.OnContentRendered(e);
+        _timer.Start();
+    }
+
     private void Timer_Tick(object? sender, EventArgs e)
     {
         _timer.Stop();
         _onSplashComplete();
         Close();
-    }
-
-    protected override void OnContentRendered(EventArgs e)
-    {
-        base.OnContentRendered(e);
-        _timer.Start();
     }
 }

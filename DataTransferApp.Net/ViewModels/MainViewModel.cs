@@ -67,8 +67,6 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private bool _isRetentionCleanupRunning = false;
 
-        public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
-
         [ObservableProperty]
         private int _cautionFolders = 0;
 
@@ -120,9 +118,11 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
 
-        public AppSettings Settings => _settings;
-
         private readonly DispatcherTimer _timeUpdateTimer;
+
+        public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
+
+        public AppSettings Settings => _settings;
 
         public MainViewModel(AppSettings settings)
         {
@@ -160,6 +160,51 @@ namespace DataTransferApp.Net.ViewModels
 
             // Initialize commands
             RunRetentionCleanupAsyncCommand = new AsyncRelayCommand(RunRetentionCleanupAsync, () => !IsRetentionCleanupRunning);
+        }
+
+        public async Task RunRetentionCleanupAsync()
+        {
+            LoggingService.Info("RunRetentionCleanupAsync command triggered");
+            RetentionStatus = "Running...";
+            IsRetentionCleanupRunning = true;
+            try
+            {
+                await _transferService.CleanupRetentionAsync();
+                RetentionStatus = "Idle";
+            }
+            catch (Exception ex)
+            {
+                RetentionStatus = "Error";
+                ShowSnackbar($"Retention cleanup failed: {ex.Message}", "error");
+                LoggingService.Error("Retention cleanup failed", ex);
+            }
+            finally
+            {
+                IsRetentionCleanupRunning = false;
+            }
+        }
+
+        partial void OnIsRetentionCleanupRunningChanged(bool value)
+        {
+            RunRetentionCleanupAsyncCommand?.NotifyCanExecuteChanged();
+        }
+
+        private static string FormatFileSize(long bytes)
+        {
+            const long GB = 1024 * 1024 * 1024;
+            const long MB = 1024 * 1024;
+
+            if (bytes >= GB)
+            {
+                return $"{bytes / (double)GB:N2} GB";
+            }
+
+            if (bytes >= MB)
+            {
+                return $"{bytes / (double)MB:N2} MB";
+            }
+
+            return $"{bytes / 1024.0:N2} KB";
         }
 
         partial void OnSelectedFolderChanged(FolderData? oldValue, FolderData? newValue)
@@ -878,7 +923,7 @@ namespace DataTransferApp.Net.ViewModels
                 }
                 else if (file.IsViewable)
                 {
-                    var content = _fileService.ReadTextFile(file.FullPath);
+                    var content = FileService.ReadTextFile(file.FullPath);
                     var window = new FileViewerWindow(file.FileName, file.FullPath, content);
                     window.ShowDialog();
                 }
@@ -988,38 +1033,6 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        public async Task RunRetentionCleanupAsync()
-        {
-            LoggingService.Info("RunRetentionCleanupAsync command triggered");
-            RetentionStatus = "Running...";
-            IsRetentionCleanupRunning = true;
-            try
-            {
-                await _transferService.CleanupRetentionAsync();
-                RetentionStatus = "Idle";
-            }
-            catch (Exception ex)
-            {
-                RetentionStatus = "Error";
-                ShowSnackbar($"Retention cleanup failed: {ex.Message}", "error");
-                LoggingService.Error("Retention cleanup failed", ex);
-            }
-            finally
-            {
-                IsRetentionCleanupRunning = false;
-            }
-        }
-
-        private void UpdateStatistics()
-        {
-            TotalFolders = FolderList.Count;
-            ReadyFolders = FolderList.Count(f => f.AuditStatus == "Passed");
-            CautionFolders = FolderList.Count(f => f.AuditStatus == "Caution");
-            FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
-            TransferredCount = TransferredList.Count;
-            TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
-        }
-
         private void AutoSelectFirstFolder()
         {
             // Auto-select first folder if available
@@ -1053,9 +1066,9 @@ namespace DataTransferApp.Net.ViewModels
                 return DriveAction.Append;
             }
 
-            if (TransferredCount == 0 && _transferService.DriveHasContents(SelectedDrive.DriveLetter))
+            if (TransferredCount == 0 && TransferService.DriveHasContents(SelectedDrive.DriveLetter))
             {
-                var driveCount = _transferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
+                var driveCount = TransferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
                 var messageResult = MessageBox.Show(
                     $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
                     "Do you want to APPEND to existing contents?\n\n" +
@@ -1085,27 +1098,14 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private static string FormatFileSize(long bytes)
+        private void UpdateStatistics()
         {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            return $"{bytes / 1024.0:N2} KB";
-        }
-
-        partial void OnIsRetentionCleanupRunningChanged(bool value)
-        {
-            RunRetentionCleanupAsyncCommand?.NotifyCanExecuteChanged();
+            TotalFolders = FolderList.Count;
+            ReadyFolders = FolderList.Count(f => f.AuditStatus == "Passed");
+            CautionFolders = FolderList.Count(f => f.AuditStatus == "Caution");
+            FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
+            TransferredCount = TransferredList.Count;
+            TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
         }
     }
 }

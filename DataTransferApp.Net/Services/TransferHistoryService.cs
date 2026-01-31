@@ -81,7 +81,7 @@ namespace DataTransferApp.Net.Services
         /// Gets transfer statistics.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Dictionary<string, int>> GetTransferStatisticsAsync()
+        public async Task<IDictionary<string, int>> GetTransferStatisticsAsync()
         {
             return await Task.Run(() => _databaseService.GetTransferStatistics());
         }

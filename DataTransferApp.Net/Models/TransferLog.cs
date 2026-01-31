@@ -11,7 +11,7 @@ namespace DataTransferApp.Net.Models
 
         public TransferInfo TransferInfo { get; set; } = new();
 
-        public List<TransferredFile> Files { get; set; } = new();
+        public IList<TransferredFile> Files { get; set; } = new List<TransferredFile>();
 
         public TransferSummary Summary { get; set; } = new();
     }

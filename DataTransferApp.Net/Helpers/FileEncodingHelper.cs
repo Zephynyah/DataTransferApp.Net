@@ -55,6 +55,30 @@ namespace DataTransferApp.Net.Helpers
             }
         }
 
+        /// <summary>
+        /// Legacy method - kept for compatibility but IsTextFile is preferred.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsAsciiFileDotNet6(string filePath)
+        {
+            try
+            {
+                // Only check small files
+                var fileInfo = new FileInfo(filePath);
+                if (fileInfo.Length > MAXFILESIZE || fileInfo.Length == 0)
+                {
+                    return false;
+                }
+
+                string content = File.ReadAllText(filePath, Encoding.UTF8);
+                return content.All(char.IsAscii);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static bool IsTextBuffer(byte[] buffer, int length)
         {
             // Check for BOM (Byte Order Mark)
@@ -116,30 +140,6 @@ namespace DataTransferApp.Net.Helpers
 
                 // Allow up to 5% control characters (for binary safety)
                 return controlCharCount <= sampleLength * 0.05;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Legacy method - kept for compatibility but IsTextFile is preferred.
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsAsciiFileDotNet6(string filePath)
-        {
-            try
-            {
-                // Only check small files
-                var fileInfo = new FileInfo(filePath);
-                if (fileInfo.Length > MAXFILESIZE || fileInfo.Length == 0)
-                {
-                    return false;
-                }
-
-                string content = File.ReadAllText(filePath, Encoding.UTF8);
-                return content.All(char.IsAscii);
             }
             catch
             {

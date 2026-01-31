@@ -13,14 +13,12 @@ namespace DataTransferApp.Net.Services
     public class TransferService
     {
         private readonly AppSettings _settings;
-        private readonly ArchiveService _archiveService;
         private readonly TransferDatabaseService? _databaseService;
         private readonly ComplianceRecordService? _complianceService;
 
         public TransferService(AppSettings settings)
         {
             _settings = settings;
-            _archiveService = new ArchiveService();
 
             // Initialize database service
             try
@@ -68,72 +66,6 @@ namespace DataTransferApp.Net.Services
             {
                 return 0;
             }
-        }
-
-        private string ResolveDestinationPath(string destinationDrive, string folderName)
-        {
-            var basePath = Path.Combine(destinationDrive, folderName);
-
-            if (!Directory.Exists(basePath))
-            {
-                return basePath;
-            }
-
-            // Folder exists - check if contents are different
-            if (_settings.AutoHandleConflicts)
-            {
-                if (_settings.ConflictResolution == "Skip")
-                {
-                    LoggingService.Info($"Skipping existing folder: {folderName}");
-                    return basePath; // Return existing path, will skip in transfer
-                }
-                else if (_settings.ConflictResolution == "Overwrite")
-                {
-                    LoggingService.Info($"Overwriting existing folder: {folderName}");
-                    return basePath;
-                }
-                else // AppendSequence
-                {
-                    return GetSequencedPath(destinationDrive, folderName);
-                }
-            }
-
-            return basePath;
-        }
-
-        private static string GetSequencedPath(string destinationDrive, string folderName)
-        {
-            // Check if folder name already has a sequence (e.g., X50135_20260116_JTH_2)
-            var parts = folderName.Split('_');
-            string baseFolderName;
-            int currentSequence = 0;
-
-            // If there are 4 parts and the last part is numeric, it's already sequenced
-            if (parts.Length == 4 && int.TryParse(parts[3], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int existingSeq))
-            {
-                // Remove the existing sequence number
-                baseFolderName = string.Join("_", parts.Take(3));
-                currentSequence = existingSeq;
-            }
-            else
-            {
-                baseFolderName = folderName;
-                currentSequence = 0;
-            }
-
-            // Start from the next sequence number
-            var sequence = currentSequence + 1;
-            var newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
-
-            // Keep incrementing until we find a non-existing path
-            while (Directory.Exists(newPath))
-            {
-                sequence++;
-                newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
-            }
-
-            LoggingService.Info($"Conflict resolved: {folderName} -> {Path.GetFileName(newPath)}");
-            return newPath;
         }
 
         public async Task<TransferResult> TransferFolderAsync(
@@ -199,79 +131,6 @@ namespace DataTransferApp.Net.Services
             }
 
             return result;
-        }
-
-        private async Task TransferFilesAsync(IEnumerable<FileData> files, string destinationPath, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
-        {
-            var fileList = files.ToList();
-            var totalFiles = fileList.Count;
-            var completedFiles = 0;
-
-            foreach (var file in fileList)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Copy file
-                var destFilePath = Path.Combine(destinationPath, file.RelativePath);
-                var destFileDir = Path.GetDirectoryName(destFilePath);
-
-                if (!string.IsNullOrEmpty(destFileDir))
-                {
-                    Directory.CreateDirectory(destFileDir);
-                }
-
-                await Task.Run(() => File.Copy(file.FullPath, destFilePath, true), cancellationToken);
-
-                // Calculate hash if enabled
-                if (_settings.CalculateFileHashes)
-                {
-                    file.Hash = await CalculateFileHashAsync(file.FullPath, cancellationToken);
-                }
-
-                file.Status = "Transferred";
-                completedFiles++;
-
-                // Report progress
-                progress?.Report(new TransferProgress
-                {
-                    CurrentFile = file.FileName,
-                    CompletedFiles = completedFiles,
-                    TotalFiles = totalFiles,
-                    PercentComplete = (int)((completedFiles / (double)totalFiles) * 100)
-                });
-            }
-        }
-
-        private async Task MoveToRetentionAsync(string sourcePath, string folderName)
-        {
-            try
-            {
-                var retentionPath = Path.Combine(_settings.RetentionDirectory, folderName);
-
-                // Create retention directory if it doesn't exist
-                Directory.CreateDirectory(_settings.RetentionDirectory);
-
-                // Handle existing folder in retention - delete old one and replace
-                if (Directory.Exists(retentionPath))
-                {
-                    Directory.Delete(retentionPath, true);
-                    LoggingService.Info($"Replaced existing retention folder: {folderName}");
-                }
-
-                // Move folder to retention
-                await Task.Run(() => Directory.Move(sourcePath, retentionPath));
-
-                // Preserve original creation time
-                Directory.SetCreationTime(retentionPath, Directory.GetCreationTime(sourcePath));
-
-                LoggingService.Info($"Moved to retention: {folderName} -> {retentionPath}");
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Error($"Failed to move folder to retention: {folderName}", ex);
-
-                // Don't throw - transfer was successful, this is just cleanup
-            }
         }
 
         public IList<RemovableDrive> GetRemovableDrives()
@@ -345,41 +204,33 @@ namespace DataTransferApp.Net.Services
                         return;
                     }
 
-                    var cutoffDate = DateTime.Now.AddDays(-_settings.RetentionDays);
-                    var folders = Directory.GetDirectories(_settings.RetentionDirectory);
-                    LoggingService.Info($"Found {folders.Length} folders in retention directory");
-                    var deletedCount = 0;
+                    var retentionDir = new DirectoryInfo(_settings.RetentionDirectory);
+                    var folders = retentionDir.GetDirectories()
+                        .OrderBy(d => d.CreationTime)
+                        .ToList();
 
-                    foreach (var folder in folders)
+                    LoggingService.Info($"Found {folders.Count} folders in retention directory");
+
+                    var foldersToDelete = folders
+                        .Take(folders.Count - _settings.RetentionCount)
+                        .ToList();
+
+                    LoggingService.Info($"Will delete {foldersToDelete.Count} old folders (keeping {_settings.RetentionCount})");
+
+                    foreach (var folder in foldersToDelete)
                     {
-                        var folderInfo = new DirectoryInfo(folder);
-                        bool shouldDelete = _settings.RetentionDays == 0 || folderInfo.CreationTime < cutoffDate;
-                        LoggingService.Info($"Checking retention folder: {folderInfo.Name}, Created: {folderInfo.CreationTime:yyyy-MM-dd HH:mm:ss}, RetentionDays: {_settings.RetentionDays}, Cutoff: {cutoffDate:yyyy-MM-dd HH:mm:ss}, ShouldDelete: {shouldDelete}");
-                        if (shouldDelete)
+                        try
                         {
-                            LoggingService.Info($"Attempting to delete retention folder: {folderInfo.Name}");
-                            try
-                            {
-                                Directory.Delete(folder, true);
-                                deletedCount++;
-                                string reason = _settings.RetentionDays == 0 ? "Zero retention days" : $"Older than {_settings.RetentionDays} days (Created: {folderInfo.CreationTime:yyyy-MM-dd})";
-                                LoggingService.Info($"Deleted retention folder: {folderInfo.Name} ({reason})");
-                            }
-                            catch (Exception ex)
-                            {
-                                LoggingService.Error($"Failed to delete retention folder: {folderInfo.Name}", ex);
-                            }
+                            LoggingService.Info($"Deleting retention folder: {folder.Name}");
+                            folder.Delete(true); // Delete recursively
+                        }
+                        catch (Exception ex)
+                        {
+                            LoggingService.Error($"Failed to delete retention folder: {folder.Name}", ex);
                         }
                     }
 
-                    if (deletedCount > 0)
-                    {
-                        LoggingService.Success($"Retention cleanup completed: {deletedCount} folder(s) removed");
-                    }
-                    else
-                    {
-                        LoggingService.Info("Retention cleanup completed: No folders to remove");
-                    }
+                    LoggingService.Info("Retention cleanup completed");
                 }
                 catch (Exception ex)
                 {
@@ -502,6 +353,169 @@ namespace DataTransferApp.Net.Services
             });
         }
 
+        private static string GetSequencedPath(string destinationDrive, string folderName)
+        {
+            // Check if folder name already has a sequence (e.g., X50135_20260116_JTH_2)
+            var parts = folderName.Split('_');
+            string baseFolderName;
+            int currentSequence = 0;
+
+            // If there are 4 parts and the last part is numeric, it's already sequenced
+            if (parts.Length == 4 && int.TryParse(parts[3], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int existingSeq))
+            {
+                // Remove the existing sequence number
+                baseFolderName = string.Join("_", parts.Take(3));
+                currentSequence = existingSeq;
+            }
+            else
+            {
+                baseFolderName = folderName;
+                currentSequence = 0;
+            }
+
+            // Start from the next sequence number
+            var sequence = currentSequence + 1;
+            var newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
+
+            // Keep incrementing until we find a non-existing path
+            while (Directory.Exists(newPath))
+            {
+                sequence++;
+                newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
+            }
+
+            LoggingService.Info($"Conflict resolved: {folderName} -> {Path.GetFileName(newPath)}");
+            return newPath;
+        }
+
+        private static string FormatFileSize(long bytes)
+        {
+            const long GB = 1024 * 1024 * 1024;
+            const long MB = 1024 * 1024;
+            const long KB = 1024;
+
+            if (bytes >= GB)
+            {
+                return $"{bytes / (double)GB:N2} GB";
+            }
+
+            if (bytes >= MB)
+            {
+                return $"{bytes / (double)MB:N2} MB";
+            }
+
+            if (bytes >= KB)
+            {
+                return $"{bytes / (double)KB:N2} KB";
+            }
+
+            return $"{bytes} bytes";
+        }
+
+        private async Task TransferFilesAsync(IEnumerable<FileData> files, string destinationPath, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
+        {
+            var fileList = files.ToList();
+            var totalFiles = fileList.Count;
+            var completedFiles = 0;
+
+            foreach (var file in fileList)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Copy file
+                var destFilePath = Path.Combine(destinationPath, file.RelativePath);
+                var destFileDir = Path.GetDirectoryName(destFilePath);
+
+                if (!string.IsNullOrEmpty(destFileDir))
+                {
+                    Directory.CreateDirectory(destFileDir);
+                }
+
+                await Task.Run(() => File.Copy(file.FullPath, destFilePath, true), cancellationToken);
+
+                // Calculate hash if enabled
+                if (_settings.CalculateFileHashes)
+                {
+                    file.Hash = await CalculateFileHashAsync(file.FullPath, cancellationToken);
+                }
+
+                file.Status = "Transferred";
+                completedFiles++;
+
+                // Report progress
+                progress?.Report(new TransferProgress
+                {
+                    CurrentFile = file.FileName,
+                    CompletedFiles = completedFiles,
+                    TotalFiles = totalFiles,
+                    PercentComplete = (int)((completedFiles / (double)totalFiles) * 100)
+                });
+            }
+        }
+
+        private async Task MoveToRetentionAsync(string sourcePath, string folderName)
+        {
+            try
+            {
+                var retentionPath = Path.Combine(_settings.RetentionDirectory, folderName);
+
+                // Create retention directory if it doesn't exist
+                Directory.CreateDirectory(_settings.RetentionDirectory);
+
+                // Handle existing folder in retention - delete old one and replace
+                if (Directory.Exists(retentionPath))
+                {
+                    Directory.Delete(retentionPath, true);
+                    LoggingService.Info($"Replaced existing retention folder: {folderName}");
+                }
+
+                // Move folder to retention
+                await Task.Run(() => Directory.Move(sourcePath, retentionPath));
+
+                // Preserve original creation time
+                Directory.SetCreationTime(retentionPath, Directory.GetCreationTime(sourcePath));
+
+                LoggingService.Info($"Moved to retention: {folderName} -> {retentionPath}");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error($"Failed to move folder to retention: {folderName}", ex);
+
+                // Don't throw - transfer was successful, this is just cleanup
+            }
+        }
+
+        private string ResolveDestinationPath(string destinationDrive, string folderName)
+        {
+            var basePath = Path.Combine(destinationDrive, folderName);
+
+            if (!Directory.Exists(basePath))
+            {
+                return basePath;
+            }
+
+            // Folder exists - check if contents are different
+            if (_settings.AutoHandleConflicts)
+            {
+                if (_settings.ConflictResolution == "Skip")
+                {
+                    LoggingService.Info($"Skipping existing folder: {folderName}");
+                    return basePath; // Return existing path, will skip in transfer
+                }
+                else if (_settings.ConflictResolution == "Overwrite")
+                {
+                    LoggingService.Info($"Overwriting existing folder: {folderName}");
+                    return basePath;
+                }
+                else // AppendSequence
+                {
+                    return GetSequencedPath(destinationDrive, folderName);
+                }
+            }
+
+            return basePath;
+        }
+
         private TransferLog CreateTransferLog(FolderData folder, string destinationPath)
         {
             return new TransferLog
@@ -597,30 +611,6 @@ namespace DataTransferApp.Net.Services
                 LoggingService.Error($"Error calculating hash for: {filePath}", ex);
                 return "error";
             }
-        }
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
         }
     }
 

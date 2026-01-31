@@ -7,14 +7,11 @@ namespace DataTransferApp.Net.Services
 {
     public class SettingsService : IDisposable
     {
-        private readonly string _dbPath;
         private readonly LiteDatabase _db;
         private readonly ILiteCollection<AppSettings> _collection;
 
         public SettingsService(string dbPath)
         {
-            _dbPath = dbPath;
-
             // Ensure directory exists
             var dbDir = Path.GetDirectoryName(dbPath);
             if (!string.IsNullOrEmpty(dbDir) && !Directory.Exists(dbDir))
@@ -30,17 +27,6 @@ namespace DataTransferApp.Net.Services
 
             // Ensure default settings exist
             EnsureDefaultSettings();
-        }
-
-        private void EnsureDefaultSettings()
-        {
-            var settings = _collection.FindById(1);
-            if (settings == null)
-            {
-                settings = new AppSettings();
-                _collection.Insert(settings);
-                LoggingService.Info("Default settings created");
-            }
         }
 
         public AppSettings GetSettings()
@@ -67,6 +53,17 @@ namespace DataTransferApp.Net.Services
         public void Dispose()
         {
             _db?.Dispose();
+        }
+
+        private void EnsureDefaultSettings()
+        {
+            var settings = _collection.FindById(1);
+            if (settings == null)
+            {
+                settings = new AppSettings();
+                _collection.Insert(settings);
+                LoggingService.Info("Default settings created");
+            }
         }
     }
 }

@@ -44,33 +44,6 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
-        LoggingService.Info("MainWindow_Loaded fired");
-        LoggingService.Info($"DataContext type: {DataContext?.GetType().Name}");
-
-        // Find the storyboard resource and begin the animation
-        // Storyboard storyboard = (Storyboard)FindResource("RotateStoryboard");
-        // storyboard.Begin();
-
-        // Run retention cleanup after window is loaded
-        if (DataContext is MainViewModel vm)
-        {
-            LoggingService.Info("Calling RunRetentionCleanupAsync");
-            await vm.RunRetentionCleanupAsync();
-        }
-        else
-        {
-            LoggingService.Info("DataContext is not MainViewModel");
-        }
-    }
-
-    private void UpdateFullScreenUI(bool isFullScreen)
-    {
-        // Update exit button visibility
-        ExitButton.Tag = isFullScreen;
-    }
-
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
@@ -91,6 +64,29 @@ public partial class MainWindow : Window
                 UpdateFullScreenUI(true);
             }
         }
+    }
+
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        LoggingService.Info("MainWindow_Loaded fired");
+        LoggingService.Info($"DataContext type: {DataContext?.GetType().Name}");
+
+        // Run retention cleanup after window is loaded
+        if (DataContext is MainViewModel vm)
+        {
+            LoggingService.Info("Calling RunRetentionCleanupAsync");
+            await vm.RunRetentionCleanupAsync();
+        }
+        else
+        {
+            LoggingService.Info("DataContext is not MainViewModel");
+        }
+    }
+
+    private void UpdateFullScreenUI(bool isFullScreen)
+    {
+        // Update exit button visibility
+        ExitButton.Tag = isFullScreen;
     }
 
     private void ExitButton_Click(object sender, RoutedEventArgs e)

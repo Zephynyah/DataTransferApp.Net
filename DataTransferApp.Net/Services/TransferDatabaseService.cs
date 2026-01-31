@@ -15,50 +15,7 @@ namespace DataTransferApp.Net.Services
     /// </summary>
     public class TransferDatabaseService : IDisposable
     {
-        private readonly string _databasePath;
-        private readonly string _connectionString;
-
-        public TransferDatabaseService(string? databasePath = null)
-        {
-            // Determine database path
-            _databasePath = ResolveDatabasePath(databasePath);
-
-            // Ensure directory exists
-            var directory = Path.GetDirectoryName(_databasePath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            // Configure connection string with Shared mode to allow multiple concurrent accesses
-            _connectionString = $"Filename={_databasePath};Mode=Shared";
-
-            // Initialize indexes on first run
-            InitializeDatabase();
-
-            LoggingService.Info($"Transfer database initialized: {_databasePath}");
-        }
-
-        private void InitializeDatabase()
-        {
-            try
-            {
-                using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
-
-                // Create indexes for better query performance
-                collection.EnsureIndex(x => x.TransferInfo.Date);
-                collection.EnsureIndex(x => x.TransferInfo.FolderName);
-                collection.EnsureIndex(x => x.TransferInfo.Employee);
-                collection.EnsureIndex(x => x.TransferInfo.DTA);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Error("Error initializing database indexes", ex);
-            }
-        }
-
-        private string ResolveDatabasePath(string? customPath)
+        private static string ResolveDatabasePath(string? customPath)
         {
             if (!string.IsNullOrWhiteSpace(customPath))
             {
@@ -105,6 +62,30 @@ namespace DataTransferApp.Net.Services
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "DataTransferApp",
                 "TransferHistory.db");
+        }
+
+        private readonly string _databasePath;
+        private readonly string _connectionString;
+
+        public TransferDatabaseService(string? databasePath = null)
+        {
+            // Determine database path
+            _databasePath = ResolveDatabasePath(databasePath);
+
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(_databasePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Configure connection string with Shared mode to allow multiple concurrent accesses
+            _connectionString = $"Filename={_databasePath};Mode=Shared";
+
+            // Initialize indexes on first run
+            InitializeDatabase();
+
+            LoggingService.Info($"Transfer database initialized: {_databasePath}");
         }
 
         /// <summary>
@@ -317,7 +298,7 @@ namespace DataTransferApp.Net.Services
         /// Retrieves transfers by Data Transfer Agent.
         /// </summary>
         /// <returns></returns>
-        public List<TransferLog> GetTransfersByDTA(string dta)
+        public IList<TransferLog> GetTransfersByDTA(string dta)
         {
             try
             {
@@ -338,7 +319,7 @@ namespace DataTransferApp.Net.Services
         /// Gets transfer statistics.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, int> GetTransferStatistics()
+        public IDictionary<string, int> GetTransferStatistics()
         {
             try
             {
@@ -516,6 +497,25 @@ namespace DataTransferApp.Net.Services
         {
             // No persistent connection to dispose with connection-per-operation pattern
             // No unmanaged resources to release
+        }
+
+        private void InitializeDatabase()
+        {
+            try
+            {
+                using var db = new LiteDatabase(_connectionString);
+                var collection = db.GetCollection<TransferLog>("transfers");
+
+                // Create indexes for better query performance
+                collection.EnsureIndex(x => x.TransferInfo.Date);
+                collection.EnsureIndex(x => x.TransferInfo.FolderName);
+                collection.EnsureIndex(x => x.TransferInfo.Employee);
+                collection.EnsureIndex(x => x.TransferInfo.DTA);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("Error initializing database indexes", ex);
+            }
         }
     }
 }

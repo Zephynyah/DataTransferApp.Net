@@ -10,8 +10,6 @@ namespace DataTransferApp.Net.Services
 {
     public class FileService
     {
-        private readonly ArchiveService _archiveService;
-
         private static readonly string[] ViewableExtensions =
         {
             ".txt", ".log", ".csv", ".xml", ".json", ".ps1", ".psm1", ".psd1",
@@ -22,7 +20,51 @@ namespace DataTransferApp.Net.Services
 
         public FileService()
         {
-            _archiveService = new ArchiveService();
+        }
+
+        public static string ReadTextFile(string filePath, int maxLines = 50000)
+        {
+            try
+            {
+                var fileInfo = new FileInfo(filePath);
+                const long maxSize = 5 * 1024 * 1024; // 5MB
+
+                if (fileInfo.Length > maxSize)
+                {
+                    var lines = File.ReadLines(filePath).Take(maxLines);
+                    return string.Join(Environment.NewLine, lines) +
+                           $"{Environment.NewLine}{Environment.NewLine}[File truncated - showing first {maxLines} lines]";
+                }
+
+                return File.ReadAllText(filePath);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error($"Error reading file: {filePath}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Enhanced file viewability check that combines extension filtering with content analysis.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsFileViewable(string filePath, string extension)
+        {
+            // Archives are always "viewable" because we can show their contents
+            if (ArchiveService.IsArchive(extension))
+            {
+                return true;
+            }
+
+            // For known text extensions, verify content is actually text
+            if (ViewableExtensions.Contains(extension.ToLowerInvariant()))
+            {
+                return FileEncodingHelper.IsTextFile(filePath);
+            }
+
+            // For unknown extensions, check if file is actually text-based
+            return FileEncodingHelper.IsTextFile(filePath);
         }
 
         public async Task<IList<FolderData>> ScanStagingDirectoryAsync(string stagingPath)
@@ -43,11 +85,6 @@ namespace DataTransferApp.Net.Services
                 }
 
                 var directories = Directory.GetDirectories(stagingPath);
-
-                // Get excluded folder names (case-insensitive)
-                // var excludedFolders = App.Settings?.ExcludedFolders?
-                //     .Select(f => f.ToLowerInvariant())
-                //     .ToHashSet() ?? new HashSet<string>();
 
                 // Get excluded folder patterns from settings
                 var excludedPatterns = App.Settings?.ExcludedFolders ?? new List<string>();
@@ -115,7 +152,7 @@ namespace DataTransferApp.Net.Services
             return folderData;
         }
 
-        public List<FileData> GetFolderFiles(string folderPath)
+        public IList<FileData> GetFolderFiles(string folderPath)
         {
             var fileDataList = new List<FileData>();
 
@@ -142,8 +179,8 @@ namespace DataTransferApp.Net.Services
                             Status = "Ready",
 
                             // IsViewable = IsFileViewable(fileInfo.FullName, ext),
-                            IsViewable = IsFileViewable(ext),
-                            IsArchive = _archiveService.IsArchive(file)
+                            IsViewable = FileService.IsFileViewable(ext),
+                            IsArchive = ArchiveService.IsArchive(file)
                         };
 
                         fileDataList.Add(fileData);
@@ -162,29 +199,6 @@ namespace DataTransferApp.Net.Services
             return fileDataList;
         }
 
-        public static string ReadTextFile(string filePath, int maxLines = 50000)
-        {
-            try
-            {
-                var fileInfo = new FileInfo(filePath);
-                const long maxSize = 5 * 1024 * 1024; // 5MB
-
-                if (fileInfo.Length > maxSize)
-                {
-                    var lines = File.ReadLines(filePath).Take(maxLines);
-                    return string.Join(Environment.NewLine, lines) +
-                           $"{Environment.NewLine}{Environment.NewLine}[File truncated - showing first {maxLines} lines]";
-                }
-
-                return File.ReadAllText(filePath);
-            }
-            catch (Exception ex)
-            {
-                LoggingService.Error($"Error reading file: {filePath}", ex);
-                throw;
-            }
-        }
-
         private static string GetRelativePath(string? directoryPath, string basePath)
         {
             if (string.IsNullOrEmpty(directoryPath))
@@ -196,31 +210,9 @@ namespace DataTransferApp.Net.Services
             return string.IsNullOrEmpty(relativePath) ? "\\" : relativePath.TrimEnd('\\') + "\\";
         }
 
-        private bool IsFileViewable(string extension)
+        private static bool IsFileViewable(string extension)
         {
-            return ViewableExtensions.Contains(extension.ToLowerInvariant()) || _archiveService.IsArchive(extension);
-        }
-
-        /// <summary>
-        /// Enhanced file viewability check that combines extension filtering with content analysis.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsFileViewable(string filePath, string extension)
-        {
-            // Archives are always "viewable" because we can show their contents
-            if (_archiveService.IsArchive(extension))
-            {
-                return true;
-            }
-
-            // For known text extensions, verify content is actually text
-            if (ViewableExtensions.Contains(extension.ToLowerInvariant()))
-            {
-                return FileEncodingHelper.IsTextFile(filePath);
-            }
-
-            // For unknown extensions, check if file is actually text-based
-            return FileEncodingHelper.IsTextFile(filePath);
+            return ViewableExtensions.Contains(extension.ToLowerInvariant()) || ArchiveService.IsArchive(extension);
         }
     }
 }

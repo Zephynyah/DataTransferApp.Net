@@ -31,7 +31,7 @@ namespace DataTransferApp.Net.Services
             return ArchiveExtensions.Contains(ext);
         }
 
-        public List<ArchiveEntry> GetArchiveContents(string archiveFilePath)
+        public IList<ArchiveEntry> GetArchiveContents(string archiveFilePath)
         {
             var entries = new List<ArchiveEntry>();
 

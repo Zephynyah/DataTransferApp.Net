@@ -4,8 +4,6 @@ namespace DataTransferApp.Net.Views
 {
     public partial class InputDialog : Window
     {
-        public string InputText => InputTextBox.Text;
-
         public InputDialog(string title, string prompt)
         {
             InitializeComponent();
@@ -20,6 +18,8 @@ namespace DataTransferApp.Net.Views
             PromptText.Text = prompt;
             InputTextBox.Text = defaultValue;
         }
+
+        public string InputText => InputTextBox.Text;
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {

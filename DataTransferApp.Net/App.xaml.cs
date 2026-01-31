@@ -44,7 +44,7 @@ public partial class App : Application
             LoggingService.Initialize(logPath, logLevel);
 
             LoggingService.Info("=== Application Starting ===");
-            LoggingService.Info($"Version: {Settings.ApplicationVersion}");
+            LoggingService.Info($"Version: {AppSettings.ApplicationVersion}");
             LoggingService.Info($"DTA: {Settings.DataTransferAgent}");
             LoggingService.Info($"AppData: {appDataPath}");
 

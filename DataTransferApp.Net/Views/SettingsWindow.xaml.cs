@@ -23,9 +23,6 @@ namespace DataTransferApp.Net.Views
             {
                 _settingsService.SaveSettings(_settings);
 
-                // Update logging level
-                var logLevel = LoggingService.ParseLogLevel(_settings.LogLevel);
-
                 MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoggingService.Info("Settings saved by user");
 
