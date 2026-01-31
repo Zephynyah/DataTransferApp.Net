@@ -508,7 +508,14 @@ namespace DataTransferApp.Net.Services
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             // No persistent connection to dispose with connection-per-operation pattern
+            // No unmanaged resources to release
         }
     }
 }

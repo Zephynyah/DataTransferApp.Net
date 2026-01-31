@@ -5,7 +5,7 @@ using LiteDB;
 
 namespace DataTransferApp.Net.Services
 {
-    public class SettingsService
+    public class SettingsService : IDisposable
     {
         private readonly string _dbPath;
         private readonly LiteDatabase _db;

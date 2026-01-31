@@ -345,10 +345,10 @@ namespace DataTransferApp.Net.ViewModels
                 // Count compressed files
                 var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
                 var compressedCount = SelectedFolder.Files.Count(f =>
-                    compressedExtensions.Contains(f.Extension.ToLower()) ||
-                    f.FileName.ToLower().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tgz", StringComparison.Ordinal) ||
-                    f.FileName.ToLower().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".txz", StringComparison.Ordinal) ||
-                    f.FileName.ToLower().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tbz2", StringComparison.Ordinal));
+                    compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                    f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
+                    f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
+                    f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
                 SelectedFolder.CompressedFileCount = compressedCount;
                 SelectedFolder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
@@ -388,8 +388,8 @@ namespace DataTransferApp.Net.ViewModels
                 // Mark compressed files
                 foreach (var file in SelectedFolder.Files)
                 {
-                    var fileName = file.FileName.ToLower();
-                    if (compressedExtensions.Contains(file.Extension.ToLower()) ||
+                    var fileName = file.FileName.ToLowerInvariant();
+                    if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
                         fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
                         fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
                         fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
@@ -462,10 +462,10 @@ namespace DataTransferApp.Net.ViewModels
                     // Count compressed files
                     var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
                     var compressedCount = folder.Files.Count(f =>
-                        compressedExtensions.Contains(f.Extension.ToLower()) ||
-                        f.FileName.ToLower().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tgz", StringComparison.Ordinal) ||
-                        f.FileName.ToLower().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".txz", StringComparison.Ordinal) ||
-                        f.FileName.ToLower().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLower().EndsWith(".tbz2", StringComparison.Ordinal));
+                        compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                        f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
+                        f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
+                        f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
                     folder.CompressedFileCount = compressedCount;
                     folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
 
@@ -504,8 +504,8 @@ namespace DataTransferApp.Net.ViewModels
                     // Mark compressed files
                     foreach (var file in folder.Files)
                     {
-                        var fileName = file.FileName.ToLower();
-                        if (compressedExtensions.Contains(file.Extension.ToLower()) ||
+                        var fileName = file.FileName.ToLowerInvariant();
+                        if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
                             fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
                             fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
                             fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
