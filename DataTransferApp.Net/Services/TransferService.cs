@@ -321,6 +321,17 @@ namespace DataTransferApp.Net.Services
         {
             await Task.Run(() =>
             {
+
+#if DEBUG
+                LoggingService.Info("DEBUG MODE: Retention cleanup simulated - no folders will be deleted.");
+                
+                // Synchronously pause the current thread for 5000 milliseconds (5 seconds)
+                Thread.Sleep(5000);
+
+                LoggingService.Info("DEBUG MODE: Retention cleanup simulation complete.");
+
+                return;
+#endif
                 try
                 {
                     LoggingService.Info("Starting retention cleanup");
@@ -388,7 +399,7 @@ namespace DataTransferApp.Net.Services
                         "RECYCLER",
                         "$WinREAgent"
                     };
-                    
+
                     var directories = Directory.GetDirectories(drivePath)
                         .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
                         .ToList();

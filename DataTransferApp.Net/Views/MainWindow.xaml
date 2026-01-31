@@ -838,9 +838,36 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="0"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
-                    <TextBlock Foreground="{StaticResource BackgroundBrush}" Text="Retention Cleanup:" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding RetentionStatus}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Margin="0,0,0,0"/>
-                    <ProgressBar IsIndeterminate="True" Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Width="120" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+                    <TextBlock Foreground="{StaticResource BackgroundBrush}" Text="Retention Cleanup:" Margin="0,0,5,0" FontWeight="SemiBold"/>
+                    <fa:IconBlock Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource InverseBooleanToVisibilityConverter}}" VerticalAlignment="Center">
+                        <fa:IconBlock.Style>
+                            <Style TargetType="fa:IconBlock">
+                                <Setter Property="Icon" Value="CheckCircle"/>
+                                <Setter Property="Foreground" Value="{StaticResource BackgroundBrush}"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RetentionStatus}" Value="Error">
+                                        <Setter Property="Icon" Value="TimesCircle"/>
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </fa:IconBlock.Style>
+                    </fa:IconBlock>
+                    <fa:IconImage Visibility="{Binding IsRetentionCleanupRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Height="14" Width="14" Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" Margin="0,0,0,0">
+                        <fa:IconImage.RenderTransform>
+                            <RotateTransform x:Name="noFreezeRotate" Angle="0" />
+                        </fa:IconImage.RenderTransform>
+                        <fa:IconImage.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="(fa:IconImage.RenderTransform).(RotateTransform.Angle)" From="0" To="360" Duration="0:0:1" RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </fa:IconImage.Triggers>
+                    </fa:IconImage>
                 </StackPanel>
                 <TextBlock Text="{Binding AppFooter}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="2"/>
             </Grid>
