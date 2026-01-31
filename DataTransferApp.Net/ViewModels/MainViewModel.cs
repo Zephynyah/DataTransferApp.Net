@@ -17,13 +17,6 @@ namespace DataTransferApp.Net.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        private enum DriveAction
-        {
-            Append,
-            Clear,
-            Abort
-        }
-
         private readonly FileService _fileService;
         private readonly AuditService _auditService;
         private readonly TransferService _transferService;
@@ -119,9 +112,12 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt", CultureInfo.CurrentCulture);
 
-        public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
-
-        public AppSettings Settings => _settings;
+        private enum DriveAction
+        {
+            Append,
+            Clear,
+            Abort
+        }
 
         public MainViewModel(AppSettings settings)
         {
@@ -160,6 +156,10 @@ namespace DataTransferApp.Net.ViewModels
             // Initialize commands
             RunRetentionCleanupAsyncCommand = new AsyncRelayCommand(RunRetentionCleanupAsync, () => !IsRetentionCleanupRunning);
         }
+
+        public IAsyncRelayCommand RunRetentionCleanupAsyncCommand { get; private set; }
+
+        public AppSettings Settings => _settings;
 
         public async Task RunRetentionCleanupAsync()
         {

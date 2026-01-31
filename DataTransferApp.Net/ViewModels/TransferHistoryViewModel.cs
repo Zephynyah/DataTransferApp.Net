@@ -12,10 +12,6 @@ namespace DataTransferApp.Net.ViewModels
 {
     public partial class TransferHistoryViewModel : ViewModelBase
     {
-        public string PageTitle { get; } = "Transfer History";
-
-        public string PageDescription { get; } = "View all transferred folders and files";
-
         private readonly TransferHistoryService _historyService;
 
         [ObservableProperty]
@@ -64,6 +60,10 @@ namespace DataTransferApp.Net.ViewModels
             _ = CheckDbHealthAsync();
             _ = LoadTransfersAsync();
         }
+
+        public string PageTitle { get; } = "Transfer History";
+
+        public string PageDescription { get; } = "View all transferred folders and files";
 
         [RelayCommand]
         private async Task LoadTransfersAsync()

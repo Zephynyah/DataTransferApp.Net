@@ -15,6 +15,30 @@ namespace DataTransferApp.Net.Services
     /// </summary>
     public class TransferDatabaseService : IDisposable
     {
+        private readonly string _databasePath;
+        private readonly string _connectionString;
+
+        public TransferDatabaseService(string? databasePath = null)
+        {
+            // Determine database path
+            _databasePath = ResolveDatabasePath(databasePath);
+
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(_databasePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Configure connection string with Shared mode to allow multiple concurrent accesses
+            _connectionString = $"Filename={_databasePath};Mode=Shared";
+
+            // Initialize indexes on first run
+            InitializeDatabase();
+
+            LoggingService.Info($"Transfer database initialized: {_databasePath}");
+        }
+
         private static string ResolveDatabasePath(string? customPath)
         {
             if (!string.IsNullOrWhiteSpace(customPath))
@@ -62,30 +86,6 @@ namespace DataTransferApp.Net.Services
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "DataTransferApp",
                 "TransferHistory.db");
-        }
-
-        private readonly string _databasePath;
-        private readonly string _connectionString;
-
-        public TransferDatabaseService(string? databasePath = null)
-        {
-            // Determine database path
-            _databasePath = ResolveDatabasePath(databasePath);
-
-            // Ensure directory exists
-            var directory = Path.GetDirectoryName(_databasePath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            // Configure connection string with Shared mode to allow multiple concurrent accesses
-            _connectionString = $"Filename={_databasePath};Mode=Shared";
-
-            // Initialize indexes on first run
-            InitializeDatabase();
-
-            LoggingService.Info($"Transfer database initialized: {_databasePath}");
         }
 
         /// <summary>
