@@ -115,6 +115,8 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private string _currentDateTime = DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt");
 
+        public AppSettings Settings => _settings;
+
         private readonly DispatcherTimer _timeUpdateTimer;
 
         public MainViewModel(AppSettings settings)

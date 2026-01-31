@@ -324,9 +324,9 @@ namespace DataTransferApp.Net.Services
 
 #if DEBUG
                 LoggingService.Info("DEBUG MODE: Retention cleanup simulated - no folders will be deleted.");
-                
+
                 // Synchronously pause the current thread for 5000 milliseconds (5 seconds)
-                Thread.Sleep(5000);
+                Thread.Sleep(10000);
 
                 LoggingService.Info("DEBUG MODE: Retention cleanup simulation complete.");
 
