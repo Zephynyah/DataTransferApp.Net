@@ -10,6 +10,15 @@ namespace DataTransferApp.Net.ViewModels
     {
         private string _markdownContent = string.Empty;
 
+        public ChangesViewModel()
+        {
+            // Enable advanced extensions for GitHub-style rendering
+            Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            LoadReadme();
+        }
+
+        public MarkdownPipeline Pipeline { get; }
+
         public string MarkdownContent
         {
             get => _markdownContent;
@@ -19,15 +28,6 @@ namespace DataTransferApp.Net.ViewModels
                 OnPropertyChanged(nameof(MarkdownContent));
             }
         }
-
-        public ChangesViewModel()
-        {
-            // Enable advanced extensions for GitHub-style rendering
-            Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            LoadReadme();
-        }
-
-        public MarkdownPipeline Pipeline { get; }
 
         private void LoadReadme()
         {

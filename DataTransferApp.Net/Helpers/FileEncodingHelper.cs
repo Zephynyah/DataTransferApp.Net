@@ -111,13 +111,10 @@ namespace DataTransferApp.Net.Helpers
                 }
 
                 // Check for non-ASCII characters
-                if (buffer[i] > 127)
+                // Control characters in extended range
+                if (buffer[i] > 127 && buffer[i] < 160)
                 {
-                    // Allow some extended ASCII, but be conservative
-                    if (buffer[i] < 160) // Control characters in extended range
-                    {
-                        return false;
-                    }
+                    return false;
                 }
 
                 totalChars++;

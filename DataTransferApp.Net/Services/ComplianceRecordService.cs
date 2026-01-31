@@ -45,8 +45,9 @@ namespace DataTransferApp.Net.Services
                 {
                     await GenerateStandardRecordAsync(transfer, outputPath);
                 }
-                else // Comprehensive is default
+                else
                 {
+                    // Comprehensive is default
                     await GenerateComprehensiveRecordAsync(transfer, outputPath);
                 }
 
@@ -102,8 +103,9 @@ namespace DataTransferApp.Net.Services
                 {
                     await GenerateConsolidatedJsonReportAsync(transfers, outputPath, startDate, endDate);
                 }
-                else // CSV and TXT use the same format (comma-separated values)
+                else
                 {
+                    // CSV and TXT use the same format (comma-separated values)
                     await GenerateConsolidatedCsvReportAsync(transfers, outputPath, startDate, endDate);
                 }
 
@@ -449,7 +451,9 @@ namespace DataTransferApp.Net.Services
             {
                 await GenerateJsonRecordAsync(transfer, outputPath);
             }
-            else // CSV and TXT use the same format (comma-separated values)
+
+            // CSV and TXT use the same format (comma-separated values)
+            else
             {
                 await ComplianceRecordService.GenerateCsvRecordAsync(transfer, outputPath);
             }
@@ -520,7 +524,9 @@ namespace DataTransferApp.Net.Services
             {
                 await GenerateStandardCsvRecordAsync(transfer, outputPath);
             }
-            else // TXT is default
+
+            // TXT is default
+            else
             {
                 await GenerateStandardTxtRecordAsync(transfer, outputPath);
             }
@@ -713,7 +719,9 @@ namespace DataTransferApp.Net.Services
             {
                 extension = ".txt";
             }
-            else // CSV is default
+
+            // CSV is default
+            else
             {
                 extension = ".csv";
             }
@@ -737,7 +745,9 @@ namespace DataTransferApp.Net.Services
             {
                 extension = ".json";
             }
-            else // CSV and TXT both use .csv extension for consolidated reports
+
+            // CSV and TXT both use .csv extension for consolidated reports
+            else
             {
                 extension = ".csv";
             }

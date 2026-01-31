@@ -13,19 +13,29 @@ namespace DataTransferApp.Net.Helpers
             var str = value as string;
             if (str != null)
             {
-                return string.IsNullOrEmpty(str)
-                    ? (invert ? Visibility.Visible : Visibility.Collapsed)
-                    : (invert ? Visibility.Collapsed : Visibility.Visible);
+                if (string.IsNullOrEmpty(str))
+                {
+                    return invert ? Visibility.Visible : Visibility.Collapsed;
+                }
+                else
+                {
+                    return invert ? Visibility.Collapsed : Visibility.Visible;
+                }
             }
 
-            return value == null
-                ? (invert ? Visibility.Visible : Visibility.Collapsed)
-                : (invert ? Visibility.Collapsed : Visibility.Visible);
+            if (value == null)
+            {
+                return invert ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else
+            {
+                return invert ? Visibility.Collapsed : Visibility.Visible;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

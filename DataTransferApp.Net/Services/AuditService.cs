@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -105,7 +106,7 @@ namespace DataTransferApp.Net.Services
 
         private NameValidation ValidateFolderName(string folderName)
         {
-            var regex = new Regex(_settings.FolderNameRegex);
+            var regex = new Regex(_settings.FolderNameRegex, RegexOptions.Compiled);
 
             var parts = folderName.Split('_');
 
@@ -128,7 +129,7 @@ namespace DataTransferApp.Net.Services
                     var year = dateStr.Substring(0, 4);
                     var month = dateStr.Substring(4, 2);
                     var day = dateStr.Substring(6, 2);
-                    DateTime.ParseExact($"{year}-{month}-{day}", "yyyy-MM-dd", null);
+                    DateTime.ParseExact($"{year}-{month}-{day}", "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
                 catch
                 {
@@ -156,7 +157,7 @@ namespace DataTransferApp.Net.Services
                     var year = dateStr.Substring(0, 4);
                     var month = dateStr.Substring(4, 2);
                     var day = dateStr.Substring(6, 2);
-                    DateTime.ParseExact($"{year}-{month}-{day}", "yyyy-MM-dd", null);
+                    DateTime.ParseExact($"{year}-{month}-{day}", "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
                 catch
                 {

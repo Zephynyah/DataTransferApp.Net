@@ -11,21 +11,13 @@ namespace DataTransferApp.Net.Helpers
         // Converts a wildcard pattern (e.g., "New folder*") to a regex
         public static Regex WildcardToRegex(string pattern)
         {
-            return new Regex("^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$", RegexOptions.IgnoreCase);
+            return new Regex("^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
 
         // Returns true if the input matches any of the wildcard patterns
         public static bool IsMatch(string input, IEnumerable<string> patterns)
         {
-            foreach (var pattern in patterns)
-            {
-                if (WildcardToRegex(pattern).IsMatch(input))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return patterns.Any(pattern => WildcardToRegex(pattern).IsMatch(input));
         }
     }
 }

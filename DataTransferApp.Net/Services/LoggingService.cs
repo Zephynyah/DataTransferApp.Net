@@ -68,7 +68,7 @@ namespace DataTransferApp.Net.Services
 
         public static void Success(string message)
         {
-            _logger?.Information($"✓ {message}");
+            _logger?.Information("✓ {Message}", message);
         }
 
         public static void Dispose()

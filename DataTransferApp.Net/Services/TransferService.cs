@@ -507,7 +507,9 @@ namespace DataTransferApp.Net.Services
                     LoggingService.Info($"Overwriting existing folder: {folderName}");
                     return basePath;
                 }
-                else // AppendSequence
+
+                // AppendSequence
+                else
                 {
                     return GetSequencedPath(destinationDrive, folderName);
                 }

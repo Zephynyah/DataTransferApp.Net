@@ -149,13 +149,10 @@ namespace DataTransferApp.Net.Services
                 }
 
                 // Batch insert into database
-                if (transfers.Count > 0)
+                if (transfers.Count > 0 && _databaseService.AddTransfers(transfers))
                 {
-                    if (_databaseService.AddTransfers(transfers))
-                    {
-                        migratedCount = transfers.Count;
-                        LoggingService.Success($"Successfully migrated {migratedCount} transfer records to database");
-                    }
+                    migratedCount = transfers.Count;
+                    LoggingService.Success($"Successfully migrated {migratedCount} transfer records to database");
                 }
             }
             catch (Exception ex)

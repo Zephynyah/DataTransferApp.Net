@@ -175,7 +175,7 @@ namespace DataTransferApp.Net.ViewModels
             catch (Exception ex)
             {
                 RetentionStatus = "Error";
-                ShowSnackbar($"Retention cleanup failed: {ex.Message}", "error");
+                _ = ShowSnackbar($"Retention cleanup failed: {ex.Message}", "error");
                 LoggingService.Error("Retention cleanup failed", ex);
             }
             finally
@@ -222,17 +222,6 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private void OnSelectedFolderPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            // When folder properties change, notify commands to re-evaluate
-            if (e.PropertyName == nameof(FolderData.AuditStatus) ||
-                e.PropertyName == nameof(FolderData.CanTransfer))
-            {
-                AuditFolderCommand.NotifyCanExecuteChanged();
-                TransferFolderCommand.NotifyCanExecuteChanged();
-            }
-        }
-
         partial void OnSelectedFolderChanged(FolderData? value)
         {
             if (value != null)
@@ -248,7 +237,17 @@ namespace DataTransferApp.Net.ViewModels
             AuditFolderCommand.NotifyCanExecuteChanged();
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
-            ClearDriveCommand.NotifyCanExecuteChanged();
+        }
+
+        private void OnSelectedFolderPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            // When folder properties change, notify commands to re-evaluate
+            if (e.PropertyName == nameof(FolderData.AuditStatus) ||
+                e.PropertyName == nameof(FolderData.CanTransfer))
+            {
+                AuditFolderCommand.NotifyCanExecuteChanged();
+                TransferFolderCommand.NotifyCanExecuteChanged();
+            }
         }
 
         partial void OnSelectedDriveChanged(RemovableDrive? value)
@@ -584,14 +583,14 @@ namespace DataTransferApp.Net.ViewModels
         {
             if (SelectedDrive == null)
             {
-                ShowSnackbar("Please select a destination drive", "error");
+                _ = ShowSnackbar("Please select a destination drive", "error");
                 return;
             }
 
             var passedFolders = FolderList.Where(f => f.CanTransfer).ToList();
             if (!passedFolders.Any())
             {
-                ShowSnackbar("No folders passed audit. Run audit first.", "warning");
+                _ = ShowSnackbar("No folders passed audit. Run audit first.", "warning");
                 return;
             }
 
@@ -620,7 +619,8 @@ namespace DataTransferApp.Net.ViewModels
 
             try
             {
-                foreach (var folder in passedFolders.ToList()) // ToList to avoid collection modification issues
+                // ToList to avoid collection modification issues
+                foreach (var folder in passedFolders.ToList())
                 {
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
@@ -657,7 +657,7 @@ namespace DataTransferApp.Net.ViewModels
                 UpdateStatistics();
                 var successCount = completed - failed;
                 StatusMessage = $"Transfer All complete: {successCount} succeeded, {failed} failed, {skipped} skipped";
-                ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
+                _ = ShowSnackbar($"Transferred {successCount} of {total} folders ({skipped} skipped)", failed > 0 ? "warning" : "success");
 
                 // Auto-select first folder if available after transfers
                 AutoSelectFirstFolder();
@@ -666,7 +666,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 StatusMessage = $"Transfer All error: {ex.Message}";
                 LoggingService.Error("Transfer all error", ex);
-                ShowSnackbar($"Transfer All failed: {ex.Message}", "error");
+                _ = ShowSnackbar($"Transfer All failed: {ex.Message}", "error");
             }
             finally
             {
@@ -730,7 +730,7 @@ namespace DataTransferApp.Net.ViewModels
                         : $"Transfer complete: {folderName}";
 
                     StatusMessage = message;
-                    ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
+                    _ = ShowSnackbar(message, result.ErrorMessage != null ? "info" : "success");
 
                     // Auto-select first folder if available after transfer
                     AutoSelectFirstFolder();
@@ -738,14 +738,14 @@ namespace DataTransferApp.Net.ViewModels
                 else
                 {
                     StatusMessage = $"Transfer failed: {result.ErrorMessage}";
-                    ShowSnackbar($"Transfer failed: {result.ErrorMessage}", "error");
+                    _ = ShowSnackbar($"Transfer failed: {result.ErrorMessage}", "error");
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Transfer error: {ex.Message}";
                 LoggingService.Error("Transfer error", ex);
-                ShowSnackbar($"Transfer error: {ex.Message}", "error");
+                _ = ShowSnackbar($"Transfer error: {ex.Message}", "error");
             }
             finally
             {
@@ -821,7 +821,7 @@ namespace DataTransferApp.Net.ViewModels
                     FolderList.Remove(SelectedFolder);
                     UpdateStatistics();
                     StatusMessage = $"Transfer complete (Override): {folderName}";
-                    ShowSnackbar($"Override transfer completed", "warning");
+                    _ = ShowSnackbar($"Override transfer completed", "warning");
 
                     // Auto-select first folder if available after transfer
                     AutoSelectFirstFolder();
@@ -829,14 +829,14 @@ namespace DataTransferApp.Net.ViewModels
                 else
                 {
                     StatusMessage = $"Transfer failed: {transferResult.ErrorMessage}";
-                    ShowSnackbar($"Transfer failed: {transferResult.ErrorMessage}", "error");
+                    _ = ShowSnackbar($"Transfer failed: {transferResult.ErrorMessage}", "error");
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Transfer error: {ex.Message}";
                 LoggingService.Error("Transfer override error", ex);
-                ShowSnackbar($"Transfer error: {ex.Message}", "error");
+                _ = ShowSnackbar($"Transfer error: {ex.Message}", "error");
             }
             finally
             {
@@ -889,12 +889,12 @@ namespace DataTransferApp.Net.ViewModels
                 await _transferService.ClearDriveAsync(SelectedDrive.DriveLetter, progress);
 
                 StatusMessage = $"Drive cleared: {SelectedDrive.DriveLetter}";
-                ShowSnackbar($"Drive cleared successfully: {SelectedDrive.DriveLetter}", "success");
+                _ = ShowSnackbar($"Drive cleared successfully: {SelectedDrive.DriveLetter}", "success");
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error clearing drive: {ex.Message}";
-                ShowSnackbar($"Error clearing drive: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error clearing drive: {ex.Message}", "error");
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -959,13 +959,13 @@ namespace DataTransferApp.Net.ViewModels
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
 
                     StatusMessage = "Settings updated successfully";
-                    ShowSnackbar("Settings saved successfully!", "success");
+                    _ = ShowSnackbar("Settings saved successfully!", "success");
                     LoggingService.Info("Settings updated successfully");
                 }
             }
             catch (Exception ex)
             {
-                ShowSnackbar($"Error opening settings: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error opening settings: {ex.Message}", "error");
                 LoggingService.Error("Error opening settings", ex);
             }
         }
@@ -980,7 +980,7 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (Exception ex)
             {
-                ShowSnackbar($"Error opening about: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error opening about: {ex.Message}", "error");
                 LoggingService.Error("Error opening about", ex);
             }
         }
@@ -995,7 +995,7 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (Exception ex)
             {
-                ShowSnackbar($"Error opening changes: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error opening changes: {ex.Message}", "error");
                 LoggingService.Error("Error opening changes", ex);
             }
         }
@@ -1010,7 +1010,7 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (Exception ex)
             {
-                ShowSnackbar($"Error opening help: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error opening help: {ex.Message}", "error");
                 LoggingService.Error("Error opening help", ex);
             }
         }
@@ -1028,7 +1028,7 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (Exception ex)
             {
-                ShowSnackbar($"Error opening transfer history: {ex.Message}", "error");
+                _ = ShowSnackbar($"Error opening transfer history: {ex.Message}", "error");
                 LoggingService.Error("Error opening transfer history", ex);
             }
         }
@@ -1042,7 +1042,7 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private async void ShowSnackbar(string message, string type = "success")
+        private async Task ShowSnackbar(string message, string type = "success")
         {
             SnackbarMessage = message;
             SnackbarBackground = type switch
@@ -1087,7 +1087,9 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     return DriveAction.Clear;
                 }
-                else // Yes
+
+                // Yes
+                else
                 {
                     return DriveAction.Append;
                 }
