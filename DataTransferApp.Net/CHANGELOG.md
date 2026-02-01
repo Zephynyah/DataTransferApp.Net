@@ -6,10 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Enhance AppSettings validation and UI; update version to 1.3.5
 - Add unit tests for FileService and update solution configuration; suppress StyleCop warnings
 - Refactor various services for improved readability and maintainability; add missing newlines and reorganize code structure
 - Refactor TransferDatabaseService and TransferHistoryService; add InitializeDatabase method for index management and clean up code structure
-- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService; introduce timeUpdateTimer in MainViewModel for improved functionality
+- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService
+- Introduce timeUpdateTimer in MainViewModel for improved functionality
 - Refactor application startup logic for improved readability and maintainability; add new models for transfer and audit processes; remove unused classes and consolidate functionality.
 - Add DatasetValidation, ExtensionValidation, and FileViolation models for dataset and file validation
 - Refactor compliance record service documentation for clarity; update return type descriptions; enhance check-quality scripts for improved analysis and error handling; add batch script for code quality checks
@@ -25,7 +27,6 @@ All notable changes to this project will be documented in this file.
 - Refactor AuditService and TransferService for improved readability and maintainability
 - Refactor various services and helpers for improved error handling, performance, and code clarity; update logging and snackbar methods for consistency
 - Refactor FileService and enhance file handling capabilities
-- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
 
 ## [1.3.4] - 2026-01-31
 
