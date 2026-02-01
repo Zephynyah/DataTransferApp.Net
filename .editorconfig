@@ -91,6 +91,7 @@ dotnet_diagnostic.SA1124.severity = none  # Do not use regions
 dotnet_diagnostic.SA1200.severity = none  # Using directives must be placed within namespace
 dotnet_diagnostic.SA1309.severity = none  # Field names should not begin with underscore
 dotnet_diagnostic.SA1413.severity = none  # Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1518.severity = none  # File may not end with a newline character
 dotnet_diagnostic.SA1600.severity = none  # Elements should be documented
 dotnet_diagnostic.SA1633.severity = none  # File should have header
 

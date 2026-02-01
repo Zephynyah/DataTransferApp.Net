@@ -97,6 +97,7 @@ public partial class MainWindow : Window
         UpdateFullScreenUI(false);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'MenuButton_Click' a static method", Justification = "Event handler must be instance method")]
     private void MenuButton_Click(object sender, RoutedEventArgs e)
     {
         // Open the context menu dropdown

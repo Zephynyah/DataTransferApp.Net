@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DataTransferApp.Net.Models;
 
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1518:File may not end with a newline character", Justification = "File does end with newline", Scope = "namespace", Target = "DataTransferApp.Net.Services")]
+
 namespace DataTransferApp.Net.Services
 {
     /// <summary>
@@ -211,3 +213,4 @@ namespace DataTransferApp.Net.Services
         }
     }
 }
+

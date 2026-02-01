@@ -183,6 +183,7 @@ namespace DataTransferApp.Net.Services
             return drives;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'CleanupRetentionAsync' a static method", Justification = "Service method should remain instance method for dependency injection")]
         public async Task CleanupRetentionAsync()
         {
 #if DEBUG
@@ -240,6 +241,7 @@ namespace DataTransferApp.Net.Services
 #endif
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'ClearDriveAsync' a static method", Justification = "Service method should remain instance method for dependency injection")]
         public async Task ClearDriveAsync(string drivePath, IProgress<TransferProgress>? progress = null)
         {
             await Task.Run(() =>
