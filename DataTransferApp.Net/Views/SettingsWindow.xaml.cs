@@ -15,6 +15,15 @@ namespace DataTransferApp.Net.Views
             _settingsService = settingsService;
             _settings = settings;
             DataContext = settings;
+
+            // Trigger initial validation
+            ValidateAllSettings();
+        }
+
+        private void ValidateAllSettings()
+        {
+            // Trigger validation for directory path properties
+            _settings.ValidateAllProperties();
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

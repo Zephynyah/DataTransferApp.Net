@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using DataTransferApp.Net.Helpers;
 using LiteDB;
 
 namespace DataTransferApp.Net.Models
 {
-    public class AppSettings
+    public class AppSettings : INotifyDataErrorInfo
     {
         public static string ApplicationVersion => VersionHelper.GetVersion();
 
@@ -16,13 +19,49 @@ namespace DataTransferApp.Net.Models
         public string DataTransferAgent { get; set; } = Environment.UserName;
 
         // Directory Paths
-        public string StagingDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
+        private string _stagingDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
+        public string StagingDirectory
+        {
+            get => _stagingDirectory;
+            set
+            {
+                _stagingDirectory = value;
+                ValidateProperty(nameof(StagingDirectory), value);
+            }
+        }
 
-        public string RetentionDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
+        private string _retentionDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
+        public string RetentionDirectory
+        {
+            get => _retentionDirectory;
+            set
+            {
+                _retentionDirectory = value;
+                ValidateProperty(nameof(RetentionDirectory), value);
+            }
+        }
 
-        public string TransferRecordsDirectory { get; set; } = @"D:\Powershell\GUI\DTA\test-data\TransferRecords";
+        private string _transferRecordsDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferRecords";
+        public string TransferRecordsDirectory
+        {
+            get => _transferRecordsDirectory;
+            set
+            {
+                _transferRecordsDirectory = value;
+                ValidateProperty(nameof(TransferRecordsDirectory), value);
+            }
+        }
 
-        public int RetentionDays { get; set; } = 7;
+        private int _retentionDays = 7;
+        public int RetentionDays
+        {
+            get => _retentionDays;
+            set
+            {
+                _retentionDays = value;
+                ValidateProperty(nameof(RetentionDays), value);
+            }
+        }
 
         // Folder Naming
         public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{2,10}(_\d+)?$";
@@ -114,5 +153,115 @@ namespace DataTransferApp.Net.Models
 
         // Last Updated
         public DateTime LastModified { get; set; } = DateTime.Now;
+
+        #region INotifyDataErrorInfo Implementation
+
+        private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        public System.Collections.IEnumerable GetErrors(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName) || !_errors.ContainsKey(propertyName))
+                return Enumerable.Empty<string>();
+
+            return _errors[propertyName];
+        }
+
+        public bool HasErrors => _errors.Any();
+
+        private static void ValidateDirectoryPath(string? path, List<string> errors, string fieldName)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                errors.Add($"{fieldName} cannot be empty.");
+                return;
+            }
+
+            try
+            {
+                // Check if it's a valid path format
+                Path.GetFullPath(path);
+            }
+            catch
+            {
+                errors.Add($"{fieldName} contains invalid path characters.");
+                return;
+            }
+
+            // Check if the path is absolute
+            if (!Path.IsPathRooted(path))
+            {
+                errors.Add($"{fieldName} must be an absolute path.");
+                return;
+            }
+
+            // Check if the drive exists
+            var drive = Path.GetPathRoot(path);
+            if (!string.IsNullOrEmpty(drive) && !Directory.Exists(drive))
+            {
+                errors.Add($"{fieldName} drive '{drive}' does not exist.");
+            }
+        }
+
+        private static void ValidateRetentionDays(int? days, List<string> errors)
+        {
+            if (days == null)
+            {
+                errors.Add("Retention period is required.");
+                return;
+            }
+
+            if (days < 0)
+            {
+                errors.Add("Retention period cannot be less than 0 days.");
+            }
+            else if (days > 3650)
+            {
+                // 10 years
+                errors.Add("Retention period cannot exceed 3650 days (10 years).");
+            }
+        }
+
+        private void ValidateProperty(string propertyName, object? value)
+        {
+            var errors = new List<string>();
+
+            switch (propertyName)
+            {
+                case nameof(StagingDirectory):
+                    ValidateDirectoryPath(value as string, errors, "Staging Directory");
+                    break;
+                case nameof(TransferRecordsDirectory):
+                    ValidateDirectoryPath(value as string, errors, "Transfer Records Directory");
+                    break;
+                case nameof(RetentionDirectory):
+                    ValidateDirectoryPath(value as string, errors, "Retention Directory");
+                    break;
+                case nameof(RetentionDays):
+                    ValidateRetentionDays(value as int?, errors);
+                    break;
+            }
+
+            if (errors.Any())
+            {
+                _errors[propertyName] = errors;
+            }
+            else
+            {
+                _errors.Remove(propertyName);
+            }
+
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        public void ValidateAllProperties()
+        {
+            ValidateProperty(nameof(StagingDirectory), StagingDirectory);
+            ValidateProperty(nameof(TransferRecordsDirectory), TransferRecordsDirectory);
+            ValidateProperty(nameof(RetentionDirectory), RetentionDirectory);
+            ValidateProperty(nameof(RetentionDays), RetentionDays);
+        }
+        #endregion
     }
 }

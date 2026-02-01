@@ -13,6 +13,17 @@
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
         <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        
+        <!-- Validation Error Style -->
+        <Style x:Key="ValidatingTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     
     <Grid>
@@ -41,16 +52,20 @@
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
                         <TextBlock Text="Staging Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding StagingDirectory}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Transfer Records Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferRecordsDirectory}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Retention Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDirectory}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Retention Period (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDays}" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding RetentionDays, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,5"/>
                         <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu" Style="{StaticResource FootnoteStyle}"/>
                     </StackPanel>
                 </GroupBox>

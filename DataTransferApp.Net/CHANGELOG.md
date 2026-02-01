@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.5] - 2026-02-01
+
+### Added
+
+- Add unit tests for FileService and update solution configuration; suppress StyleCop warnings
+- Refactor various services for improved readability and maintainability; add missing newlines and reorganize code structure
+- Refactor TransferDatabaseService and TransferHistoryService; add InitializeDatabase method for index management and clean up code structure
+- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService; introduce timeUpdateTimer in MainViewModel for improved functionality
+- Refactor application startup logic for improved readability and maintainability; add new models for transfer and audit processes; remove unused classes and consolidate functionality.
+- Add DatasetValidation, ExtensionValidation, and FileViolation models for dataset and file validation
+- Refactor compliance record service documentation for clarity; update return type descriptions; enhance check-quality scripts for improved analysis and error handling; add batch script for code quality checks
+- Update DEVELOPEMENT.md for formatting consistency; enhance AppSettings with additional dataset in whitelist; improve dataset validation logic in AuditService; refine check-quality script documentation
+- Refactor MainWindow layout and UI elements for improved consistency; add changelog file and update check-quality script with detailed documentation. Enhance application versioning in package.json and update CHANGELOG.md with recent changes and fixes.
+
+### Changed
+
+- Remove trailing newlines in SettingsService and TransferHistoryService for code cleanliness
+- Refactor TransferDatabaseService and MainViewModel
+- Refactor TransferDatabaseService and MainViewModel for improved structure; move DriveAction enum in MainViewModel, and ensure proper initialization in TransferDatabaseService
+- Refactor various services for improved resource management, error handling, and regex performance; enhance boolean conversion logic and wildcard pattern matching
+- Refactor AuditService and TransferService for improved readability and maintainability
+- Refactor various services and helpers for improved error handling, performance, and code clarity; update logging and snackbar methods for consistency
+- Refactor FileService and enhance file handling capabilities
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+
 ## [1.3.4] - 2026-01-31
 
 ### Added
