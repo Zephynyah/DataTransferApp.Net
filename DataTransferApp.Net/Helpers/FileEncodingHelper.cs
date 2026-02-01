@@ -13,7 +13,7 @@ namespace DataTransferApp.Net.Helpers
         /// Determines if a file appears to be a text file that can be safely opened in a viewer
         /// by checking if it's ASCII-compatible and doesn't contain binary data patterns.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the file appears to be a text file; otherwise, false.</returns>
         public static bool IsTextFile(string filePath)
         {
             try
@@ -58,7 +58,7 @@ namespace DataTransferApp.Net.Helpers
         /// <summary>
         /// Legacy method - kept for compatibility but IsTextFile is preferred.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the file contains only ASCII characters; otherwise, false.</returns>
         public static bool IsAsciiFileDotNet6(string filePath)
         {
             try

@@ -26,8 +26,6 @@ namespace DataTransferApp.Net.Helpers
 
                     case "caution":
                     case "warning":
-                        // return new SolidColorBrush(Color.FromRgb(241, 196, 15)); // Yellow
-                        // return new SolidColorBrush(Color.FromRgb(243, 156, 18)); // Orange
                         return new SolidColorBrush(Color.FromRgb(255, 131, 3)); // Orange
 
                     case "not audited":

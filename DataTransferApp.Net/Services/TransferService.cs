@@ -212,17 +212,18 @@ namespace DataTransferApp.Net.Services
 
                     LoggingService.Info($"Found {folders.Count} folders in retention directory");
 
+                    var cutoffDate = DateTime.Now.AddDays(-_settings.RetentionDays);
                     var foldersToDelete = folders
-                        .Take(folders.Count - _settings.RetentionCount)
+                        .Where(f => f.CreationTime < cutoffDate)
                         .ToList();
 
-                    LoggingService.Info($"Will delete {foldersToDelete.Count} old folders (keeping {_settings.RetentionCount})");
+                    LoggingService.Info($"Will delete {foldersToDelete.Count} old folders (older than {_settings.RetentionDays} days, cutoff: {cutoffDate})");
 
                     foreach (var folder in foldersToDelete)
                     {
                         try
                         {
-                            LoggingService.Info($"Deleting retention folder: {folder.Name}");
+                            LoggingService.Info($"Deleting retention folder: {folder.Name} (created: {folder.CreationTime})");
                             folder.Delete(true); // Delete recursively
                         }
                         catch (Exception ex)

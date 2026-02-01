@@ -9,7 +9,7 @@ namespace DataTransferApp.Net.Helpers
         /// <summary>
         /// Gets the current application version from the executing assembly.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current application version as a string.</returns>
         public static string GetVersion()
         {
             if (_version == null)
@@ -23,7 +23,7 @@ namespace DataTransferApp.Net.Helpers
         /// <summary>
         /// Gets the current application version with 'v' prefix.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current application version with 'v' prefix as a string.</returns>
         public static string GetVersionWithPrefix()
         {
             return $"v{GetVersion()}";

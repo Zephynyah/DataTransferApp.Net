@@ -5,4 +5,6 @@ Start-Sleep -Seconds 1
 
 # Run the app
 Write-Host "Starting application..." -ForegroundColor Green
-dotnet clean; dotnet build; dotnet run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj
+# dotnet clean; dotnet build; dotnet run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj
+
+dotnet run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj

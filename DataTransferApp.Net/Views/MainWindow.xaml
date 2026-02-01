@@ -22,7 +22,6 @@
         <helpers:StatusToColorConverter x:Key="StatusToColorConverter"/>
         <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
         <helpers:FileIconConverter x:Key="FileIconConverter"/>
-        <helpers:FileToFontAwesomeConverter x:Key="FileToFontAwesomeConverter"/>
         <helpers:AuditStatusToBrushConverter x:Key="AuditStatusToBrushConverter"/>
         <helpers:AuditStatusToBrushIconConverter x:Key="AuditStatusToBrushIconConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
@@ -335,9 +334,9 @@
                                             
                                             <!-- Stats: Size | File Count -->
                                             <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                                                <TextBlock Text="{Binding SizeFormatted}" FontSize="10" Foreground="#7f8c8d"/>
+                                                <TextBlock Text="{Binding SizeFormatted}" FontSize="10" Foreground="{StaticResource FootNoteDarkBrush}"/>
                                                 <TextBlock Text=" | " FontSize="10" Foreground="#bdc3c7" Margin="3,0"/>
-                                                <TextBlock FontSize="10" Foreground="#7f8c8d">
+                                                <TextBlock FontSize="10" Foreground="{StaticResource FootNoteDarkBrush}">
                                                     <Run Text="{Binding FileCount, Mode=OneWay}"/>
                                                     <Run Text=" files"/>
                                                 </TextBlock>
@@ -759,7 +758,7 @@
                             <DataGridTemplateColumn Header="" Width="35">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <fa:IconBlock Icon="{Binding Converter={StaticResource FileToFontAwesomeConverter}}" FontSize="14" HorizontalAlignment="Center">
+                                        <fa:IconBlock Icon="{Binding Converter={StaticResource FileIconConverter}}" FontSize="14" HorizontalAlignment="Center">
                                             <fa:IconBlock.Style>
                                                 <Style TargetType="fa:IconBlock">
                                                     <Setter Property="Foreground" Value="#7f8c8d"/>
