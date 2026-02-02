@@ -221,15 +221,7 @@ namespace DataTransferApp.Net.Services
 
                     foreach (var folder in foldersToDelete)
                     {
-                        try
-                        {
-                            LoggingService.Info($"Deleting retention folder: {folder.Name} (created: {folder.CreationTime})");
-                            folder.Delete(true); // Delete recursively
-                        }
-                        catch (Exception ex)
-                        {
-                            LoggingService.Error($"Failed to delete retention folder: {folder.Name}", ex);
-                        }
+                        DeleteRetentionFolder(folder);
                     }
 
                     LoggingService.Info("Retention cleanup completed");
@@ -240,6 +232,94 @@ namespace DataTransferApp.Net.Services
                 }
             });
 #endif
+        }
+
+        private static void DeleteRetentionFolder(DirectoryInfo folder)
+        {
+            const int maxRetries = 3;
+            const int retryDelayMs = 1000;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    if (attempt == 1)
+                    {
+                        LoggingService.Info($"Deleting retention folder: {folder.Name} (created: {folder.CreationTime})");
+                    }
+                    else
+                    {
+                        LoggingService.Info($"Retry {attempt}/{maxRetries}: Deleting retention folder: {folder.Name}");
+                    }
+
+                    // For UNC paths, try to remove read-only attributes first
+                    try
+                    {
+                        RemoveReadOnlyAttributes(folder);
+                    }
+                    catch
+                    {
+                        // Continue even if attribute removal fails
+                    }
+
+                    folder.Delete(true);
+                    LoggingService.Info($"Successfully deleted retention folder: {folder.Name}");
+                    return; // Success
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    if (attempt == maxRetries)
+                    {
+                        LoggingService.Warning($"Access denied when deleting retention folder '{folder.Name}' after {maxRetries} attempts. The folder may be locked or you may lack permissions. Skipping.");
+                        LoggingService.Debug($"Details: {ex.Message}");
+                    }
+                    else
+                    {
+                        Thread.Sleep(retryDelayMs);
+                    }
+                }
+                catch (IOException ex) when (ex.Message.Contains("denied") || ex.Message.Contains("being used"))
+                {
+                    if (attempt == maxRetries)
+                    {
+                        LoggingService.Warning($"Unable to delete retention folder '{folder.Name}' - folder is locked or in use. Will retry on next cleanup.");
+                        LoggingService.Debug($"Details: {ex.Message}");
+                    }
+                    else
+                    {
+                        Thread.Sleep(retryDelayMs);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Error($"Unexpected error deleting retention folder: {folder.Name}", ex);
+                    return; // Don't retry on unexpected errors
+                }
+            }
+        }
+
+        private static void RemoveReadOnlyAttributes(DirectoryInfo directory)
+        {
+            // Remove read-only attribute from directory
+            if ((directory.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+            {
+                directory.Attributes &= ~FileAttributes.ReadOnly;
+            }
+
+            // Recursively remove read-only from files
+            foreach (var file in directory.GetFiles())
+            {
+                if ((file.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    file.Attributes &= ~FileAttributes.ReadOnly;
+                }
+            }
+
+            // Recursively remove read-only from subdirectories
+            foreach (var subDir in directory.GetDirectories())
+            {
+                RemoveReadOnlyAttributes(subDir);
+            }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'ClearDriveAsync' a static method", Justification = "Service method should remain instance method for dependency injection")]
