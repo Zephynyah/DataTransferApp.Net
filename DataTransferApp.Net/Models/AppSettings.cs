@@ -19,7 +19,11 @@ namespace DataTransferApp.Net.Models
         public string DataTransferAgent { get; set; } = Environment.UserName;
 
         // Directory Paths
+#if DEBUG
         private string _stagingDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferStaging";
+#else
+        private string _stagingDirectory = @"\\Puszbf0a\GSC_FILE_TRANSFER";
+#endif
         public string StagingDirectory
         {
             get => _stagingDirectory;
@@ -30,7 +34,11 @@ namespace DataTransferApp.Net.Models
             }
         }
 
+#if DEBUG
         private string _retentionDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferRetention";
+#else
+        private string _retentionDirectory = @"\\Puszbf0a\GSC_FILE_TRANSFER\Moved";
+#endif
         public string RetentionDirectory
         {
             get => _retentionDirectory;
@@ -41,7 +49,11 @@ namespace DataTransferApp.Net.Models
             }
         }
 
+#if DEBUG
         private string _transferRecordsDirectory = @"D:\Powershell\GUI\DTA\test-data\TransferRecords";
+#else
+        private string _transferRecordsDirectory = @"\\Puszbf0a\GSC2\GSC_ACC\AFT\Collateral AFT Records";
+#endif
         public string TransferRecordsDirectory
         {
             get => _transferRecordsDirectory;
@@ -64,7 +76,7 @@ namespace DataTransferApp.Net.Models
         }
 
         // Folder Naming
-        public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Z]{2,10}(_\d+)?$";
+        public string FolderNameRegex { get; set; } = @"^[A-Za-z0-9]+_\d{8}_[A-Za-z]{2,10}(_\d+)?$";
 
         // File Extension Blacklist
         public IList<string> BlacklistedExtensions { get; set; } = new List<string>
@@ -75,7 +87,7 @@ namespace DataTransferApp.Net.Models
         // Dataset Whitelist
         public IList<string> WhiteListDatasets { get; set; } = new List<string>
         {
-            "UG", "AETP", "PGP", "PAN"
+            "UG", "PGP"
         };
 
         // Audit Strategy
@@ -92,7 +104,7 @@ namespace DataTransferApp.Net.Models
         public IList<string> ExcludeDrives { get; set; } = new List<string> { "A:\\", "B:\\", "C:\\", "D:\\" };
 
         // Folder Exclusion
-        public IList<string> ExcludedFolders { get; set; } = new List<string> { "New*", "MOVED", "ISSUES", "TEST" };
+        public IList<string> ExcludedFolders { get; set; } = new List<string> { "New*", "MOVED", "ISSUES" };
 
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;
