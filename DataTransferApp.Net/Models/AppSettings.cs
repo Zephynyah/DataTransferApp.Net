@@ -118,7 +118,11 @@ namespace DataTransferApp.Net.Models
         public int KeepLogFiles { get; set; } = 5;
 
         // Transfer History Database (LiteDB)
-        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = auto-select location
+#if DEBUG
+        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = auto-select location  @"C:\ProgramData\DataTransferApp\TransferHistory.db";
+#else
+        public string TransferHistoryDatabasePath { get; set; } = @"\\Puszbf0a\GSC2\GSC_ACC\AFT\Collateral AFT Records\TransferHistory.db";
+#endif
 
         public bool UseSharedDatabaseLocation { get; set; } = true; // True = central location for all users
 
