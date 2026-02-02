@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Empty nested folders not being transferred (e.g., CADIQ Reports subfolder now preserved)
+- Empty nested folders not being transferred (subfolder now preserved)
 - Access denied errors when deleting retention folders on UNC network shares
 - Read-only attribute conflicts preventing file transfer and folder cleanup
 - Locked files causing entire transfer to fail instead of retrying
