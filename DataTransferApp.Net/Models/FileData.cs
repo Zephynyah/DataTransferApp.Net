@@ -30,6 +30,12 @@ namespace DataTransferApp.Net.Models
         private string _status = "Ready";
 
         [ObservableProperty]
+        private string _scanResult = "Not Scanned";
+
+        [ObservableProperty]
+        private bool _isInfected;
+
+        [ObservableProperty]
         private string? _hash;
 
         [ObservableProperty]

@@ -11,6 +11,9 @@ namespace DataTransferApp.Utils
         private static bool _isDefenderAvailable;
         private static string? _defenderPath;
         private static SemaphoreSlim _lock = new SemaphoreSlim(5); // limit to 5 concurrent checks at a time
+        private static readonly TimeSpan _scanTimeout = TimeSpan.FromSeconds(20);
+
+        public static bool IsAvailable => _isDefenderAvailable;
 
         // static ctor
         static WinDefender()
@@ -56,7 +59,16 @@ namespace DataTransferApp.Utils
 
             try
             {
-                using (var process = Process.Start(_defenderPath, $"-Scan -ScanType 3 -File \"{path}\" -DisableRemediation"))
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = _defenderPath,
+                    Arguments = $"-Scan -ScanType 3 -File \"{path}\" -DisableRemediation",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+
+                using (var process = Process.Start(startInfo))
                 {
                     if (process == null)
                     {
@@ -67,7 +79,7 @@ namespace DataTransferApp.Utils
 
                     try
                     {
-                        await process.WaitForExitAsync().WaitAsync(TimeSpan.FromMilliseconds(2500), cancellationToken);
+                        await process.WaitForExitAsync().WaitAsync(_scanTimeout, cancellationToken);
                     }
                     catch (TimeoutException ex) // timeout
                     {

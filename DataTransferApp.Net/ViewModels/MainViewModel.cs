@@ -12,6 +12,7 @@ using DataTransferApp.Net.Helpers;
 using DataTransferApp.Net.Models;
 using DataTransferApp.Net.Services;
 using DataTransferApp.Net.Views;
+using DataTransferApp.Utils;
 
 namespace DataTransferApp.Net.ViewModels
 {
@@ -261,6 +262,8 @@ namespace DataTransferApp.Net.ViewModels
             {
                 file.IsBlacklisted = false;
                 file.IsCompressed = false;
+                file.IsInfected = false;
+                file.ScanResult = "Not Scanned";
                 file.Status = "Ready";
             }
 
@@ -476,9 +479,10 @@ namespace DataTransferApp.Net.ViewModels
                 var compressedCount = CountCompressedFiles();
                 SelectedFolder.AuditStatus = DetermineOverallAuditStatus(result, compressedCount);
                 UpdateFileStatuses(result);
+                await ScanFolderForVirusesAsync(SelectedFolder);
                 UpdateStatistics();
 
-                StatusMessage = $"Audit {result.OverallStatus}: {SelectedFolder.FolderName}";
+                StatusMessage = $"Audit {SelectedFolder.AuditStatus}: {SelectedFolder.FolderName}";
             }
             catch (Exception ex)
             {
@@ -539,7 +543,9 @@ namespace DataTransferApp.Net.ViewModels
             {
                 file.IsBlacklisted = false;
                 file.IsCompressed = false;
+                file.IsInfected = false;
                 file.Status = "Ready";
+                file.ScanResult = "Not Scanned";
             }
 
             // Mark blacklisted files
@@ -572,6 +578,53 @@ namespace DataTransferApp.Net.ViewModels
                         file.Status = "Compressed";
                     }
                 }
+            }
+        }
+
+        private async Task ScanFolderForVirusesAsync(FolderData folder)
+        {
+            if (!WinDefender.IsAvailable)
+            {
+                foreach (var file in folder.Files)
+                {
+                    file.ScanResult = "Defender Unavailable";
+                }
+
+                return;
+            }
+
+            var scanTasks = folder.Files.Select(ScanSingleFileAsync);
+            await Task.WhenAll(scanTasks);
+
+            if (folder.Files.Any(f => f.IsInfected) && folder.AuditStatus == "Passed")
+            {
+                folder.AuditStatus = "Failed";
+            }
+        }
+
+        private static async Task ScanSingleFileAsync(FileData file)
+        {
+            file.ScanResult = "Scanning...";
+
+            try
+            {
+                var infected = await WinDefender.IsVirus(file.FullPath);
+                file.IsInfected = infected;
+                file.ScanResult = infected ? "Infected" : "Clean";
+
+                if (infected)
+                {
+                    file.Status = "Virus";
+                }
+            }
+            catch (TimeoutException)
+            {
+                file.ScanResult = "Timeout";
+            }
+            catch (Exception ex)
+            {
+                file.ScanResult = "Error";
+                LoggingService.Error($"Virus scan failed for {file.FullPath}", ex);
             }
         }
 
@@ -617,6 +670,7 @@ namespace DataTransferApp.Net.ViewModels
             CountAndUpdateCompressedFiles(folder);
             DetermineFolderOverallStatus(folder, result);
             UpdateFileStatuses(folder, result);
+            await ScanFolderForVirusesAsync(folder);
         }
 
         [RelayCommand(CanExecute = nameof(CanTransferAllFolders))]

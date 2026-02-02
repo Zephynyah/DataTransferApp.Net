@@ -741,6 +741,15 @@
                                             </Setter.Value>
                                         </Setter>
                                     </MultiDataTrigger>
+
+                                    <!-- Infected files get highest priority - override everything except blacklisted -->
+                                    <DataTrigger Binding="{Binding IsInfected}" Value="True">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="#E74C3C" Opacity="0.35"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
                                     
                                     <!-- Blacklisted files get highest priority - override everything -->
                                     <DataTrigger Binding="{Binding IsBlacklisted}" Value="True">
@@ -780,6 +789,7 @@
                             <DataGridTextColumn Header="Extension" Binding="{Binding Extension}" Width="*"/>
                             <DataGridTextColumn Header="Size" Binding="{Binding SizeFormatted}" Width="*"/>
                             <DataGridTextColumn Header="Modified" Binding="{Binding Modified}" Width="2*"/>
+                            <DataGridTextColumn Header="Scan" Binding="{Binding ScanResult}" Width="*"/>
                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
                             <DataGridTemplateColumn Header="Action" Width="80">
                                 <DataGridTemplateColumn.CellTemplate>
