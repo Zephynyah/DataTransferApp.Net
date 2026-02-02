@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enhance AppSettings validation and UI; update version to 1.3.5
+- Enhance AppSettings validation and UI; 
 - Add unit tests for FileService and update solution configuration; suppress StyleCop warnings
 - Refactor various services for improved readability and maintainability; add missing newlines and reorganize code structure
 - Refactor TransferDatabaseService and TransferHistoryService; add InitializeDatabase method for index management and clean up code structure
