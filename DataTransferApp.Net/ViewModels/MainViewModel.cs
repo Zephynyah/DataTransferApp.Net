@@ -362,6 +362,7 @@ namespace DataTransferApp.Net.ViewModels
             // Notify transfer commands to re-evaluate when selected drive changes
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+            TransferAllFoldersCommand.NotifyCanExecuteChanged();
             ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
@@ -371,6 +372,7 @@ namespace DataTransferApp.Net.ViewModels
             AuditFolderCommand.NotifyCanExecuteChanged();
             TransferFolderCommand.NotifyCanExecuteChanged();
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+            TransferAllFoldersCommand.NotifyCanExecuteChanged();
             ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
@@ -617,7 +619,7 @@ namespace DataTransferApp.Net.ViewModels
             UpdateFileStatuses(folder, result);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanTransferAllFolders))]
         private async Task TransferAllFoldersAsync()
         {
             if (!ValidateTransferPrerequisites(out var passedFolders))
@@ -834,6 +836,10 @@ namespace DataTransferApp.Net.ViewModels
         private bool CanTransferFolder() =>
             SelectedFolder != null &&
             SelectedFolder.CanTransfer &&
+            SelectedDrive != null &&
+            !IsProcessing;
+
+        private bool CanTransferAllFolders() =>
             SelectedDrive != null &&
             !IsProcessing;
 
