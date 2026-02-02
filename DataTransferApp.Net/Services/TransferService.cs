@@ -68,6 +68,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "Method readability preferred; refactor later if needed.")]
         public async Task<TransferResult> TransferFolderAsync(
             FolderData folder,
             string destinationDrive,
@@ -237,6 +238,8 @@ namespace DataTransferApp.Net.Services
 #endif
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "Retries and logging kept together for clarity.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used by retention cleanup flow")]
         private static void DeleteRetentionFolder(DirectoryInfo folder)
         {
             const int maxRetries = 3;
@@ -543,12 +546,12 @@ namespace DataTransferApp.Net.Services
             try
             {
                 var allDirs = Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories);
-                
+
                 foreach (var dir in allDirs)
                 {
                     var relativePath = dir.Replace(sourcePath, string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var destDir = Path.Combine(destinationPath, relativePath);
-                    
+
                     if (!Directory.Exists(destDir))
                     {
                         Directory.CreateDirectory(destDir);
@@ -593,12 +596,12 @@ namespace DataTransferApp.Net.Services
                 }
                 catch (IOException ex) when (attempt < maxRetries && (ex.Message.Contains("being used") || ex.Message.Contains("denied")))
                 {
-                    LoggingService.Debug($"File locked, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)}");
+                    LoggingService.Debug($"File locked, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)} ({ex.Message})");
                     await Task.Delay(retryDelayMs, cancellationToken);
                 }
                 catch (UnauthorizedAccessException ex) when (attempt < maxRetries)
                 {
-                    LoggingService.Debug($"Access denied, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)}");
+                    LoggingService.Debug($"Access denied, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)} ({ex.Message})");
                     await Task.Delay(retryDelayMs, cancellationToken);
                 }
             }

@@ -101,9 +101,9 @@ namespace DataTransferApp.Net.Models
         // Drive Detection
         public double MinimumFreeSpaceGB { get; set; } = 1.0;
 
-        public IList<string> ExcludeDrives { get; set; } = new List<string> 
-        { 
-            "A:\\", "B:\\", "C:\\", "D:\\", "E:\\", "T:\\" 
+        public IList<string> ExcludeDrives { get; set; } = new List<string>
+        {
+            "A:\\", "B:\\", "C:\\", "D:\\", "E:\\", "T:\\"
         };
 
         // Folder Exclusion
@@ -122,7 +122,7 @@ namespace DataTransferApp.Net.Models
 
         // Transfer History Database (LiteDB)
 #if DEBUG
-        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty = auto-select location  @"C:\ProgramData\DataTransferApp\TransferHistory.db";
+        public string TransferHistoryDatabasePath { get; set; } = string.Empty; // Empty uses the default application data location
 #else
         public string TransferHistoryDatabasePath { get; set; } = @"\\Puszbf0a\GSC2\GSC_ACC\AFT\Collateral AFT Records\TransferHistory.db";
 #endif
