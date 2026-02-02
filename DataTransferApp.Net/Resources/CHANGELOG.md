@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enhance AppSettings validation and UI; 
+- Enhance AppSettings validation and UI
 - Add unit tests for FileService and update solution configuration; suppress StyleCop warnings
 - Refactor various services for improved readability and maintainability; add missing newlines and reorganize code structure
 - Refactor TransferDatabaseService and TransferHistoryService; add InitializeDatabase method for index management and clean up code structure
@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete subdirectory structure preservation including empty folders
 - Conditional compilation directives for Debug vs Release builds with environment-specific default paths
 - BUILD-CONFIGURATION.md documentation for build-time configuration options
+- CanExecute validation for Transfer All command to ensure drive is selected before enabling
 
 ### Changed
 
@@ -46,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Read-only attribute conflicts preventing file transfer and folder cleanup
 - Locked files causing entire transfer to fail instead of retrying
 - Excessive warning log spam during normal database retry operations
+- Transfer All button now properly disabled when no drive is selected or detected
 
 ## [1.3.3] - 2026-01-30
 
