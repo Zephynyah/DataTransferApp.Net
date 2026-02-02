@@ -102,6 +102,9 @@ namespace DataTransferApp.Net.Services
                 // Create destination directory
                 Directory.CreateDirectory(destinationPath);
 
+                // Copy all subdirectories (including empty ones) to preserve folder structure
+                CopyAllSubdirectories(folder.FolderPath, destinationPath);
+
                 // Transfer all files
                 await TransferFilesAsync(folder.Files, destinationPath, progress, cancellationToken);
 
@@ -535,6 +538,75 @@ namespace DataTransferApp.Net.Services
             return $"{bytes} bytes";
         }
 
+        private static void CopyAllSubdirectories(string sourcePath, string destinationPath)
+        {
+            try
+            {
+                var allDirs = Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories);
+                
+                foreach (var dir in allDirs)
+                {
+                    var relativePath = dir.Replace(sourcePath, string.Empty).TrimStart(Path.DirectorySeparatorChar);
+                    var destDir = Path.Combine(destinationPath, relativePath);
+                    
+                    if (!Directory.Exists(destDir))
+                    {
+                        Directory.CreateDirectory(destDir);
+                        LoggingService.Debug($"Created subdirectory: {relativePath}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Warning($"Error creating subdirectories: {ex.Message}");
+            }
+        }
+
+        private static async Task CopyFileWithRetryAsync(string sourceFile, string destFile, CancellationToken cancellationToken)
+        {
+            const int maxRetries = 3;
+            const int retryDelayMs = 500;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    // Remove read-only attribute from source if present
+                    var sourceFileInfo = new FileInfo(sourceFile);
+                    if ((sourceFileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        sourceFileInfo.Attributes &= ~FileAttributes.ReadOnly;
+                    }
+
+                    // Remove read-only attribute from destination if it exists
+                    if (File.Exists(destFile))
+                    {
+                        var destFileInfo = new FileInfo(destFile);
+                        if ((destFileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            destFileInfo.Attributes &= ~FileAttributes.ReadOnly;
+                        }
+                    }
+
+                    await Task.Run(() => File.Copy(sourceFile, destFile, true), cancellationToken);
+                    return; // Success
+                }
+                catch (IOException ex) when (attempt < maxRetries && (ex.Message.Contains("being used") || ex.Message.Contains("denied")))
+                {
+                    LoggingService.Debug($"File locked, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)}");
+                    await Task.Delay(retryDelayMs, cancellationToken);
+                }
+                catch (UnauthorizedAccessException ex) when (attempt < maxRetries)
+                {
+                    LoggingService.Debug($"Access denied, retry {attempt}/{maxRetries}: {Path.GetFileName(sourceFile)}");
+                    await Task.Delay(retryDelayMs, cancellationToken);
+                }
+            }
+
+            // Final attempt without catching
+            await Task.Run(() => File.Copy(sourceFile, destFile, true), cancellationToken);
+        }
+
         private async Task TransferFilesAsync(IEnumerable<FileData> files, string destinationPath, IProgress<TransferProgress>? progress, CancellationToken cancellationToken)
         {
             var fileList = files.ToList();
@@ -554,7 +626,8 @@ namespace DataTransferApp.Net.Services
                     Directory.CreateDirectory(destFileDir);
                 }
 
-                await Task.Run(() => File.Copy(file.FullPath, destFilePath, true), cancellationToken);
+                // Copy file with retry logic for locked files
+                await CopyFileWithRetryAsync(file.FullPath, destFilePath, cancellationToken);
 
                 // Calculate hash if enabled
                 if (_settings.CalculateFileHashes)
@@ -588,8 +661,27 @@ namespace DataTransferApp.Net.Services
                 // Handle existing folder in retention - delete old one and replace
                 if (Directory.Exists(retentionPath))
                 {
-                    Directory.Delete(retentionPath, true);
-                    LoggingService.Info($"Replaced existing retention folder: {folderName}");
+                    try
+                    {
+                        RemoveReadOnlyAttributes(new DirectoryInfo(retentionPath));
+                        Directory.Delete(retentionPath, true);
+                        LoggingService.Info($"Replaced existing retention folder: {folderName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggingService.Warning($"Could not delete existing retention folder, will use alternate path: {ex.Message}");
+                        retentionPath = GetSequencedPath(_settings.RetentionDirectory, folderName);
+                    }
+                }
+
+                // Remove read-only attributes from source before moving
+                try
+                {
+                    RemoveReadOnlyAttributes(new DirectoryInfo(sourcePath));
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Debug($"Could not remove read-only attributes: {ex.Message}");
                 }
 
                 // Move folder to retention
