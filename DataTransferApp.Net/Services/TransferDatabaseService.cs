@@ -108,14 +108,16 @@ namespace DataTransferApp.Net.Services
                 }
                 catch (IOException ex) when (ex.Message.Contains("being used by another process"))
                 {
-                    LoggingService.Warning($"Database file locked, attempt {attempt}/{maxRetries}: {ex.Message}");
                     if (attempt < maxRetries)
                     {
+                        // Only log debug message on retry attempts to reduce noise
+                        LoggingService.Debug($"Database file locked, attempt {attempt}/{maxRetries}, retrying...");
                         System.Threading.Thread.Sleep(delayMs);
                     }
                     else
                     {
-                        LoggingService.Error("Error retrieving all transfers from database after retries", ex);
+                        LoggingService.Warning($"Database file still locked after {maxRetries} attempts. Some data may be temporarily unavailable.");
+                        LoggingService.Debug($"Details: {ex.Message}");
                     }
                 }
                 catch (Exception ex)
@@ -340,14 +342,15 @@ namespace DataTransferApp.Net.Services
                 }
                 catch (IOException ex) when (ex.Message.Contains("being used by another process"))
                 {
-                    LoggingService.Warning($"Database file locked during delete, attempt {attempt}/{maxRetries}: {ex.Message}");
                     if (attempt < maxRetries)
                     {
+                        LoggingService.Debug($"Database file locked during delete, attempt {attempt}/{maxRetries}, retrying...");
                         System.Threading.Thread.Sleep(delayMs);
                     }
                     else
                     {
-                        LoggingService.Error($"Error deleting transfer from database after retries: {id}", ex);
+                        LoggingService.Warning($"Database file still locked after {maxRetries} attempts during delete operation.");
+                        LoggingService.Debug($"Details: {ex.Message}");
                     }
                 }
                 catch (Exception ex)
