@@ -5,6 +5,33 @@ All notable changes to Data Transfer Application (.NET) will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] - 2026-02-02
+
+### Added
+
+- Add E:\ and T:\ to excluded drives
+- Add command for transferring all folders
+- Add conditional compilation for TransferHistoryDatabasePath
+- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService; introduce timeUpdateTimer in MainViewModel for improved functionality
+
+### Fixed
+
+- Update CHANGELOG with fixed issues
+
+### Changed
+
+- Refactor code style and improve logging in TransferService methods
+- Update CHANGELOG for version 1.3.4 enhancements
+- Remove IsEnabled binding from Transfer All button
+- Update CHANGELOG for version 1.3.5
+- Implement subdirectory copying and file retry logic
+- Create Build Configuration Guide
+- Refactor AppSettings for directory paths and regex
+- Enhance retention folder deletion with retries
+- Enhance logging for database file lock handling
+- Refactor converters and improve documentation; remove unused FileToFontAwesomeConverter
+- Update CHANGELOG.md to reflect recent enhancements and refactoring; improve clarity and organization
+
 ## [1.3.4] - 2026-02-01
 
 ### Added

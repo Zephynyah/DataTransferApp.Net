@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.5] - 2026-02-02
+
+### Added
+
+- Update project version to 1.3.4 and add WinDefender utility class for virus scanning
+- Add E:\ and T:\ to excluded drives
+- Add command for transferring all folders
+- Add conditional compilation for TransferHistoryDatabasePath
+- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService; introduce timeUpdateTimer in MainViewModel for improved functionality
+
+### Fixed
+
+- Update CHANGELOG with fixed issues
+
+### Changed
+
+- Refactor code style and improve logging in TransferService methods
+- Remove WinDefender utility class for virus scanning
+- Update CHANGELOG for version 1.3.4 enhancements
+- Remove IsEnabled binding from Transfer All button
+- Update CHANGELOG for version 1.3.5
+- Implement subdirectory copying and file retry logic
+- Update CHANGELOG for version 1.3.4
+- Create Build Configuration Guide
+- Refactor AppSettings for directory paths and regex
+- Enhance retention folder deletion with retries
+- Enhance logging for database file lock handling
+- Refactor converters and improve documentation; remove unused FileToFontAwesomeConverter
+- Update CHANGELOG.md to reflect recent enhancements and refactoring; improve clarity and organization
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+
 ## [1.3.5] - 2026-02-01
 
 ### Added
