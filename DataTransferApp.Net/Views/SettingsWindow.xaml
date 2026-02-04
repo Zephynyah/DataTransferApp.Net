@@ -274,6 +274,33 @@
                     </StackPanel>
                 </GroupBox>
                 
+                <!-- Experimental Features -->
+                <GroupBox Header="🧪 Experimental Features">
+                    <StackPanel>
+                        <Border Background="#fff3cd" BorderBrush="#ffeaa7" BorderThickness="1" CornerRadius="3" Padding="15" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="⚠️ These features are experimental and may impact performance" 
+                                         FontSize="12" Foreground="#856404" FontWeight="Bold" Margin="0,0,0,10"/>
+                                
+                                <CheckBox Content="Enable Virus Scanning (Windows Defender)" 
+                                         IsChecked="{Binding EnableVirusScanning}" 
+                                         Foreground="#856404" 
+                                         FontWeight="SemiBold"/>
+                                
+                                <TextBlock FontSize="11" Foreground="#856404" TextWrapping="Wrap" Margin="20,8,0,0">
+                                    Scans transferred files for viruses using Windows Defender. 
+                                    <LineBreak/>
+                                    <Bold>• May significantly slow transfer performance</Bold>
+                                    <LineBreak/>
+                                    • Requires Windows Defender to be installed and available
+                                    <LineBreak/>
+                                    • Adds a "Scan" column to the file list when enabled
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </GroupBox>
+                
                 <!-- Transfer Settings -->
                 <GroupBox Header="Transfer Options">
                     <StackPanel>

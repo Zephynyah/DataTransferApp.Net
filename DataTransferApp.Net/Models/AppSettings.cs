@@ -147,6 +147,9 @@ namespace DataTransferApp.Net.Models
         // Transfer Settings
         public bool EnableCompression { get; set; } = false;
 
+        // Experimental Features (Use with caution)
+        public bool EnableVirusScanning { get; set; } = false; // EXPERIMENTAL: Enable Windows Defender virus scanning for transferred files
+
         public int MaxConcurrentTransfers { get; set; } = 1;
 
         public bool AutoHandleConflicts { get; set; } = true;

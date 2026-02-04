@@ -19,6 +19,7 @@
         <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
         <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <helpers:BoolToWidthConverter x:Key="BoolToWidthConverter"/>
         <helpers:StatusToColorConverter x:Key="StatusToColorConverter"/>
         <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
         <helpers:FileIconConverter x:Key="FileIconConverter"/>
@@ -712,7 +713,7 @@
                 
                 <!-- Files Grid -->
                 <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1">
-                    <DataGrid ItemsSource="{Binding FileList}" 
+                    <DataGrid x:Name="FileDataGrid" ItemsSource="{Binding FileList}" 
                               RowHeight="28"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"

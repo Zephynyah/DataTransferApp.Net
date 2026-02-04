@@ -240,7 +240,7 @@ namespace DataTransferApp.Net.ViewModels
             folder.CompressedAuditStatus = compressedCount > 0 ? "Caution" : "Passed";
         }
 
-        private static void DetermineFolderOverallStatus(FolderData folder, AuditResult result)
+        private static void DetermineFolderOverallStatus(FolderData folder, AuditResult result, AppSettings settings)
         {
             // Determine overall status: if all checks pass but there are compressed files, set to Caution
             if (result.OverallStatus == "Passed" && folder.CompressedFileCount > 0)
@@ -253,7 +253,7 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private static void UpdateFileStatuses(FolderData folder, AuditResult result)
+        private static void UpdateFileStatuses(FolderData folder, AuditResult result, AppSettings settings)
         {
             var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
 
@@ -263,7 +263,7 @@ namespace DataTransferApp.Net.ViewModels
                 file.IsBlacklisted = false;
                 file.IsCompressed = false;
                 file.IsInfected = false;
-                file.ScanResult = "Not Scanned";
+                file.ScanResult = settings.EnableVirusScanning ? "Not Scanned" : "Disabled";
                 file.Status = "Ready";
             }
 
@@ -479,7 +479,10 @@ namespace DataTransferApp.Net.ViewModels
                 var compressedCount = CountCompressedFiles();
                 SelectedFolder.AuditStatus = DetermineOverallAuditStatus(result, compressedCount);
                 UpdateFileStatuses(result);
-                await ScanFolderForVirusesAsync(SelectedFolder);
+                if (_settings.EnableVirusScanning)
+                {
+                    await ScanFolderForVirusesAsync(SelectedFolder);
+                }
                 UpdateStatistics();
 
                 StatusMessage = $"Audit {SelectedFolder.AuditStatus}: {SelectedFolder.FolderName}";
@@ -545,7 +548,7 @@ namespace DataTransferApp.Net.ViewModels
                 file.IsCompressed = false;
                 file.IsInfected = false;
                 file.Status = "Ready";
-                file.ScanResult = "Not Scanned";
+                file.ScanResult = _settings.EnableVirusScanning ? "Not Scanned" : "Disabled";
             }
 
             // Mark blacklisted files
@@ -668,9 +671,12 @@ namespace DataTransferApp.Net.ViewModels
 
             UpdateFolderAuditStatuses(folder, result);
             CountAndUpdateCompressedFiles(folder);
-            DetermineFolderOverallStatus(folder, result);
-            UpdateFileStatuses(folder, result);
-            await ScanFolderForVirusesAsync(folder);
+            DetermineFolderOverallStatus(folder, result, _settings);
+            UpdateFileStatuses(folder, result, _settings);
+            if (_settings.EnableVirusScanning)
+            {
+                await ScanFolderForVirusesAsync(folder);
+            }
         }
 
         [RelayCommand(CanExecute = nameof(CanTransferAllFolders))]
@@ -1095,6 +1101,10 @@ namespace DataTransferApp.Net.ViewModels
                     _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
+                    _settings.EnableVirusScanning = updatedSettings.EnableVirusScanning;
+
+                    // Refresh scan results for all files based on new virus scanning setting
+                    RefreshScanResults();
 
                     StatusMessage = "Settings updated successfully";
                     _ = ShowSnackbar("Settings saved successfully!", "success");
@@ -1246,6 +1256,21 @@ namespace DataTransferApp.Net.ViewModels
             FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
             TransferredCount = TransferredList.Count;
             TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
+        }
+
+        private void RefreshScanResults()
+        {
+            foreach (var folder in FolderList)
+            {
+                foreach (var file in folder.Files)
+                {
+                    // Only update scan result if it hasn't been scanned yet (don't overwrite actual scan results)
+                    if (file.ScanResult == "Not Scanned" || file.ScanResult == "Disabled")
+                    {
+                        file.ScanResult = _settings.EnableVirusScanning ? "Not Scanned" : "Disabled";
+                    }
+                }
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace DataTransferApp.Net.Models
         private string _status = "Ready";
 
         [ObservableProperty]
-        private string _scanResult = "Not Scanned";
+        private string _scanResult = "Disabled";
 
         [ObservableProperty]
         private bool _isInfected;
