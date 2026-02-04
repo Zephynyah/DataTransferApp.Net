@@ -132,7 +132,7 @@
                             </MenuItem>
                             <MenuItem Header="Run Retention Cleanup" Command="{Binding RunRetentionCleanupAsyncCommand}" IsEnabled="{Binding IsRetentionCleanupRunning, Converter={StaticResource InverseBoolConverter}}">
                                 <MenuItem.Icon>
-                                    <fa:IconBlock Icon="Trash" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
+                                    <fa:IconBlock Icon="Tasks" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
