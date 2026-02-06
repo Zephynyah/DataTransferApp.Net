@@ -365,7 +365,7 @@
                             
                             <StackPanel Grid.Column="1" Margin="5,0,0,0">
                                 <TextBlock Text="Retry Wait (seconds):" Style="{StaticResource SubHeaderTextStyle}"/>
-                                <TextBox Text="{Binding RobocopyRetryWait}" 
+                                <TextBox Text="{Binding RobocopyRetryWaitSeconds}" 
                                          IsEnabled="{Binding UseRoboSharp}"
                                          ToolTip="Wait time between retry attempts"/>
                             </StackPanel>
@@ -379,7 +379,7 @@
                         <TextBlock Text="Logging &amp; Monitoring" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
                         
                         <CheckBox Content="Enable Verbose Output" 
-                                  IsChecked="{Binding RobocopyVerbose}" 
+                                  IsChecked="{Binding RobocopyVerboseOutput}" 
                                   IsEnabled="{Binding UseRoboSharp}"
                                   Margin="0,0,0,5"
                                   ToolTip="Show detailed file-by-file progress information"/>
@@ -388,7 +388,7 @@
                                    Margin="20,0,0,10"/>
                         
                         <CheckBox Content="Generate Transfer Logs" 
-                                  IsChecked="{Binding RobocopyEnableLogging}" 
+                                  IsChecked="{Binding RobocopyDetailedLogging}" 
                                   IsEnabled="{Binding UseRoboSharp}"
                                   Margin="0,0,0,5"
                                   ToolTip="Save detailed Robocopy logs for each transfer"/>

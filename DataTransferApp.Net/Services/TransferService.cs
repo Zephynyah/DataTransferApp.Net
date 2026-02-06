@@ -1016,7 +1016,7 @@ namespace DataTransferApp.Net.Services
                         $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log")
                     : null,
                 
-                VerboseOutput = _settings.RobocopyDetailedLogging,
+                VerboseOutput = _settings.RobocopyVerboseOutput,
                 AppendLog = false
             };
         }

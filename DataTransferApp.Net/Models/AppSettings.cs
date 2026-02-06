@@ -174,6 +174,8 @@ namespace DataTransferApp.Net.Models
 
         public int RobocopyBufferSizeKB { get; set; } = 128;
 
+        public bool RobocopyVerboseOutput { get; set; } = false;
+
         public bool RobocopyDetailedLogging { get; set; } = false;
 
         public int RobocopyInterPacketGapMs { get; set; } = 0; // 0 = no throttling

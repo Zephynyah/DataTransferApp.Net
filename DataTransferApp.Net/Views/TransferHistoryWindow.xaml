@@ -15,6 +15,7 @@
     <Window.Resources>
         <helpers:FileSizeConverter x:Key="FileSizeConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#E74C3C"/>
     </Window.Resources>
     
     <Grid>
