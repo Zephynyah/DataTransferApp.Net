@@ -24,7 +24,7 @@
   - Mirror mode toggle (future)
   - Purge destination option (future)
 - [x] Add "Use RoboSharp" toggle in Settings (applies to all transfers)
-- [ ] Create preset configurations (Fast, Safe, Network, Archive)
+- [x] Create preset configurations (Fast, Safe, Network, Archive)
 
 ### Error Handling & Logging
 

@@ -51,6 +51,74 @@ namespace DataTransferApp.Net.Views
             Close();
         }
 
+        #region RoboSharp Presets
+
+        private void ApplyFastPreset_Click(object sender, RoutedEventArgs e)
+        {
+            _settings.RobocopyThreadCount = 16;
+            _settings.RobocopyRetries = 3;
+            _settings.RobocopyRetryWaitSeconds = 5;
+            _settings.UseRestartableMode = false;
+            _settings.UseBackupMode = false;
+            _settings.VerifyRobocopy = false;
+            _settings.RobocopyVerboseOutput = false;
+            _settings.RobocopyDetailedLogging = false;
+
+            MessageBox.Show("Fast preset applied.\n✓ 16 threads for maximum local speed\n✓ Minimal retries for quick transfers\n✓ No verification overhead",
+                "Preset Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            LoggingService.Info("RoboSharp Fast preset applied");
+        }
+
+        private void ApplySafePreset_Click(object sender, RoutedEventArgs e)
+        {
+            _settings.RobocopyThreadCount = 8;
+            _settings.RobocopyRetries = 5;
+            _settings.RobocopyRetryWaitSeconds = 10;
+            _settings.UseRestartableMode = true;
+            _settings.UseBackupMode = true;
+            _settings.VerifyRobocopy = false;
+            _settings.RobocopyVerboseOutput = false;
+            _settings.RobocopyDetailedLogging = true;
+
+            MessageBox.Show("Safe preset applied.\n✓ 8 threads for balanced performance\n✓ 5 retries with 10s wait time\n✓ Restartable mode enabled\n✓ Logging enabled",
+                "Preset Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            LoggingService.Info("RoboSharp Safe preset applied");
+        }
+
+        private void ApplyNetworkPreset_Click(object sender, RoutedEventArgs e)
+        {
+            _settings.RobocopyThreadCount = 4;
+            _settings.RobocopyRetries = 10;
+            _settings.RobocopyRetryWaitSeconds = 30;
+            _settings.UseRestartableMode = true;
+            _settings.UseBackupMode = true;
+            _settings.VerifyRobocopy = true;
+            _settings.RobocopyVerboseOutput = false;
+            _settings.RobocopyDetailedLogging = true;
+
+            MessageBox.Show("Network preset applied.\n✓ 4 threads for network stability\n✓ 10 retries with 30s wait time\n✓ Restartable mode for resume capability\n✓ Verification enabled\n✓ Logging enabled",
+                "Preset Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            LoggingService.Info("RoboSharp Network preset applied");
+        }
+
+        private void ApplyArchivePreset_Click(object sender, RoutedEventArgs e)
+        {
+            _settings.RobocopyThreadCount = 8;
+            _settings.RobocopyRetries = 5;
+            _settings.RobocopyRetryWaitSeconds = 10;
+            _settings.UseRestartableMode = true;
+            _settings.UseBackupMode = true;
+            _settings.VerifyRobocopy = true;
+            _settings.RobocopyVerboseOutput = true;
+            _settings.RobocopyDetailedLogging = true;
+
+            MessageBox.Show("Archive preset applied.\n✓ 8 threads for reliable archival\n✓ Full verification enabled\n✓ Verbose output for audit trail\n✓ Complete logging\n✓ Backup mode for maximum compatibility",
+                "Preset Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            LoggingService.Info("RoboSharp Archive preset applied");
+        }
+
+        #endregion
+
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(

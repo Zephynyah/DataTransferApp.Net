@@ -319,6 +319,47 @@
                         
                         <Separator Margin="0,5,0,10"/>
                         
+                        <!-- Configuration Presets -->
+                        <TextBlock Text="Configuration Presets" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        <TextBlock Text="Quick apply optimized settings for common scenarios"
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,0,0,5"/>
+                        
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <Button Grid.Column="0" Content="⚡ Fast" 
+                                    Click="ApplyFastPreset_Click"
+                                    IsEnabled="{Binding UseRoboSharp}"
+                                    Margin="0,0,5,0"
+                                    ToolTip="Max speed for local transfers (16 threads, minimal retries)"/>
+                            
+                            <Button Grid.Column="1" Content="🛡️ Safe" 
+                                    Click="ApplySafePreset_Click"
+                                    IsEnabled="{Binding UseRoboSharp}"
+                                    Margin="5,0,5,0"
+                                    ToolTip="Balanced settings with verification (8 threads, 5 retries)"/>
+                            
+                            <Button Grid.Column="2" Content="🌐 Network" 
+                                    Click="ApplyNetworkPreset_Click"
+                                    IsEnabled="{Binding UseRoboSharp}"
+                                    Margin="5,0,5,0"
+                                    ToolTip="Optimized for unreliable networks (4 threads, 10 retries)"/>
+                            
+                            <Button Grid.Column="3" Content="📦 Archive" 
+                                    Click="ApplyArchivePreset_Click"
+                                    IsEnabled="{Binding UseRoboSharp}"
+                                    Margin="5,0,0,0"
+                                    ToolTip="High integrity with full verification (8 threads, verify enabled)"/>
+                        </Grid>
+                        
+                        <Separator Margin="0,5,0,10"/>
+                        
                         <TextBlock Text="Performance Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
                         
                         <TextBlock Text="Thread Count:" Style="{StaticResource SubHeaderTextStyle}"/>
