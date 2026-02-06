@@ -12,7 +12,8 @@
         MinHeight="1000" MinWidth="1400"
         WindowStartupLocation="CenterScreen"
         Icon="/app.png"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{StaticResource BackgroundBrush}"
+        Closing="Window_Closing">
     
     <Window.Resources>
         <!-- Converters -->

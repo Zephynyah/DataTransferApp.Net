@@ -44,6 +44,61 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        // Show confirmation dialog
+        var result = MessageBox.Show(
+            "Are you sure you want to exit the Data Transfer Application?",
+            "Confirm Exit",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question,
+            MessageBoxResult.No);
+
+        if (result == MessageBoxResult.No)
+        {
+            // Cancel the closing
+            e.Cancel = true;
+            LoggingService.Info("Application close cancelled by user");
+            return;
+        }
+
+        // User confirmed exit - perform cleanup
+        LoggingService.Info("Application closing confirmed by user");
+        
+        try
+        {
+            // Cancel any running operations in ViewModel
+            if (DataContext is MainViewModel vm)
+            {
+                // Check if any transfers are running
+                if (vm.IsProcessing)
+                {
+                    var confirmTransfer = MessageBox.Show(
+                        "A transfer is currently in progress. Are you sure you want to exit? This may result in incomplete transfers.",
+                        "Transfer in Progress",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No);
+
+                    if (confirmTransfer == MessageBoxResult.No)
+                    {
+                        e.Cancel = true;
+                        LoggingService.Info("Application close cancelled due to active transfer");
+                        return;
+                    }
+                }
+
+                LoggingService.Info("Performing cleanup before exit");
+            }
+
+            LoggingService.Info("MainWindow closing - cleanup completed");
+        }
+        catch (Exception ex)
+        {
+            LoggingService.Error("Error during application shutdown", ex);
+        }
+    }
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
