@@ -213,86 +213,90 @@
                         </TextBlock>
 
                         <!-- RoboSharp Statistics (visible only for RoboSharp transfers) -->
-                        <Border Margin="0,10,0,0" 
-                                Padding="10" 
-                                Background="{StaticResource LightBrush}" 
-                                CornerRadius="5"
-                                Visibility="{Binding IsRoboSharpTransfer, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel>
-                                <TextBlock FontWeight="SemiBold" Margin="0,0,0,5" Foreground="{StaticResource PrimaryBrush}">
+                        <Expander Margin="0,10,0,0" 
+                                  IsExpanded="False"
+                                  Visibility="{Binding IsRoboSharpTransfer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Expander.Header>
+                                <TextBlock FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}">
                                     <Run Text="⚡ RoboSharp Transfer Statistics"/>
                                 </TextBlock>
-                                
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Transfer Method: "/>
-                                    <Run Text="{Binding Summary.TransferMethod, Mode=OneWay}" FontWeight="SemiBold"/>
-                                </TextBlock>
-                                
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Duration: "/>
-                                    <Run Text="{Binding Summary.Duration, StringFormat='{}{0:hh\\:mm\\:ss}', Mode=OneWay}" FontWeight="SemiBold"/>
-                                </TextBlock>
+                            </Expander.Header>
+                            <Border Padding="10" 
+                                    Background="{StaticResource LightBrush}" 
+                                    CornerRadius="5"
+                                    Margin="0,5,0,0">
+                                <StackPanel>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Transfer Method: "/>
+                                        <Run Text="{Binding Summary.TransferMethod, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    </TextBlock>
+                                    
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Duration: "/>
+                                        <Run Text="{Binding Summary.Duration, StringFormat='{}{0:hh\\:mm\\:ss}', Mode=OneWay}" FontWeight="SemiBold"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2" Visibility="{Binding Summary.FormattedSpeed, Converter={StaticResource NullToVisibilityConverter}}">
-                                    <Run Text="Average Speed: "/>
-                                    <Run Text="{Binding Summary.FormattedSpeed, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2" Visibility="{Binding Summary.FormattedSpeed, Converter={StaticResource NullToVisibilityConverter}}">
+                                        <Run Text="Average Speed: "/>
+                                        <Run Text="{Binding Summary.FormattedSpeed, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Files Copied: "/>
-                                    <Run Text="{Binding Summary.FilesCopied, Mode=OneWay}" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Files Copied: "/>
+                                        <Run Text="{Binding Summary.FilesCopied, Mode=OneWay}" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Files Skipped: "/>
-                                    <Run Text="{Binding Summary.FilesSkipped, Mode=OneWay}"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Files Skipped: "/>
+                                        <Run Text="{Binding Summary.FilesSkipped, Mode=OneWay}"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2" Visibility="{Binding Summary.FilesFailed, Converter={StaticResource NullToVisibilityConverter}}">
-                                    <Run Text="Files Failed: "/>
-                                    <Run Text="{Binding Summary.FilesFailed, Mode=OneWay}" Foreground="{StaticResource ErrorBrush}" FontWeight="Bold"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2" Visibility="{Binding Summary.FilesFailed, Converter={StaticResource NullToVisibilityConverter}}">
+                                        <Run Text="Files Failed: "/>
+                                        <Run Text="{Binding Summary.FilesFailed, Mode=OneWay}" Foreground="{StaticResource ErrorBrush}" FontWeight="Bold"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Directories Copied: "/>
-                                    <Run Text="{Binding Summary.DirectoriesCopied, Mode=OneWay}"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Directories Copied: "/>
+                                        <Run Text="{Binding Summary.DirectoriesCopied, Mode=OneWay}"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Bytes Copied: "/>
-                                    <Run Text="{Binding Summary.BytesCopied, Converter={StaticResource FileSizeConverter}, Mode=OneWay}" FontWeight="SemiBold"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Bytes Copied: "/>
+                                        <Run Text="{Binding Summary.BytesCopied, Converter={StaticResource FileSizeConverter}, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    </TextBlock>
 
-                                <TextBlock Margin="0,2">
-                                    <Run Text="Exit Code: "/>
-                                    <Run Text="{Binding Summary.RobocopyExitCode, Mode=OneWay}"/>
-                                </TextBlock>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="Exit Code: "/>
+                                        <Run Text="{Binding Summary.RobocopyExitCode, Mode=OneWay}"/>
+                                    </TextBlock>
 
-                                <!-- Errors (if any) -->
-                                <Border Margin="0,5,0,0" 
-                                        Padding="8" 
-                                        Background="#FFFFE0E0" 
-                                        CornerRadius="3"
-                                        Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <StackPanel>
-                                        <TextBlock FontWeight="SemiBold" Foreground="{StaticResource ErrorBrush}" Margin="0,0,0,3">
-                                            <Run Text="⚠ Errors:"/>
-                                        </TextBlock>
-                                        <ItemsControl ItemsSource="{Binding Summary.Errors}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding}" 
-                                                               TextWrapping="Wrap" 
-                                                               Foreground="{StaticResource ErrorBrush}"
-                                                               FontSize="11"
-                                                               Margin="0,2"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </Border>
+                                    <!-- Errors (if any) -->
+                                    <Border Margin="0,5,0,0" 
+                                            Padding="8" 
+                                            Background="#FFFFE0E0" 
+                                            CornerRadius="3"
+                                            Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Foreground="{StaticResource ErrorBrush}" Margin="0,0,0,3">
+                                                <Run Text="⚠ Errors:"/>
+                                            </TextBlock>
+                                            <ItemsControl ItemsSource="{Binding Summary.Errors}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding}" 
+                                                                   TextWrapping="Wrap" 
+                                                                   Foreground="{StaticResource ErrorBrush}"
+                                                                   FontSize="11"
+                                                                   Margin="0,2"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Expander>
                     </StackPanel>
 
                     <!-- Files List -->
