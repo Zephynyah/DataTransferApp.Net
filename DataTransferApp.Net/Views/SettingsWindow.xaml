@@ -305,6 +305,103 @@
                     </StackPanel>
                 </GroupBox>
                 
+                <!-- RoboSharp Transfer Engine -->
+                <GroupBox Header="RoboSharp Transfer Engine (Advanced)">
+                    <StackPanel>
+                        <CheckBox Content="Use RoboSharp for File Transfers" 
+                                  IsChecked="{Binding UseRoboSharp}" 
+                                  Margin="0,0,0,10"
+                                  ToolTip="Enables high-performance file transfers using Robocopy engine"/>
+                        
+                        <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" TextWrapping="Wrap" Margin="0,0,0,10">
+                            💡 RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations.
+                        </TextBlock>
+                        
+                        <Separator Margin="0,5,0,10"/>
+                        
+                        <TextBlock Text="Performance Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        
+                        <TextBlock Text="Thread Count:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Grid.Column="0" 
+                                    Minimum="1" Maximum="128" 
+                                    Value="{Binding RobocopyThreadCount}" 
+                                    TickFrequency="1" 
+                                    IsSnapToTickEnabled="True"
+                                    VerticalAlignment="Center"
+                                    IsEnabled="{Binding UseRoboSharp}"/>
+                            <TextBlock Grid.Column="1" 
+                                       Text="{Binding RobocopyThreadCount}" 
+                                       VerticalAlignment="Center" 
+                                       Margin="10,0,0,0" 
+                                       MinWidth="30"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryBrush}"/>
+                        </Grid>
+                        <TextBlock Text="Number of concurrent file copy operations. Higher values improve speed for many small files. Default: 8"
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,0,0,10"/>
+                        
+                        <Separator Margin="0,5,0,10"/>
+                        
+                        <TextBlock Text="Reliability Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Retry Count:" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBox Text="{Binding RobocopyRetries}" 
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         ToolTip="Number of retry attempts for failed operations"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Retry Wait (seconds):" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBox Text="{Binding RobocopyRetryWait}" 
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         ToolTip="Wait time between retry attempts"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Automatic retry on transient failures (network issues, file locks, etc.)"
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,5,0,10"/>
+                        
+                        <Separator Margin="0,5,0,10"/>
+                        
+                        <TextBlock Text="Logging &amp; Monitoring" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        
+                        <CheckBox Content="Enable Verbose Output" 
+                                  IsChecked="{Binding RobocopyVerbose}" 
+                                  IsEnabled="{Binding UseRoboSharp}"
+                                  Margin="0,0,0,5"
+                                  ToolTip="Show detailed file-by-file progress information"/>
+                        <TextBlock Text="Shows detailed progress for each file. Provides more information but may impact performance with many small files."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="20,0,0,10"/>
+                        
+                        <CheckBox Content="Generate Transfer Logs" 
+                                  IsChecked="{Binding RobocopyEnableLogging}" 
+                                  IsEnabled="{Binding UseRoboSharp}"
+                                  Margin="0,0,0,5"
+                                  ToolTip="Save detailed Robocopy logs for each transfer"/>
+                        <TextBlock Text="Logs are saved in the Transfer Records directory for troubleshooting and audit purposes."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="20,0,0,10"/>
+                        
+                        <TextBlock FontSize="10" Foreground="#e67e22" TextWrapping="Wrap" Margin="0,5,0,0">
+                            ⚠️ RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions.
+                        </TextBlock>
+                    </StackPanel>
+                </GroupBox>
+                
             </StackPanel>
         </ScrollViewer>
         

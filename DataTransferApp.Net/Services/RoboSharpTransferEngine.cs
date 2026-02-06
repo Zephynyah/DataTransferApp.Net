@@ -1,0 +1,396 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using DataTransferApp.Net.Models;
+using RoboSharp;
+using RoboSharp.EventArgObjects;
+using RoboSharp.Interfaces;
+
+namespace DataTransferApp.Net.Services
+{
+    /// <summary>
+    /// High-performance file transfer engine using RoboSharp (Robocopy wrapper).
+    /// Provides multithreaded, resilient file transfer operations with detailed progress tracking.
+    /// </summary>
+    public class RoboSharpTransferEngine : IRoboSharpTransferEngine
+    {
+        /// <summary>
+        /// Event raised when an error occurs during transfer.
+        /// </summary>
+        public event EventHandler<RoboSharpErrorEventArgs>? OnError;
+
+        /// <summary>
+        /// Event raised when transfer completes.
+        /// </summary>
+        public event EventHandler<RoboSharpTransferResult>? OnCompleted;
+
+        /// <summary>
+        /// Transfers an entire folder and its contents from source to destination.
+        /// </summary>
+        public async Task<RoboSharpTransferResult> TransferFolderAsync(
+            string sourcePath,
+            string destinationPath,
+            RoboSharpOptions options,
+            IProgress<TransferProgress>? progress = null,
+            CancellationToken cancellationToken = default)
+        {
+            var startTime = DateTime.Now;
+
+            try
+            {
+                LoggingService.Info($"Starting RoboSharp transfer: {sourcePath} -> {destinationPath}");
+                LoggingService.Debug($"Options: Threads={options.ThreadCount}, Retries={options.RetryCount}");
+
+                // Validate paths
+                if (!Directory.Exists(sourcePath))
+                {
+                    throw new DirectoryNotFoundException($"Source directory not found: {sourcePath}");
+                }
+
+                // Create destination directory if needed
+                Directory.CreateDirectory(destinationPath);
+
+                // Create and configure RoboCommand
+                var command = CreateRoboCommand(sourcePath, destinationPath, options);
+
+                // Set up progress tracking
+                var progressAdapter = new RoboSharpProgressAdapter(progress);
+                AttachEventHandlers(command, progressAdapter, cancellationToken);
+
+                // Start the transfer - StartAsync() returns Task<RoboCopyResults>
+                progressAdapter.Start();
+                var roboResult = await command.StartAsync();
+                
+                // Build result from RoboCopyResults
+                var result = BuildResult(roboResult, sourcePath, destinationPath, startTime, options);
+
+                LoggingService.Info($"RoboSharp transfer completed: ExitCode={roboResult.Status.ExitCodeValue}, Files={roboResult.FilesStatistic.Copied}");
+
+                OnCompleted?.Invoke(this, result);
+                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                LoggingService.Warning("RoboSharp transfer cancelled by user");
+                return RoboSharpTransferResult.CreateFailure(
+                    sourcePath,
+                    destinationPath,
+                    -1,
+                    "Transfer cancelled by user",
+                    startTime);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("RoboSharp transfer failed", ex);
+
+                var error = new RoboSharpError
+                {
+                    ErrorType = RoboSharpErrorType.FatalError,
+                    Message = ex.Message,
+                    Exception = ex,
+                    IsFatal = true
+                };
+
+                OnError?.Invoke(this, new RoboSharpErrorEventArgs(error, true));
+
+                return RoboSharpTransferResult.CreateFailure(
+                    sourcePath,
+                    destinationPath,
+                    -1,
+                    ex.Message,
+                    startTime);
+            }
+        }
+
+
+        /// <summary>
+        /// Transfers specific files from source root to destination.
+        /// </summary>
+        public async Task<RoboSharpTransferResult> TransferFilesAsync(
+            string[] filePaths,
+            string sourceRoot,
+            string destinationPath,
+            RoboSharpOptions options,
+            IProgress<TransferProgress>? progress = null,
+            CancellationToken cancellationToken = default)
+        {
+            var startTime = DateTime.Now;
+
+            try
+            {
+                LoggingService.Info($"Starting RoboSharp file transfer: {filePaths.Length} files from {sourceRoot} -> {destinationPath}");
+
+                if (filePaths.Length == 0)
+                {
+                    return RoboSharpTransferResult.CreateSuccess(sourceRoot, destinationPath, 0, 0, startTime, DateTime.Now);
+                }
+
+                // For selective file transfer, we'll use RoboSharp with file filters
+                // Extract unique file names
+                var fileNames = filePaths.Select(Path.GetFileName).Where(f => !string.IsNullOrEmpty(f)).ToList();
+
+                // Configure options to include only these files
+                var fileOptions = new RoboSharpOptions
+                {
+                    ThreadCount = options.ThreadCount,
+                    RetryCount = options.RetryCount,
+                    RetryWaitSeconds = options.RetryWaitSeconds,
+                    CopySubdirectories = true,
+                    CopyEmptySubdirectories = false,
+                    ContinueOnError = options.ContinueOnError,
+                    IncludeFiles = fileNames
+                };
+
+                // Transfer using folder method with file filter
+                return await TransferFolderAsync(sourceRoot, destinationPath, fileOptions, progress, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("RoboSharp file transfer failed", ex);
+                return RoboSharpTransferResult.CreateFailure(
+                    sourceRoot,
+                    destinationPath,
+                    -1,
+                    ex.Message,
+                    startTime);
+            }
+        }
+
+        /// <summary>
+        /// Estimates transfer size and file count without actually copying.
+        /// </summary>
+        public async Task<RoboSharpTransferResult> EstimateTransferAsync(
+            string sourcePath,
+            RoboSharpOptions options,
+            CancellationToken cancellationToken = default)
+        {
+            var startTime = DateTime.Now;
+
+            try
+            {
+                LoggingService.Debug($"Estimating transfer from: {sourcePath}");
+
+                // Create options with ListOnly mode
+                var estimateOptions = new RoboSharpOptions
+                {
+                    ListOnly = true,
+                    CopySubdirectories = options.CopySubdirectories,
+                    CopyEmptySubdirectories = options.CopyEmptySubdirectories,
+                    ExcludeFiles = options.ExcludeFiles,
+                    ExcludeDirectories = options.ExcludeDirectories,
+                    IncludeFiles = options.IncludeFiles
+                };
+
+                // Use a temporary destination for estimation
+                var tempDest = Path.Combine(Path.GetTempPath(), "_robosharp_estimate_");
+
+                var command = CreateRoboCommand(sourcePath, tempDest, estimateOptions);
+                var roboResult = await command.StartAsync();
+
+                var result = BuildResult(roboResult, sourcePath, tempDest, startTime, estimateOptions);
+                LoggingService.Debug($"Estimate: {result.FilesScanned} files, {result.BytesTotal} bytes");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Error("RoboSharp estimation failed", ex);
+                return RoboSharpTransferResult.CreateFailure(
+                    sourcePath,
+                    string.Empty,
+                    -1,
+                    ex.Message,
+                    startTime);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Creates and configures a RoboCommand with the specified options.
+        /// </summary>
+        private static RoboCommand CreateRoboCommand(string sourcePath, string destinationPath, RoboSharpOptions options)
+        {
+            var command = new RoboCommand
+            {
+                CopyOptions =
+                {
+                    Source = sourcePath,
+                    Destination = destinationPath,
+                    
+                    // Threading
+                    MultiThreadedCopiesCount = options.ThreadCount,
+                    
+                    // Copy flags
+                    CopySubdirectories = options.CopySubdirectories,
+                    CopySubdirectoriesIncludingEmpty = options.CopyEmptySubdirectories,
+                    
+                    // Special modes
+                    Purge = options.PurgeDestination,
+                    Mirror = options.MirrorMode,
+                    MoveFiles = options.MoveFiles,
+                    MoveFilesAndDirectories = options.MoveTree
+                },
+
+                RetryOptions =
+                {
+                    RetryCount = options.RetryCount,
+                    RetryWaitTime = options.RetryWaitSeconds
+                },
+
+                SelectionOptions =
+                {
+                    // Note: RoboSharp v1.6.0 uses different property types
+                    // ExcludeFiles/ExcludedDirectories may need string format or be read-only
+                },
+
+                LoggingOptions =
+                {
+                    VerboseOutput = options.VerboseOutput,
+                    ListOnly = options.ListOnly
+                }
+            };
+
+            // Configure file exclusion filters if provided
+            if (options.ExcludeFiles != null && options.ExcludeFiles.Count > 0)
+            {
+                command.SelectionOptions.ExcludedFiles.AddRange(options.ExcludeFiles);
+            }
+
+            if (options.ExcludeDirectories != null && options.ExcludeDirectories.Count > 0)
+            {
+                command.SelectionOptions.ExcludedDirectories.AddRange(options.ExcludeDirectories);
+            }
+
+            // Configure logging if path specified
+            if (!string.IsNullOrEmpty(options.LogFilePath))
+            {
+                command.LoggingOptions.LogPath = options.LogFilePath;
+            }
+
+            // Configure inter-packet gap if specified
+            if (options.InterPacketGapMs > 0)
+            {
+                command.CopyOptions.InterPacketGap = options.InterPacketGapMs;
+            }
+
+            return command;
+        }
+
+
+
+        /// <summary>
+        /// Attaches event handlers to RoboCommand for progress and error tracking.
+        /// </summary>
+        private void AttachEventHandlers(RoboCommand command, RoboSharpProgressAdapter progressAdapter, CancellationToken cancellationToken)
+        {
+            // Progress events
+            command.OnFileProcessed += progressAdapter.OnFileProcessed;
+            command.OnProgressEstimatorCreated += progressAdapter.OnProgressEstimatorCreated;
+            command.OnCopyProgressChanged += progressAdapter.OnCopyProgressChanged;
+
+            // Error events
+            command.OnError += (sender, e) =>
+            {
+                var error = new RoboSharpError
+                {
+                    ErrorType = RoboSharpErrorType.CopyError,
+                    Message = e.Error ?? "Unknown error",
+                    AdditionalInfo = e.ErrorDescription,
+                    FilePath = e.ErrorPath ?? string.Empty,
+                    Timestamp = e.DateTime,
+                    IsRecoverable = true,
+                    IsFatal = false
+                };
+
+                LoggingService.Warning($"RoboSharp error: {e.Error}");
+                OnError?.Invoke(this, new RoboSharpErrorEventArgs(error, false));
+            };
+
+            // Completion event
+            command.OnCommandCompleted += (sender, e) =>
+            {
+                progressAdapter.ReportComplete();
+                LoggingService.Debug($"RoboSharp command completed with exit code: {e.Results.Status.ExitCodeValue}");
+            };
+
+            // Handle cancellation
+            cancellationToken.Register(() =>
+            {
+                try
+                {
+                    command.Stop();
+                    LoggingService.Info("RoboSharp command stopped due to cancellation");
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Warning($"Error stopping RoboSharp command: {ex.Message}");
+                }
+            });
+        }
+
+
+
+        /// <summary>
+        /// Builds a RoboSharpTransferResult from RoboSharp's native result.
+        /// </summary>
+        private RoboSharpTransferResult BuildResult(
+            RoboSharp.Results.RoboCopyResults roboResults,
+            string sourcePath,
+            string destinationPath,
+            DateTime startTime,
+            RoboSharpOptions options)
+        {
+            var endTime = DateTime.Now;
+            var exitCode = roboResults.Status.ExitCodeValue;
+
+            var result = new RoboSharpTransferResult
+            {
+                Success = exitCode <= 1, // 0 = no changes, 1 = files copied
+                ExitCode = exitCode,
+                SourcePath = sourcePath,
+                DestinationPath = destinationPath,
+                StartTime = startTime,
+                EndTime = endTime,
+
+                // Directory stats
+                DirectoriesScanned = (int)roboResults.DirectoriesStatistic.Total,
+                DirectoriesCopied = (int)roboResults.DirectoriesStatistic.Copied,
+                DirectoriesSkipped = (int)roboResults.DirectoriesStatistic.Skipped,
+                DirectoriesFailed = (int)roboResults.DirectoriesStatistic.Failed,
+
+                // File stats
+                FilesScanned = (int)roboResults.FilesStatistic.Total,
+                FilesCopied = (int)roboResults.FilesStatistic.Copied,
+                FilesSkipped = (int)roboResults.FilesStatistic.Skipped,
+                FilesFailed = (int)roboResults.FilesStatistic.Failed,
+                FilesExtra = (int)roboResults.FilesStatistic.Extras,
+                FilesMismatch = (int)roboResults.FilesStatistic.Mismatch,
+
+                // Byte stats
+                BytesTotal = roboResults.BytesStatistic.Total,
+                BytesCopied = roboResults.BytesStatistic.Copied,
+                BytesSkipped = roboResults.BytesStatistic.Skipped,
+                BytesFailed = roboResults.BytesStatistic.Failed,
+
+                // Log file
+                LogFilePath = options.LogFilePath,
+
+                // Native result
+                RoboSharpNativeResult = roboResults
+            };
+
+            // Parse exit code for errors
+            if (exitCode >= 8)
+            {
+                var error = RoboSharpError.FromExitCode(exitCode, sourcePath, destinationPath);
+                result.Errors.Add(error);
+                result.ErrorMessage = error.Message;
+            }
+
+            return result;
+        }
+    }
+}
