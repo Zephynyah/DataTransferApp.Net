@@ -262,12 +262,14 @@ namespace DataTransferApp.Net.ViewModels
         {
             var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
 
-            // Reset file flags
+            // Reset file flags and errors
             foreach (var file in folder.Files)
             {
                 file.IsBlacklisted = false;
                 file.IsCompressed = false;
                 file.Status = "Ready";
+                file.ErrorMessage = null;
+                file.ErrorDetails = null;
             }
 
             // Mark blacklisted files
@@ -280,6 +282,8 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         file.Status = "Blacklisted";
                         file.IsBlacklisted = true;
+                        file.ErrorMessage = $"Extension '{violation.Extension}' is not allowed for transfer";
+                        file.ErrorDetails = $"This file extension is blacklisted. Remove the file or convert to an allowed format before transfer.";
                     }
                 }
             }
@@ -297,6 +301,8 @@ namespace DataTransferApp.Net.ViewModels
                     if (file.Status == "Ready")
                     {
                         file.Status = "Compressed";
+                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
+                        file.ErrorDetails = "Extract contents and transfer uncompressed files, or verify archive integrity before transfer.";
                     }
                 }
             }
@@ -546,6 +552,8 @@ namespace DataTransferApp.Net.ViewModels
                 file.IsBlacklisted = false;
                 file.IsCompressed = false;
                 file.Status = "Ready";
+                file.ErrorMessage = null;
+                file.ErrorDetails = null;
             }
 
             // Mark blacklisted files
@@ -558,6 +566,8 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         file.Status = "Blacklisted";
                         file.IsBlacklisted = true;
+                        file.ErrorMessage = $"Extension '{violation.Extension}' is not allowed for transfer";
+                        file.ErrorDetails = $"This file extension is blacklisted. Remove the file or convert to an allowed format before transfer.";
                     }
                 }
             }
@@ -576,6 +586,8 @@ namespace DataTransferApp.Net.ViewModels
                     if (file.Status == "Ready")
                     {
                         file.Status = "Compressed";
+                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
+                        file.ErrorDetails = "Extract contents and transfer uncompressed files, or verify archive integrity before transfer.";
                     }
                 }
             }

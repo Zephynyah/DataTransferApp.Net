@@ -41,12 +41,15 @@
 - [x] **Implemented exponential backoff retry logic** (RetryHelper with jitter)
 - [x] Disabled RoboSharp internal retry for predictable behavior
 - [x] Updated TODO.md to mark retry logic complete
+- [x] **Fixed race condition: Transfer engine now returns to idle after completion**
+- [x] **Added detailed error tooltips for files** with full paths and remediation hints
 
 ## Next Steps (TODO.md)
 See [TODO.md](../TODO.md) for complete task list. Priority items:
 - [ ] Verify real-time progress accuracy with large transfers
 - [ ] Test pause/resume functionality
-- [ ] Add detailed error tooltips with file paths
 - [ ] Unit tests for RoboSharpTransferEngine and RetryHelper
+- [ ] Performance benchmarking
+- [ ] User documentation for RoboSharp features
 - [ ] Performance benchmarking
 - [ ] User documentation for RoboSharp features

@@ -27,6 +27,7 @@
         <helpers:AuditStatusToBrushIconConverter x:Key="AuditStatusToBrushIconConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <helpers:PluralizationConverter x:Key="PluralizationConverter"/>
+        <helpers:FileErrorTooltipConverter x:Key="FileErrorTooltipConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -728,6 +729,10 @@
                             <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                                 <!-- Default: white background -->
                                 <Setter Property="Background" Value="White"/>
+                                <!-- Tooltip for files with errors or warnings -->
+                                <Setter Property="ToolTip" Value="{Binding Converter={StaticResource FileErrorTooltipConverter}}"/>
+                                <Setter Property="ToolTipService.InitialShowDelay" Value="300"/>
+                                <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
                                 <Style.Triggers>
                                     <!-- Alternating row - only applies if no other conditions are met -->
                                     <Trigger Property="AlternationIndex" Value="1">

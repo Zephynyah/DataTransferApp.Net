@@ -44,7 +44,18 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private bool _isBlacklisted;
 
+        [ObservableProperty]
+        private string? _errorMessage;
+
+        [ObservableProperty]
+        private string? _errorDetails;
+
         public string SizeFormatted => FormatFileSize(Size);
+
+        /// <summary>
+        /// Gets a value indicating whether this file has an error (blacklisted or other issues).
+        /// </summary>
+        public bool HasError => IsBlacklisted || !string.IsNullOrEmpty(ErrorMessage);
 
         private static string FormatFileSize(long bytes)
         {
