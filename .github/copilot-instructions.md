@@ -43,6 +43,7 @@
 - [x] Updated TODO.md to mark retry logic complete
 - [x] **Fixed race condition: Transfer engine now returns to idle after completion**
 - [x] **Added detailed error tooltips for files** with full paths and remediation hints
+- [x] **Implemented pause/resume functionality** for batch transfers with state management
 
 ## Next Steps (TODO.md)
 See [TODO.md](../TODO.md) for complete task list. Priority items:

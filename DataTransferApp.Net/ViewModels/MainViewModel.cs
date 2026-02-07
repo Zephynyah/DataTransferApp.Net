@@ -56,7 +56,14 @@ namespace DataTransferApp.Net.ViewModels
         private bool _isTransferActive = false;
 
         [ObservableProperty]
+        private bool _isTransferPaused = false;
+
+        [ObservableProperty]
         private int _progressPercent = 0;
+
+        private CancellationTokenSource? _transferCancellationTokenSource;
+        private List<FolderData>? _pendingTransferFolders = null;
+        private int _currentTransferIndex = 0;
 
         [ObservableProperty]
         private int _totalFolders = 0;
@@ -690,9 +697,14 @@ namespace DataTransferApp.Net.ViewModels
             return action;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "State machine logic for pause/resume is best kept cohesive")]
         private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
         {
             IsProcessing = true;
+            _pendingTransferFolders = passedFolders;
+            _currentTransferIndex = 0;
+            _transferCancellationTokenSource = new CancellationTokenSource();
+            
             var total = passedFolders.Count;
             var completed = 0;
             var failed = 0;
@@ -701,12 +713,22 @@ namespace DataTransferApp.Net.ViewModels
             try
             {
                 // ToList to avoid collection modification issues
-                foreach (var folder in passedFolders.ToList())
+                for (int i = _currentTransferIndex; i < passedFolders.Count; i++)
                 {
+                    // Check for pause request
+                    if (IsTransferPaused)
+                    {
+                        _currentTransferIndex = i;
+                        StatusMessage = $"Transfer paused at {i}/{total}";
+                        _ = ShowSnackbar($"Transfer paused. Click Resume to continue.", "warning");
+                        return;
+                    }
+
+                    var folder = passedFolders[i];
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
 
-                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
+                    var transferResult = await TransferSingleFolderAsync(folder, completed, total, _transferCancellationTokenSource.Token);
 
                     if (transferResult.Success)
                     {
@@ -727,6 +749,15 @@ namespace DataTransferApp.Net.ViewModels
                 }
 
                 UpdateTransferResults(total, completed, failed, skipped);
+                
+                // Clear pause state after completion
+                _pendingTransferFolders = null;
+                _currentTransferIndex = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                // Transfer was cancelled via pause
+                StatusMessage = $"Transfer paused at {completed}/{total}";
             }
             catch (Exception ex)
             {
@@ -736,15 +767,23 @@ namespace DataTransferApp.Net.ViewModels
             }
             finally
             {
-                IsProcessing = false;
-                IsTransferActive = false;
-                ProgressPercent = 0;
-                ProgressText = "Ready";
-                ProgressIssues = "Idle";
+                if (!IsTransferPaused)
+                {
+                    IsProcessing = false;
+                    IsTransferActive = false;
+                    ProgressPercent = 0;
+                    ProgressText = "Ready";
+                    ProgressIssues = "Idle";
+                    _pendingTransferFolders = null;
+                    _currentTransferIndex = 0;
+                }
+                
+                _transferCancellationTokenSource?.Dispose();
+                _transferCancellationTokenSource = null;
             }
         }
 
-        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total)
+        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total, CancellationToken cancellationToken = default)
         {
             var progress = new Progress<TransferProgress>(p =>
             {
@@ -757,7 +796,8 @@ namespace DataTransferApp.Net.ViewModels
             return await _transferService.TransferFolderAsync(
                 folder,
                 SelectedDrive!.DriveLetter,
-                progress);
+                progress,
+                cancellationToken);
         }
 
         private void UpdateTransferResults(int total, int completed, int failed, int skipped)
@@ -932,7 +972,49 @@ namespace DataTransferApp.Net.ViewModels
             !IsProcessing;
 
         private bool CanTransferAllFolders() =>
-            SelectedDrive != null && !IsProcessing; // Only enabled when not processing
+            SelectedDrive != null && !IsProcessing && !IsTransferPaused; // Only enabled when not processing or paused
+
+        [RelayCommand(CanExecute = nameof(CanPauseTransfer))]
+        private void PauseTransfer()
+        {
+            IsTransferPaused = true;
+            StatusMessage = "Pausing transfer...";
+            LoggingService.Info("Transfer pause requested");
+            
+            // Request cancellation to stop current folder transfer
+            _transferCancellationTokenSource?.Cancel();
+            
+            // Notify commands
+            PauseTransferCommand.NotifyCanExecuteChanged();
+            ResumeTransferCommand.NotifyCanExecuteChanged();
+            TransferAllFoldersCommand.NotifyCanExecuteChanged();
+        }
+
+        private bool CanPauseTransfer() => IsProcessing && !IsTransferPaused;
+
+        [RelayCommand(CanExecute = nameof(CanResumeTransfer))]
+        private async Task ResumeTransferAsync()
+        {
+            if (_pendingTransferFolders == null || _pendingTransferFolders.Count == 0)
+            {
+                _ = ShowSnackbar("No transfer to resume", "error");
+                return;
+            }
+
+            IsTransferPaused = false;
+            StatusMessage = $"Resuming transfer from folder {_currentTransferIndex + 1}...";
+            LoggingService.Info($"Transfer resumed at index {_currentTransferIndex}");
+            
+            // Notify commands
+            PauseTransferCommand.NotifyCanExecuteChanged();
+            ResumeTransferCommand.NotifyCanExecuteChanged();
+            TransferAllFoldersCommand.NotifyCanExecuteChanged();
+            
+            // Continue with remaining folders
+            await ProcessFolderTransfersAsync(_pendingTransferFolders);
+        }
+
+        private bool CanResumeTransfer() => IsTransferPaused && _pendingTransferFolders != null;
 
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()

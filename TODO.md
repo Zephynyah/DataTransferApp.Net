@@ -12,7 +12,7 @@
 - [x] Verify real-time progress updates in UI (test with large transfers)
 - [x] Add MB/s speed calculation validation
 - [x] Test ETA accuracy with various file sizes
-- [ ] Implement pause/resume functionality using RoboSharp job files
+- [x] Implement pause/resume functionality using RoboSharp job files
 
 ### Settings & Configuration
 
