@@ -27,12 +27,18 @@ namespace DataTransferApp.Net.Controls
                 typeof(AwesomeToolTip),
                 new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty DescriptionProperty =
+        public static readonly DependencyProperty IsBlacklistedProperty =
             DependencyProperty.Register(
-                nameof(Description),
-                typeof(string),
+                nameof(IsBlacklisted),
+                typeof(bool),
                 typeof(AwesomeToolTip),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(false));
+        public static readonly DependencyProperty IsCompessedProperty =
+            DependencyProperty.Register(
+                nameof(IsCompessed),
+                typeof(bool),
+                typeof(AwesomeToolTip),
+                new PropertyMetadata(false));
 
         public string FileName
         {
@@ -51,10 +57,16 @@ namespace DataTransferApp.Net.Controls
             set => SetValue(SizeFormattedProperty, value);
         }
 
-        public string Description
+        public bool IsBlacklisted
         {
-            get => (string)GetValue(DescriptionProperty);
-            set => SetValue(DescriptionProperty, value);
+            get => (bool)GetValue(IsBlacklistedProperty);
+            set => SetValue(IsBlacklistedProperty, value);
+        }
+
+        public bool IsCompessed
+        {
+            get => (bool)GetValue(IsCompessedProperty);
+            set => SetValue(IsCompessedProperty, value);
         }
 
         public AwesomeToolTip()

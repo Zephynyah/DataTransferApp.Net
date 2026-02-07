@@ -26,6 +26,8 @@
             <helpers:FileSizeConverter x:Key="FileSizeConverter"/>
             <helpers:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
             <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
+            <helpers:FileErrorTooltipConverter x:Key="FileErrorTooltipConverter"/>
+
 
             <!-- Color Palette -->
             <SolidColorBrush x:Key="PrimaryBrush" Color="#3498DB"/>

@@ -714,7 +714,7 @@
                             <Button Content="Hover Me!" Width="100" Height="40" HorizontalAlignment="Center"  VerticalAlignment="Center">
                                 <Button.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
-                                        <control:AwesomeToolTip FileName="Test.txt"  FullPath="D:\Test.txt" SizeFormatted="15 KB" />
+                                        <control:AwesomeToolTip FileName="Test.txt"  FullPath="D:\Test.txt" SizeFormatted="15 KB" IsBlacklisted="True" IsCompessed="False" />
                                     </ToolTip>
                                 </Button.ToolTip>
                             </Button>
@@ -735,7 +735,12 @@
                             <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                                 <!-- Default: white background -->
                                 <Setter Property="Background" Value="White"/>
-                                <!-- Rich tooltip for files with errors or warnings (defined inline below) -->
+
+                                <!-- Tooltip for files with errors or warnings -->
+                                <Setter Property="ToolTip" Value="{Binding Converter={StaticResource FileErrorTooltipConverter}}"/>
+                                <Setter Property="ToolTipService.InitialShowDelay" Value="300"/>
+                                <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
+
                                 <Style.Triggers>
                                     <!-- Alternating row - only applies if no other conditions are met -->
                                     <Trigger Property="AlternationIndex" Value="1">
