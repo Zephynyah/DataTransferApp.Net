@@ -29,6 +29,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Transfers an entire folder and its contents from source to destination.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<RoboSharpTransferResult> TransferFolderAsync(
             string sourcePath,
             string destinationPath,
@@ -55,19 +56,13 @@ namespace DataTransferApp.Net.Services
                 // Create and configure RoboCommand
                 var command = CreateRoboCommand(sourcePath, destinationPath, options);
 
-                // Pre-calculate totals for accurate ETA
-                var (totalFiles, totalBytes) = CalculateDirectoryTotals(sourcePath);
-                LoggingService.Debug($"Pre-scan complete: {totalFiles} files, {totalBytes:N0} bytes");
-
-                // Set up progress tracking
-                var progressAdapter = new RoboSharpProgressAdapter(progress);
-                progressAdapter.SetTotals(totalFiles, totalBytes); // Set totals before starting
-                AttachEventHandlers(command, progressAdapter, cancellationToken);
+                // Set up progress tracking with pre-calculated totals
+                var progressAdapter = SetupProgressTracking(sourcePath, command, progress, cancellationToken);
 
                 // Start the transfer - StartAsync() returns Task<RoboCopyResults>
                 progressAdapter.Start();
                 var roboResult = await command.StartAsync();
-                
+
                 // Build result from RoboCopyResults
                 var result = BuildResult(roboResult, sourcePath, destinationPath, startTime, options);
 
@@ -78,41 +73,18 @@ namespace DataTransferApp.Net.Services
             }
             catch (OperationCanceledException)
             {
-                LoggingService.Warning("RoboSharp transfer cancelled by user");
-                return RoboSharpTransferResult.CreateFailure(
-                    sourcePath,
-                    destinationPath,
-                    -1,
-                    "Transfer cancelled by user",
-                    startTime);
+                return HandleCancellation(sourcePath, destinationPath, startTime);
             }
             catch (Exception ex)
             {
-                LoggingService.Error("RoboSharp transfer failed", ex);
-
-                var error = new RoboSharpError
-                {
-                    ErrorType = RoboSharpErrorType.FatalError,
-                    Message = ex.Message,
-                    Exception = ex,
-                    IsFatal = true
-                };
-
-                OnError?.Invoke(this, new RoboSharpErrorEventArgs(error, true));
-
-                return RoboSharpTransferResult.CreateFailure(
-                    sourcePath,
-                    destinationPath,
-                    -1,
-                    ex.Message,
-                    startTime);
+                return HandleTransferException(ex, sourcePath, destinationPath, startTime);
             }
         }
-
 
         /// <summary>
         /// Transfers specific files from source root to destination.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<RoboSharpTransferResult> TransferFilesAsync(
             string[] filePaths,
             string sourceRoot,
@@ -134,7 +106,7 @@ namespace DataTransferApp.Net.Services
 
                 // For selective file transfer, we'll use RoboSharp with file filters
                 // Extract unique file names
-                var fileNames = filePaths.Select(Path.GetFileName).Where(f => !string.IsNullOrEmpty(f)).ToList();
+                var fileNames = filePaths.Select(Path.GetFileName).Where(f => !string.IsNullOrEmpty(f)).Cast<string>().ToList();
 
                 // Configure options to include only these files
                 var fileOptions = new RoboSharpOptions
@@ -166,6 +138,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Estimates transfer size and file count without actually copying.
         /// </summary>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task<RoboSharpTransferResult> EstimateTransferAsync(
             string sourcePath,
             RoboSharpOptions options,
@@ -211,8 +184,6 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-
-
         /// <summary>
         /// Creates and configures a RoboCommand with the specified options.
         /// </summary>
@@ -224,14 +195,14 @@ namespace DataTransferApp.Net.Services
                 {
                     Source = sourcePath,
                     Destination = destinationPath,
-                    
+
                     // Threading
                     MultiThreadedCopiesCount = options.ThreadCount,
-                    
+
                     // Copy flags
                     CopySubdirectories = options.CopySubdirectories,
                     CopySubdirectoriesIncludingEmpty = options.CopyEmptySubdirectories,
-                    
+
                     // Special modes
                     Purge = options.PurgeDestination,
                     Mirror = options.MirrorMode,
@@ -286,8 +257,6 @@ namespace DataTransferApp.Net.Services
             return command;
         }
 
-
-
         /// <summary>
         /// Attaches event handlers to RoboCommand for progress and error tracking.
         /// </summary>
@@ -338,7 +307,39 @@ namespace DataTransferApp.Net.Services
             });
         }
 
+        /// <summary>
+        /// Handles operation cancellation during transfer.
+        /// </summary>
+        private static RoboSharpTransferResult HandleCancellation(string sourcePath, string destinationPath, DateTime startTime)
+        {
+            LoggingService.Warning("RoboSharp transfer cancelled by user");
+            return RoboSharpTransferResult.CreateFailure(
+                sourcePath,
+                destinationPath,
+                -1,
+                "Transfer cancelled by user",
+                startTime);
+        }
 
+        /// <summary>
+        /// Pre-scans a directory to calculate total file count and size for accurate ETA.
+        /// </summary>
+        private static (int TotalFiles, long TotalBytes) CalculateDirectoryTotals(string path)
+        {
+            try
+            {
+                var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                var totalFiles = files.Length;
+                var totalBytes = files.Sum(f => new FileInfo(f).Length);
+
+                return (totalFiles, totalBytes);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Warning($"Failed to pre-scan directory for totals: {ex.Message}");
+                return (0, 0); // Return zeros on error, RoboSharp's estimator will provide fallback
+            }
+        }
 
         /// <summary>
         /// Builds a RoboSharpTransferResult from RoboSharp's native result.
@@ -401,23 +402,49 @@ namespace DataTransferApp.Net.Services
         }
 
         /// <summary>
-        /// Pre-scans a directory to calculate total file count and size for accurate ETA.
+        /// Sets up progress tracking with pre-calculated totals for accurate ETA.
         /// </summary>
-        private (int totalFiles, long totalBytes) CalculateDirectoryTotals(string path)
+        private RoboSharpProgressAdapter SetupProgressTracking(
+            string sourcePath,
+            RoboCommand command,
+            IProgress<TransferProgress>? progress,
+            CancellationToken cancellationToken)
         {
-            try
-            {
-                var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-                var totalFiles = files.Length;
-                var totalBytes = files.Sum(f => new FileInfo(f).Length);
+            // Pre-calculate totals for accurate ETA
+            var (totalFiles, totalBytes) = CalculateDirectoryTotals(sourcePath);
+            LoggingService.Debug($"Pre-scan complete: {totalFiles} files, {totalBytes:N0} bytes");
 
-                return (totalFiles, totalBytes);
-            }
-            catch (Exception ex)
+            // Set up progress tracking
+            var progressAdapter = new RoboSharpProgressAdapter(progress);
+            progressAdapter.SetTotals(totalFiles, totalBytes);
+            AttachEventHandlers(command, progressAdapter, cancellationToken);
+
+            return progressAdapter;
+        }
+
+        /// <summary>
+        /// Handles exceptions during transfer.
+        /// </summary>
+        private RoboSharpTransferResult HandleTransferException(Exception ex, string sourcePath, string destinationPath, DateTime startTime)
+        {
+            LoggingService.Error("RoboSharp transfer failed", ex);
+
+            var error = new RoboSharpError
             {
-                LoggingService.Warning($"Failed to pre-scan directory for totals: {ex.Message}");
-                return (0, 0); // Return zeros on error, RoboSharp's estimator will provide fallback
-            }
+                ErrorType = RoboSharpErrorType.FatalError,
+                Message = ex.Message,
+                Exception = ex,
+                IsFatal = true
+            };
+
+            OnError?.Invoke(this, new RoboSharpErrorEventArgs(error, true));
+
+            return RoboSharpTransferResult.CreateFailure(
+                sourcePath,
+                destinationPath,
+                -1,
+                ex.Message,
+                startTime);
         }
     }
 }

@@ -887,7 +887,7 @@ namespace DataTransferApp.Net.Services
                 summary.FilesFailed = (int)roboResult.FilesFailed;
                 summary.DirectoriesCopied = (int)roboResult.DirectoriesCopied;
                 summary.BytesCopied = roboResult.BytesCopied;
-                
+
                 // Calculate average speed
                 var duration = roboResult.EndTime - roboResult.StartTime;
                 if (duration.TotalSeconds > 0 && roboResult.BytesCopied > 0)
@@ -1019,12 +1019,12 @@ namespace DataTransferApp.Net.Services
                 BufferSizeKB = _settings.RobocopyBufferSizeKB,
                 InterPacketGapMs = _settings.RobocopyInterPacketGapMs,
                 VerifyCopy = _settings.VerifyRobocopy,
-                
+
                 // Generate log file path if detailed logging is enabled
                 LogFilePath = _settings.RobocopyDetailedLogging
                     ? CreateRobocopyLogFilePath()
                     : null,
-                
+
                 VerboseOutput = _settings.RobocopyVerboseOutput,
                 AppendLog = false
             };

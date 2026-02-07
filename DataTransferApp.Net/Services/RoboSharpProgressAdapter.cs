@@ -13,23 +13,24 @@ namespace DataTransferApp.Net.Services
     /// </summary>
     public class RoboSharpProgressAdapter
     {
+        private const int UpdateIntervalMs = 500; // Update UI every 500ms
+
         private readonly IProgress<TransferProgress>? _progress;
         private readonly Stopwatch _stopwatch;
 
         private long _totalBytes;
         private long _copiedBytes;
-        private long _previousCopiedBytes;
         private int _totalFiles;
         private int _copiedFiles;
         private string _currentFile = string.Empty;
 
         private DateTime _lastUpdateTime;
-        private const int UPDATE_INTERVAL_MS = 500; // Update UI every 500ms
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="RoboSharpProgressAdapter"/> class.
         /// Initializes a new progress adapter.
         /// </summary>
-        /// <param name="progress">Progress reporter for UI updates</param>
+        /// <param name="progress">Progress reporter for UI updates.</param>
         public RoboSharpProgressAdapter(IProgress<TransferProgress>? progress)
         {
             _progress = progress;
@@ -146,7 +147,7 @@ namespace DataTransferApp.Net.Services
         {
             // Throttle updates to avoid UI flooding
             var now = DateTime.Now;
-            if ((now - _lastUpdateTime).TotalMilliseconds < UPDATE_INTERVAL_MS && _copiedFiles < _totalFiles)
+            if ((now - _lastUpdateTime).TotalMilliseconds < UpdateIntervalMs && _copiedFiles < _totalFiles)
             {
                 return;
             }
@@ -168,8 +169,6 @@ namespace DataTransferApp.Net.Services
                 BytesPerSecond = speed,
                 EstimatedTimeRemaining = eta
             });
-
-            _previousCopiedBytes = _copiedBytes;
         }
 
         /// <summary>
@@ -218,33 +217,6 @@ namespace DataTransferApp.Net.Services
             }
 
             return 0;
-        }
-
-        /// <summary>
-        /// Formats bytes to human-readable string.
-        /// </summary>
-        private static string FormatBytes(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
         }
     }
 }

@@ -832,11 +832,11 @@ namespace DataTransferApp.Net.ViewModels
             }
 
             var engine = _settings.UseRoboSharp ? "RoboSharp" : "Legacy";
-            
+
             if (progress.BytesPerSecond > 0)
             {
                 var speedMBps = progress.MBPerSecond;
-                var eta = progress.EstimatedTimeRemaining?.ToString(@"mm\:ss") ?? "--:--";
+                var eta = progress.EstimatedTimeRemaining?.ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture) ?? "--:--";
                 ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
             }
             else

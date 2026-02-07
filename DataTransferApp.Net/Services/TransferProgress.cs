@@ -11,27 +11,27 @@ namespace DataTransferApp.Net.Services
         public int PercentComplete { get; set; }
 
         /// <summary>
-        /// Number of bytes transferred so far.
+        /// Gets or sets number of bytes transferred so far.
         /// </summary>
         public long BytesTransferred { get; set; }
 
         /// <summary>
-        /// Total bytes to transfer.
+        /// Gets or sets total bytes to transfer.
         /// </summary>
         public long TotalBytes { get; set; }
 
         /// <summary>
-        /// Current transfer speed in bytes per second.
+        /// Gets or sets current transfer speed in bytes per second.
         /// </summary>
         public double BytesPerSecond { get; set; }
 
         /// <summary>
-        /// Current transfer speed in megabytes per second.
+        /// Gets current transfer speed in megabytes per second.
         /// </summary>
         public double MBPerSecond => BytesPerSecond / (1024.0 * 1024.0);
 
         /// <summary>
-        /// Estimated time remaining for the transfer.
+        /// Gets or sets estimated time remaining for the transfer.
         /// </summary>
         public System.TimeSpan? EstimatedTimeRemaining { get; set; }
     }

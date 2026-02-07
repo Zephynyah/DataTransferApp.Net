@@ -64,7 +64,7 @@ public partial class MainWindow : Window
 
         // User confirmed exit - perform cleanup
         LoggingService.Info("Application closing confirmed by user");
-        
+
         try
         {
             // Cancel any running operations in ViewModel

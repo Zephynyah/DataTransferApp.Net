@@ -16,52 +16,52 @@ namespace DataTransferApp.Net.Models
         public string Status { get; set; } = string.Empty;
 
         /// <summary>
-        /// Transfer method used (Legacy, RoboSharp, etc.)
+        /// Gets or sets transfer method used (Legacy, RoboSharp, etc.)
         /// </summary>
         public string TransferMethod { get; set; } = "Legacy";
 
         /// <summary>
-        /// RoboSharp-specific: Exit code from Robocopy operation
+        /// Gets or sets roboSharp-specific: Exit code from Robocopy operation.
         /// </summary>
         public int? RobocopyExitCode { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Number of files copied
+        /// Gets or sets roboSharp-specific: Number of files copied.
         /// </summary>
         public int? FilesCopied { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Number of files skipped
+        /// Gets or sets roboSharp-specific: Number of files skipped.
         /// </summary>
         public int? FilesSkipped { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Number of files failed
+        /// Gets or sets roboSharp-specific: Number of files failed.
         /// </summary>
         public int? FilesFailed { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Number of directories copied
+        /// Gets or sets roboSharp-specific: Number of directories copied.
         /// </summary>
         public int? DirectoriesCopied { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Bytes copied
+        /// Gets or sets roboSharp-specific: Bytes copied.
         /// </summary>
         public long? BytesCopied { get; set; }
 
         /// <summary>
-        /// RoboSharp-specific: Average transfer speed in bytes per second
+        /// Gets or sets roboSharp-specific: Average transfer speed in bytes per second.
         /// </summary>
         public double? AverageSpeedBytesPerSecond { get; set; }
 
         /// <summary>
-        /// List of errors encountered during transfer
+        /// Gets or sets list of errors encountered during transfer.
         /// </summary>
         public List<string> Errors { get; set; } = new();
 
         /// <summary>
-        /// Gets a formatted speed string (e.g., "45.2 MB/s")
+        /// Gets a formatted speed string (e.g., "45.2 MB/s").
         /// </summary>
         public string FormattedSpeed
         {
@@ -76,7 +76,7 @@ namespace DataTransferApp.Net.Models
         }
 
         /// <summary>
-        /// Gets transfer duration
+        /// Gets transfer duration.
         /// </summary>
         public TimeSpan Duration => TransferCompleted - TransferStarted;
     }

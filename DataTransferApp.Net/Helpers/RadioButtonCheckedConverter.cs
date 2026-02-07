@@ -24,7 +24,7 @@ public class RadioButtonCheckedConverter : IValueConverter
     {
         if (value is bool isChecked && isChecked && parameter != null)
         {
-            return parameter.ToString();
+            return parameter.ToString()!;
         }
 
         return Binding.DoNothing;
