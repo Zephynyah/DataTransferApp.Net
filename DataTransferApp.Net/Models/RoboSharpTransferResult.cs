@@ -153,7 +153,7 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Gets or sets list of all errors encountered during transfer.
         /// </summary>
-        public List<RoboSharpError> Errors { get; set; } = new();
+        public IList<RoboSharpError> Errors { get; set; } = new List<RoboSharpError>();
 
         /// <summary>
         /// Gets a value indicating whether indicates if there were any errors (even non-fatal).

@@ -72,7 +72,7 @@ public static class RetryHelper
                 if (useJitter)
                 {
                     var jitterPercent = 0.25;
-                    var jitterFactor = 1.0 + (((random.NextDouble() * 2) - 1) * jitterPercent);
+                    var jitterFactor = 1.0 + (((random!.NextDouble() * 2) - 1) * jitterPercent);
                     exponentialDelay *= jitterFactor;
                 }
 
@@ -86,7 +86,7 @@ public static class RetryHelper
             }
         }
 
-        throw lastException;
+        throw lastException!;
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static class RetryHelper
     /// <param name="onRetry">Optional callback invoked before each retry with attempt number and delay.</param>
     /// <param name="cancellationToken">Cancellation token to cancel retry attempts.</param>
     /// <exception cref="Exception">Throws the last exception if all retries fail.</exception>
-    /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task ExecuteWithRetryAsync(
         Func<Task> operation,
         int maxRetries = 3,

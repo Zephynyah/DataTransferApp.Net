@@ -58,7 +58,7 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Gets or sets list of errors encountered during transfer.
         /// </summary>
-        public List<string> Errors { get; set; } = new();
+        public IList<string> Errors { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets a formatted speed string (e.g., "45.2 MB/s").

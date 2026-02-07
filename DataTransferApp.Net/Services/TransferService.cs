@@ -671,6 +671,13 @@ namespace DataTransferApp.Net.Services
             return $"{bytes} bytes";
         }
 
+        private static string CreateRobocopyLogFilePath()
+        {
+            var logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            Directory.CreateDirectory(logDirectory); // Ensure directory exists
+            return Path.Combine(logDirectory, $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log");
+        }
+
         private static void CopyAllSubdirectories(string sourcePath, string destinationPath)
         {
             try
@@ -1028,13 +1035,6 @@ namespace DataTransferApp.Net.Services
                 VerboseOutput = _settings.RobocopyVerboseOutput,
                 AppendLog = false
             };
-        }
-
-        private static string CreateRobocopyLogFilePath()
-        {
-            var logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-            Directory.CreateDirectory(logDirectory); // Ensure directory exists
-            return Path.Combine(logDirectory, $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log");
         }
 
         /// <summary>

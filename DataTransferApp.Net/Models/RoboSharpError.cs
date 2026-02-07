@@ -58,32 +58,6 @@ namespace DataTransferApp.Net.Models
         public string? AdditionalInfo { get; set; }
 
         /// <summary>
-        /// Returns a detailed string representation of the error.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            var details = $"[{ErrorType}] {Message}";
-
-            if (!string.IsNullOrEmpty(FilePath))
-            {
-                details += $" - File: {FilePath}";
-            }
-
-            if (!string.IsNullOrEmpty(DirectoryPath))
-            {
-                details += $" - Directory: {DirectoryPath}";
-            }
-
-            if (ErrorCode != 0)
-            {
-                details += $" (Code: {ErrorCode})";
-            }
-
-            return details;
-        }
-
-        /// <summary>
         /// Creates a RoboSharpError from a Robocopy exit code.
         /// </summary>
         /// <param name="exitCode">The Robocopy exit code.</param>
@@ -144,6 +118,32 @@ namespace DataTransferApp.Net.Models
             }
 
             return error;
+        }
+
+        /// <summary>
+        /// Returns a detailed string representation of the error.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var details = $"[{ErrorType}] {Message}";
+
+            if (!string.IsNullOrEmpty(FilePath))
+            {
+                details += $" - File: {FilePath}";
+            }
+
+            if (!string.IsNullOrEmpty(DirectoryPath))
+            {
+                details += $" - Directory: {DirectoryPath}";
+            }
+
+            if (ErrorCode != 0)
+            {
+                details += $" (Code: {ErrorCode})";
+            }
+
+            return details;
         }
     }
 

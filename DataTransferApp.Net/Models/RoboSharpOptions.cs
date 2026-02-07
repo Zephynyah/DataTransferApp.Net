@@ -81,20 +81,20 @@ namespace DataTransferApp.Net.Models
         /// Gets or sets list of file patterns to exclude (/XF switch).
         /// Example: ["*.exe", "*.dll", "*.tmp"].
         /// </summary>
-        public List<string> ExcludeFiles { get; set; } = new();
+        public IList<string> ExcludeFiles { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets list of directory patterns to exclude (/XD switch).
         /// Example: ["temp", "cache", ".git"].
         /// </summary>
-        public List<string> ExcludeDirectories { get; set; } = new();
+        public IList<string> ExcludeDirectories { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets list of file patterns to include (file filter).
         /// Example: ["*.pdf", "*.docx"]
         /// If empty, all files are included (except excluded ones).
         /// </summary>
-        public List<string> IncludeFiles { get; set; } = new();
+        public IList<string> IncludeFiles { get; set; } = new List<string>();
 
         // Behavior Options
 
