@@ -830,7 +830,7 @@
                     </Border>
 
                     <!-- Transfer Engine Status Card -->
-                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15,10" Margin="0,10,10,0" MinWidth="300">
+                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15,10" Margin="0,10,10,0" MinWidth="250">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
