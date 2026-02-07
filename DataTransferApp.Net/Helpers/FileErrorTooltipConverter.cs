@@ -28,7 +28,7 @@ namespace DataTransferApp.Net.Helpers
             AppendErrorDetails(tooltip, file);
 
             // Custom error messages
-            AppendCustomErrors(tooltip, file);
+            // AppendCustomErrors(tooltip, file);
 
             // Status
             AppendStatus(tooltip, file);

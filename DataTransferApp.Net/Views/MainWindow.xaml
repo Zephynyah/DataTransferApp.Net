@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:local="clr-namespace:DataTransferApp.Net"
+        xmlns:control="clr-namespace:DataTransferApp.Net.Controls"
         xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
         mc:Ignorable="d"
         Title="Data Transfer Application" 
@@ -718,6 +719,14 @@
                                     <fa:IconBlock Icon="Warning" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>
                                 </StackPanel>
+                            </Button>
+
+                            <Button Content="Hover Me!" Width="100" Height="40" HorizontalAlignment="Center"  VerticalAlignment="Center">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="Alert!"  Description="This button does something amazing."/>
+                                    </ToolTip>
+                                </Button.ToolTip>
                             </Button>
                         </StackPanel>
                     </Grid>
