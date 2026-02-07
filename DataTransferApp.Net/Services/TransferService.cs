@@ -55,8 +55,13 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                var directories = Directory.GetDirectories(drivePath);
-                var files = Directory.GetFiles(drivePath);
+                // Only check for visible (non-hidden, non-system) items
+                var directories = Directory.GetDirectories(drivePath)
+                    .Where(d => !IsHiddenOrSystem(d))
+                    .ToArray();
+                var files = Directory.GetFiles(drivePath)
+                    .Where(f => !IsHiddenOrSystem(f))
+                    .ToArray();
                 return directories.Length > 0 || files.Length > 0;
             }
             catch
@@ -69,7 +74,10 @@ namespace DataTransferApp.Net.Services
         {
             try
             {
-                return Directory.GetDirectories(drivePath).Length;
+                // Only count visible (non-hidden, non-system) directories
+                return Directory.GetDirectories(drivePath)
+                    .Where(d => !IsHiddenOrSystem(d))
+                    .Count();
             }
             catch
             {
@@ -552,12 +560,33 @@ namespace DataTransferApp.Net.Services
                 "$WinREAgent"
             };
 
+            // Only get visible (non-hidden, non-system) top-level folders and files
             var directories = Directory.GetDirectories(drivePath)
-                .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
+                .Where(d => !systemFolders.Contains(Path.GetFileName(d)) && !IsHiddenOrSystem(d))
                 .ToList();
-            var files = Directory.GetFiles(drivePath);
+            var files = Directory.GetFiles(drivePath)
+                .Where(f => !IsHiddenOrSystem(f))
+                .ToArray();
 
             return (directories, files);
+        }
+
+        /// <summary>
+        /// Checks if a file or folder is hidden or has system attributes.
+        /// </summary>
+        private static bool IsHiddenOrSystem(string path)
+        {
+            try
+            {
+                var attributes = File.GetAttributes(path);
+                return (attributes & FileAttributes.Hidden) == FileAttributes.Hidden ||
+                       (attributes & FileAttributes.System) == FileAttributes.System;
+            }
+            catch
+            {
+                // If we can't read attributes, assume it's not hidden/system
+                return false;
+            }
         }
 
         private static void ReportInitialProgress(IProgress<TransferProgress>? progress, int totalItems)
