@@ -833,7 +833,9 @@ namespace DataTransferApp.Net.ViewModels
 
         private void UpdateTransferStatus(TransferProgress progress)
         {
-            if (!IsTransferActive)
+            // Only activate transfer if not already active and not a completion update
+            // This prevents race condition where completion progress arrives after finally block
+            if (!IsTransferActive && !progress.IsCompleted)
             {
                 IsTransferActive = true;
             }
