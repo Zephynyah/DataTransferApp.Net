@@ -1022,15 +1022,19 @@ namespace DataTransferApp.Net.Services
                 
                 // Generate log file path if detailed logging is enabled
                 LogFilePath = _settings.RobocopyDetailedLogging
-                    ? Path.Combine(
-                        AppDomain.CurrentDomain.BaseDirectory,
-                        "Logs",
-                        $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log")
+                    ? CreateRobocopyLogFilePath()
                     : null,
                 
                 VerboseOutput = _settings.RobocopyVerboseOutput,
                 AppendLog = false
             };
+        }
+
+        private static string CreateRobocopyLogFilePath()
+        {
+            var logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            Directory.CreateDirectory(logDirectory); // Ensure directory exists
+            return Path.Combine(logDirectory, $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log");
         }
 
         /// <summary>
