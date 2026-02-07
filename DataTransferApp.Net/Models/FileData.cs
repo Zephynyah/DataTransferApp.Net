@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DataTransferApp.Net.Models
 {
+    /// <summary>
+    /// Represents file metadata and transfer status information for the data transfer application.
+    /// </summary>
     public partial class FileData : ObservableObject
     {
         [ObservableProperty]
@@ -49,6 +53,9 @@ namespace DataTransferApp.Net.Models
 
         [ObservableProperty]
         private string? _errorDetails;
+
+        [ObservableProperty]
+        private List<string> _recommendedActions = new List<string>();
 
         public string SizeFormatted => FormatFileSize(Size);
 
