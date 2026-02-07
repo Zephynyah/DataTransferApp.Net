@@ -2,14 +2,30 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
              xmlns:local="clr-namespace:DataTransferApp.Net">
     <Application.Resources>
         <ResourceDictionary>
-
             <ResourceDictionary.MergedDictionaries>
                 <!-- Reference the style file -->
                 <!-- <ResourceDictionary Source="Controls/AwesomeToolTipStyle.xaml"/> -->
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
+            <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+            <helpers:StatusToColorConverter x:Key="StatusToColorConverter"/>
+            <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
+            <helpers:FileIconConverter x:Key="FileIconConverter"/>
+            <helpers:AuditStatusToBrushConverter x:Key="AuditStatusToBrushConverter"/>
+            <helpers:AuditStatusToBrushIconConverter x:Key="AuditStatusToBrushIconConverter"/>
+            <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <helpers:PluralizationConverter x:Key="PluralizationConverter"/>
+            <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
+            <helpers:FileSizeConverter x:Key="FileSizeConverter"/>
+            <helpers:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
+            <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
 
             <!-- Color Palette -->
             <SolidColorBrush x:Key="PrimaryBrush" Color="#3498DB"/>
@@ -29,10 +45,6 @@
             <SolidColorBrush x:Key="AnimationBlueBrush" Color="DodgerBlue"/>
             <SolidColorBrush x:Key="FootNoteDarkBrush" Color="#7f868d"/>
             <SolidColorBrush x:Key="FootNoteLightBrush" Color="#7f8c8d"/>
-
-            
-            <!-- Converters -->
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
             <!-- ScrollBar Size Definitions -->
             <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">4</system:Double>

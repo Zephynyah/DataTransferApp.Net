@@ -8,9 +8,21 @@ namespace DataTransferApp.Net.Controls
     /// </summary>
     public partial class AwesomeToolTip : UserControl
     {
-        public static readonly DependencyProperty TitleProperty =
+        public static readonly DependencyProperty FileNameProperty =
             DependencyProperty.Register(
-                nameof(Title),
+                nameof(FileName),
+                typeof(string),
+                typeof(AwesomeToolTip),
+                new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty FullPathProperty =
+            DependencyProperty.Register(
+                nameof(FullPath),
+                typeof(string),
+                typeof(AwesomeToolTip),
+                new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty SizeFormattedProperty =
+            DependencyProperty.Register(
+                nameof(SizeFormatted),
                 typeof(string),
                 typeof(AwesomeToolTip),
                 new PropertyMetadata(string.Empty));
@@ -22,10 +34,21 @@ namespace DataTransferApp.Net.Controls
                 typeof(AwesomeToolTip),
                 new PropertyMetadata(string.Empty));
 
-        public string Title
+        public string FileName
         {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
+            get => (string)GetValue(FileNameProperty);
+            set => SetValue(FileNameProperty, value);
+        }
+
+        public string FullPath
+        {
+            get => (string)GetValue(FullPathProperty);
+            set => SetValue(FullPathProperty, value);
+        }
+        public string SizeFormatted
+        {
+            get => (string)GetValue(SizeFormattedProperty);
+            set => SetValue(SizeFormattedProperty, value);
         }
 
         public string Description

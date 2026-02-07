@@ -10,12 +10,6 @@
         ResizeMode="CanResize">
     
     <Window.Resources>
-        <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
-        <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
-        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <helpers:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
-        <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
-        
         <!-- Validation Error Style -->
         <Style x:Key="ValidatingTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Style.Triggers>

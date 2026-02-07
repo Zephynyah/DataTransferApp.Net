@@ -13,10 +13,6 @@
         Background="{StaticResource BackgroundBrush}">
     
     <Window.Resources>
-        <helpers:FileSizeConverter x:Key="FileSizeConverter"/>
-        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <helpers:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <SolidColorBrush x:Key="ErrorBrush" Color="#E74C3C"/>
     </Window.Resources>
     

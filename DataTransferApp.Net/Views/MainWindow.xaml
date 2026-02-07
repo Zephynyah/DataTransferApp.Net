@@ -18,17 +18,7 @@
     
     <Window.Resources>
         <!-- Converters -->
-        <helpers:InverseBooleanConverter x:Key="InverseBoolConverter"/>
-        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <helpers:StatusToColorConverter x:Key="StatusToColorConverter"/>
-        <helpers:FileRowBackgroundConverter x:Key="FileRowBackgroundConverter"/>
-        <helpers:FileIconConverter x:Key="FileIconConverter"/>
-        <helpers:AuditStatusToBrushConverter x:Key="AuditStatusToBrushConverter"/>
-        <helpers:AuditStatusToBrushIconConverter x:Key="AuditStatusToBrushIconConverter"/>
-        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <helpers:PluralizationConverter x:Key="PluralizationConverter"/>
-        <helpers:FileErrorTooltipConverter x:Key="FileErrorTooltipConverter"/>
+ 
     </Window.Resources>
     
     <Grid>
@@ -724,7 +714,7 @@
                             <Button Content="Hover Me!" Width="100" Height="40" HorizontalAlignment="Center"  VerticalAlignment="Center">
                                 <Button.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
-                                        <control:AwesomeToolTip Title="Alert!"  Description="This button does something amazing."/>
+                                        <control:AwesomeToolTip FileName="Test.txt"  FullPath="D:\Test.txt" SizeFormatted="15 KB" />
                                     </ToolTip>
                                 </Button.ToolTip>
                             </Button>
@@ -745,10 +735,7 @@
                             <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                                 <!-- Default: white background -->
                                 <Setter Property="Background" Value="White"/>
-                                <!-- Tooltip for files with errors or warnings -->
-                                <Setter Property="ToolTip" Value="{Binding Converter={StaticResource FileErrorTooltipConverter}}"/>
-                                <Setter Property="ToolTipService.InitialShowDelay" Value="300"/>
-                                <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
+                                <!-- Rich tooltip for files with errors or warnings (defined inline below) -->
                                 <Style.Triggers>
                                     <!-- Alternating row - only applies if no other conditions are met -->
                                     <Trigger Property="AlternationIndex" Value="1">
