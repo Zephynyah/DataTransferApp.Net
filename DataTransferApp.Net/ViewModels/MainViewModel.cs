@@ -305,7 +305,7 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         file.Status = "Compressed";
                         file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
-                        file.ErrorDetails = "Extract contents and transfer uncompressed files, or verify archive integrity before transfer.";
+                        file.ErrorDetails = "Use the view button to inspect contents of compressed files, or verify archive integrity before transfer if possible.";
                     }
                 }
             }
@@ -590,7 +590,7 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         file.Status = "Compressed";
                         file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
-                        file.ErrorDetails = "Extract contents and transfer uncompressed files, or verify archive integrity before transfer.";
+                        file.ErrorDetails = "Use the view button to inspect contents of compressed files, or verify archive integrity before transfer if possible.";
                     }
                 }
             }
@@ -708,13 +708,14 @@ namespace DataTransferApp.Net.ViewModels
                 // ToList to avoid collection modification issues
                 foreach (var folder in passedFolders.ToList())
                 {
-                    // Check for cancellation
+                    // Check for cancellation before starting next folder
                     _transferCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
 
-                    var transferResult = await TransferSingleFolderAsync(folder, completed, total, _transferCancellationTokenSource.Token);
+                    // Don't pass cancellation token - let current folder complete
+                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
 
                     if (transferResult.Success)
                     {
@@ -738,9 +739,9 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (OperationCanceledException)
             {
-                StatusMessage = $"Transfer cancelled at {completed}/{total} folders";
-                LoggingService.Warning($"Transfer cancelled by user after {completed} folders");
-                _ = ShowSnackbar($"Transfer cancelled. Completed {completed} of {total} folders.", "warning");
+                StatusMessage = $"Transfer cancelled - {completed} of {total} completed";
+                LoggingService.Warning($"Batch transfer cancelled by user. Completed {completed} of {total} folders");
+                _ = ShowSnackbar($"Transfer cancelled. {completed} of {total} folders completed.", "warning");
             }
             catch (Exception ex)
             {

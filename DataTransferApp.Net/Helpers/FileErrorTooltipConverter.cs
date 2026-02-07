@@ -68,8 +68,8 @@ namespace DataTransferApp.Net.Helpers
                 tooltip.AppendLine($"Archive format detected: {file.Extension}");
                 tooltip.AppendLine();
                 tooltip.AppendLine("💡 Recommended Actions:");
-                tooltip.AppendLine("  • Extract contents and transfer uncompressed");
-                tooltip.AppendLine("  • Verify contents before transfer");
+                tooltip.AppendLine("  • Use the view button to inspect contents of compressed files.");
+                tooltip.AppendLine("  • Verify archive contents with hash before transfer if possible.");
                 tooltip.AppendLine("  • Ensure no nested archives");
             }
         }
