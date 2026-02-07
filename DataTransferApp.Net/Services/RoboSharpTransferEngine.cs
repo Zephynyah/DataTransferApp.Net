@@ -56,8 +56,8 @@ namespace DataTransferApp.Net.Services
                 // Create and configure RoboCommand
                 var command = CreateRoboCommand(sourcePath, destinationPath, options);
 
-                // Set up progress tracking with pre-calculated totals
-                var progressAdapter = SetupProgressTracking(sourcePath, command, progress, cancellationToken);
+                // Set up progress tracking with accurate totals from list-only scan
+                var progressAdapter = await SetupProgressTrackingAsync(sourcePath, destinationPath, options, command, progress, cancellationToken);
 
                 // Start the transfer - StartAsync() returns Task<RoboCopyResults>
                 progressAdapter.Start();
@@ -395,21 +395,43 @@ namespace DataTransferApp.Net.Services
         }
 
         /// <summary>
-        /// Sets up progress tracking with pre-calculated totals for accurate ETA.
+        /// Sets up progress tracking using RoboSharp's list-only mode for accurate totals.
         /// </summary>
-        private RoboSharpProgressAdapter SetupProgressTracking(
+        private async Task<RoboSharpProgressAdapter> SetupProgressTrackingAsync(
             string sourcePath,
+            string destinationPath,
+            RoboSharpOptions options,
             RoboCommand command,
             IProgress<TransferProgress>? progress,
             CancellationToken cancellationToken)
         {
-            // Pre-calculate totals for accurate ETA
-            var (totalFiles, totalBytes) = CalculateDirectoryTotals(sourcePath);
-            LoggingService.Debug($"Pre-scan complete: {totalFiles} files, {totalBytes:N0} bytes");
+            long totalFiles = 0;
+            long totalBytes = 0;
 
-            // Set up progress tracking
+            try
+            {
+                // Use RoboSharp's /L (list only) for accurate totals that respect all filters
+                LoggingService.Debug("Running list-only scan for accurate totals...");
+                var listCommand = CreateRoboCommand(sourcePath, destinationPath, options);
+                var listResults = await listCommand.StartAsync_ListOnly();
+                
+                totalFiles = listResults.FilesStatistic.Total;
+                totalBytes = listResults.BytesStatistic.Total;
+                LoggingService.Debug($"List-only scan complete: {totalFiles} files, {totalBytes:N0} bytes");
+            }
+            catch (Exception ex)
+            {
+                // Fall back to directory scan if list-only fails
+                LoggingService.Warning($"List-only scan failed, using directory scan fallback: {ex.Message}");
+                var totals = CalculateDirectoryTotals(sourcePath);
+                totalFiles = totals.TotalFiles;
+                totalBytes = totals.TotalBytes;
+                LoggingService.Debug($"Fallback scan complete: {totalFiles} files, {totalBytes:N0} bytes");
+            }
+
+            // Set up progress tracking with accurate totals
             var progressAdapter = new RoboSharpProgressAdapter(progress);
-            progressAdapter.SetTotals(totalFiles, totalBytes);
+            progressAdapter.SetTotals((int)totalFiles, totalBytes);
             AttachEventHandlers(command, progressAdapter, cancellationToken);
 
             return progressAdapter;

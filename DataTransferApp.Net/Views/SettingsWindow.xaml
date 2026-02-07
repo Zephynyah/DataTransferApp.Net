@@ -348,7 +348,7 @@
                                          Margin="0,0,10,5"
                                          ToolTip="Configure all settings manually">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Cog" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <fa:IconBlock Icon="Cog" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Manual" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </RadioButton>
@@ -367,7 +367,7 @@
                                          Margin="0,0,10,5"
                                          ToolTip="Max speed for local transfers">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Bolt" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <fa:IconBlock Icon="Bolt" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Fast" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </RadioButton>
@@ -386,7 +386,7 @@
                                          Margin="0,0,10,5"
                                          ToolTip="Balanced settings with verification">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Shield" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <fa:IconBlock Icon="Shield" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Safe" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </RadioButton>
@@ -405,7 +405,7 @@
                                          Margin="0,0,10,5"
                                          ToolTip="Optimized for unreliable networks">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Globe" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <fa:IconBlock Icon="Globe" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Network" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </RadioButton>
@@ -424,7 +424,7 @@
                                          Margin="0,0,10,0"
                                          ToolTip="High integrity with full verification">
                                 <StackPanel Orientation="Horizontal">
-                                    <fa:IconBlock Icon="Archive" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <fa:IconBlock Icon="Archive" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Archive" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </RadioButton>

@@ -34,5 +34,11 @@ namespace DataTransferApp.Net.Services
         /// Gets or sets estimated time remaining for the transfer.
         /// </summary>
         public System.TimeSpan? EstimatedTimeRemaining { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the transfer has completed.
+        /// Only true when OnCommandCompleted has fired.
+        /// </summary>
+        public bool IsCompleted { get; set; }
     }
 }
