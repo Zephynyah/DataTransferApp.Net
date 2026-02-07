@@ -414,7 +414,7 @@ namespace DataTransferApp.Net.Services
                 LoggingService.Debug("Running list-only scan for accurate totals...");
                 var listCommand = CreateRoboCommand(sourcePath, destinationPath, options);
                 var listResults = await listCommand.StartAsync_ListOnly();
-                
+
                 totalFiles = listResults.FilesStatistic.Total;
                 totalBytes = listResults.BytesStatistic.Total;
                 LoggingService.Debug($"List-only scan complete: {totalFiles} files, {totalBytes:N0} bytes");

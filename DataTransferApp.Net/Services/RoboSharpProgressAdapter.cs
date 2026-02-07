@@ -13,12 +13,13 @@ namespace DataTransferApp.Net.Services
     /// </summary>
     public class RoboSharpProgressAdapter
     {
-        private const int UpdateIntervalMs = 150; // Match IProgressEstimator update frequency (~150ms)
-
         private readonly IProgress<TransferProgress>? _progress;
         private readonly Stopwatch _stopwatch;
 
+        // S1450: Field needs to persist across event handlers for event subscription
+#pragma warning disable S1450
         private IProgressEstimator? _estimator;
+#pragma warning restore S1450
         private long _totalBytes;
         private long _copiedBytes;
         private int _totalFiles;
@@ -85,7 +86,7 @@ namespace DataTransferApp.Net.Services
             if (!string.IsNullOrEmpty(fileName) && fileName != _lastProcessedFile)
             {
                 _lastProcessedFile = fileName;
-                
+
                 // If we have a current file size, add it to completed bytes
                 if (_currentFileSize > 0)
                 {
@@ -155,7 +156,7 @@ namespace DataTransferApp.Net.Services
             // CopyProgressEventArgs provides:
             // - CurrentFileProgress: progress percentage (0-100) for the current file
             // - CurrentFile: ProcessedFileInfo with Name, Size, etc.
-            
+
             // Calculate bytes transferred for current file based on progress percentage
             var currentFileProgress = e.CurrentFileProgress; // 0-100
             var currentFileBytesTransferred = (long)(_currentFileSize * (currentFileProgress / 100.0));
@@ -303,7 +304,6 @@ namespace DataTransferApp.Net.Services
 
             LoggingService.Debug($"ETA: {secondsRemaining:F0}s (remaining: {remainingBytes:N0} bytes, speed: {bytesPerSecond:F0} B/s)");
             return TimeSpan.FromSeconds(secondsRemaining);
-
         }
 
         /// <summary>

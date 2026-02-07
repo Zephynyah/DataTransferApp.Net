@@ -189,7 +189,7 @@
         </Border>
         
         <!-- Statistics -->
-        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1" Padding="15,10">
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="0,0,0,1" Padding="15,5,10,5" Margin="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -201,32 +201,32 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Total: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding TotalFolders}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Ready: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding ReadyFolders}" Foreground="{StaticResource SuccessBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Caution: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding CautionFolders}" Foreground="{StaticResource WarningBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Failed: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding FailedFolders}" Foreground="{StaticResource DangerBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="4" Orientation="Horizontal">
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="Transferred: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding TransferredCount}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="5" Orientation="Horizontal"> 
+                <StackPanel Grid.Column="5" Orientation="Horizontal" Margin="0,5,0,0"> 
                     <TextBlock Text="Size: " Style="{StaticResource HeaderTextStyle}"/>
                     <TextBlock Text="{Binding TotalSize}" Foreground="{StaticResource PrimaryBrush}" Style="{StaticResource StatValueStyle}" />
                 </StackPanel>
@@ -462,20 +462,11 @@
                                 <TextBlock Text="Audit All" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <!-- Transfer All Button - Visible when NOT processing -->
-                        <Button Style="{StaticResource SuccessButtonStyle}" Command="{Binding TransferAllFoldersCommand}" 
-                                Visibility="{Binding IsProcessing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <!-- Transfer All Button -->
+                        <Button Style="{StaticResource SuccessButtonStyle}" Command="{Binding TransferAllFoldersCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
                                 <TextBlock Text="Transfer All" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- Cancel Button - Visible when processing -->
-                        <Button Style="{StaticResource DangerButtonStyle}" Command="{Binding CancelTransferAllCommand}"
-                                Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel Orientation="Horizontal">
-                                <fa:IconBlock Icon="Stop" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
-                                <TextBlock Text="Cancel" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>

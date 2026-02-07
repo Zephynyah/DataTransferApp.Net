@@ -879,7 +879,6 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
                 }
-
             }
             else
             {
