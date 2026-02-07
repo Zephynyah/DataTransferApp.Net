@@ -830,7 +830,7 @@
                     </Border>
 
                     <!-- Transfer Engine Status Card -->
-                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15,10" Margin="0,10,10,0">
+                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource LightBrush}" BorderThickness="1" Padding="15,10" Margin="0,10,10,0" MinWidth="300">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -844,70 +844,85 @@
                             
                             <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="12" Margin="0,0,5,5" Text="Transfer Engine Status"/>
 
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" >
-                                <!-- Animated icon when transfer is active -->
-                                    <fa:IconImage Icon="Sync" Grid.Column="0" Foreground="{StaticResource PrimaryBrush}" RenderTransformOrigin="0.5,0.5" Height="16" Width="16" VerticalAlignment="Center" Margin="0,0,8,0" Opacity="0">
-                                        <fa:IconImage.RenderTransform>
-                                            <RotateTransform Angle="0" />
-                                        </fa:IconImage.RenderTransform>
-                                        <fa:IconImage.Style>
-                                            <Style TargetType="fa:IconImage">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsTransferActive}" Value="True">
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <!-- Fade in -->
-                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
-                                                                    <!-- Continuous rotation -->
-                                                                    <DoubleAnimation Storyboard.TargetProperty="(fa:IconImage.RenderTransform).(RotateTransform.Angle)"
-                                                                        From="0" To="360" Duration="0:0:1.5" RepeatBehavior="Forever" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <!-- Fade out -->
-                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </fa:IconImage.Style>
-                                    </fa:IconImage>
-                                    
-                                    <!-- Static icon when idle -->
-                                    <fa:IconBlock Icon="PowerOff" Foreground="{StaticResource SecondaryBrush}" FontSize="16" Margin="0,0,8,0" Opacity="1" >
-                                        <fa:IconBlock.Style>
-                                            <Style TargetType="fa:IconBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsTransferActive}" Value="True">
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </fa:IconBlock.Style>
-                                    </fa:IconBlock>
-                                </StackPanel>
-                                
-                                <TextBlock Grid.Column="1" Text="{Binding ProgressIssues}" FontWeight="SemiBold"/>
-                            </StackPanel>
+                            <!-- Animated icon when transfer is active -->
+                            <fa:IconImage Icon="Sync" 
+                                Grid.Row="1" 
+                                Grid.Column="0"  
+                                Foreground="{StaticResource PrimaryBrush}" 
+                                RenderTransformOrigin="0.5,0.5" 
+                                Height="16" 
+                                Width="16" 
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Center"
+                                Margin="0,0" 
+                                Opacity="0">
+                                <fa:IconImage.RenderTransform>
+                                    <RotateTransform Angle="0" />
+                                </fa:IconImage.RenderTransform>
+                                <fa:IconImage.Style>
+                                    <Style TargetType="fa:IconImage">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTransferActive}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <!-- Fade in -->
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+                                                            <!-- Continuous rotation -->
+                                                            <DoubleAnimation Storyboard.TargetProperty="(fa:IconImage.RenderTransform).(RotateTransform.Angle)"
+                                                                From="0" To="360" Duration="0:0:1.5" RepeatBehavior="Forever" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <!-- Fade out -->
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </fa:IconImage.Style>
+                            </fa:IconImage>
+                            
+                            <!-- Static icon when idle -->
+                            <fa:IconBlock Icon="PowerOff" 
+                                Grid.Row="1" 
+                                Grid.Column="0" 
+                                Foreground="{StaticResource SecondaryBrush}" 
+                                FontSize="16" 
+                                Margin="0,0" 
+                                Opacity="1" 
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Center">
+                                <fa:IconBlock.Style>
+                                    <Style TargetType="fa:IconBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTransferActive}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </fa:IconBlock.Style>
+                            </fa:IconBlock>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProgressIssues}" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         </Grid>
                     </Border>
 
