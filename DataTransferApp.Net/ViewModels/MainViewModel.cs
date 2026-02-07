@@ -315,6 +315,7 @@ namespace DataTransferApp.Net.ViewModels
                         file.RecommendedActions = new List<string>
                         {
                             "Inspect archive contents before transfer",
+                            "Verify the archive is not password protected",
                             "Verify the archive is not corrupted",
                             "Check if files inside meet all requirements"
                         };

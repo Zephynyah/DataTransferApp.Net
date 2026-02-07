@@ -17,9 +17,8 @@
                 <TextBlock Text="{Binding FileName}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap"/>
             </StackPanel>
             
-             <Separator Background="{StaticResource SecondaryBrush}" Margin="0,5"/>
+            <Separator Background="{StaticResource SecondaryBrush}" Margin="0,5"/>
             
-     
             <!-- File details -->
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
@@ -43,26 +42,15 @@
             </Grid>
 
             <StackPanel>
-                <StackPanel.Style>
-                    <Style TargetType="StackPanel">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsBlacklisted}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-
                 <Border Background="#F8D7DA" Padding="10" CornerRadius="4" Margin="0,0,0,6">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                            <fa:IconBlock Icon="Ban" Foreground="#721C24" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Blacklisted File Type" FontWeight="Bold" Foreground="#721C24" FontSize="13" VerticalAlignment="Center"/>
+                            <fa:IconBlock Icon="Server" Foreground="#721C24" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ErrorMessage}" FontWeight="Bold" Foreground="#721C24" FontSize="13" VerticalAlignment="Center"/>
                         </StackPanel>
                         
                         <TextBlock Foreground="#721C24" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6">
-                            <Run Text="This file extension is not allowed for transfer."/>
+                            <Run Text="{Binding ErrorDetails}"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -87,98 +75,6 @@
                     </StackPanel>
                 </Border>
             </StackPanel>
-            
-            <!-- Blacklisted file warning -->
-            <!-- <Border Background="#F8D7DA" Padding="10" CornerRadius="4" Margin="0,0,0,6">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsBlacklisted}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="Ban" Foreground="#721C24" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Blacklisted File Type" FontWeight="Bold" Foreground="#721C24" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock Foreground="#721C24" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6">
-                        <Run Text="This file extension is not allowed for transfer."/>
-                    </TextBlock>
-                    <TextBlock Text="Recommended Action:" FontWeight="SemiBold" Foreground="#721C24" FontSize="11" Margin="24,4,0,4"/>
-                    <StackPanel Orientation="Horizontal" Margin="24,0,0,0">
-                        <fa:IconBlock Icon="Lightbulb" Foreground="#721C24" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Top"/>
-                        <TextBlock Text="Remove file or change extension before transfer" 
-                                    FontSize="11" FontStyle="Italic" Foreground="#721C24" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border> -->
-            
-            <!-- Compressed file caution -->
-            <!-- <Border Background="#FFF3CD" Padding="10" CornerRadius="4" Margin="0,0,0,6">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding IsCompressed}" Value="True"/>
-                                    <Condition Binding="{Binding IsBlacklisted}" Value="False"/>
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="InfoCircle" Foreground="#856404" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Caution: Compressed File" FontWeight="Bold" Foreground="#856404" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock Foreground="#856404" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6">
-                        <Run Text="Transfer is allowed but review is recommended."/>
-                    </TextBlock>
-                </StackPanel>
-            </Border> -->
-
-            <!-- User recommended actions -->
-            <!-- <Border Background="#E8DEF8" Padding="10" CornerRadius="4">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}" Value="Visible">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="UserCircle" Foreground="#4A148C" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Recommended Actions" FontWeight="Bold" Foreground="#4A148C" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#4A148C" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6"/>
-                    <StackPanel Orientation="Horizontal" Margin="24,0,0,0">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ErrorDetails, Converter={StaticResource NullToVisibilityConverter}}" Value="Visible">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                        <fa:IconBlock Icon="CheckCircle" Foreground="#4A148C" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Top"/>
-                        <TextBlock Text="{Binding ErrorDetails}" Foreground="#4A148C" FontSize="11" FontStyle="Italic" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border> -->
-
         </StackPanel>
     </Border>
 </UserControl>
