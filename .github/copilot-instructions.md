@@ -18,7 +18,8 @@
 - [x] Statistics tracking (exit codes, errors, speeds)
 - [x] Transfer history with RoboSharp statistics display
 - [x] Settings UI with thread count, retries, logging controls
-- [x] **Configuration Presets** (Fast, Safe, Network, Archive) ✨ NEW
+- [x] **Configuration Presets** (Fast, Safe, Network, Archive) ✨
+- [x] **Exponential backoff retry logic with jitter** ✨ NEW
 
 ✅ **Transfer History**
 - [x] Transfer log storage and retrieval
@@ -37,13 +38,15 @@
 - [x] Implemented dual List/Table view for Transfer History files
 - [x] Fixed FileHash binding in table view
 - [x] **Added 4 Configuration Presets** with one-click optimization
-- [x] Updated TODO.md to mark presets complete
+- [x] **Implemented exponential backoff retry logic** (RetryHelper with jitter)
+- [x] Disabled RoboSharp internal retry for predictable behavior
+- [x] Updated TODO.md to mark retry logic complete
 
 ## Next Steps (TODO.md)
 See [TODO.md](../TODO.md) for complete task list. Priority items:
 - [ ] Verify real-time progress accuracy with large transfers
 - [ ] Test pause/resume functionality
-- [ ] Add retry logic with exponential backoff
-- [ ] Unit tests for RoboSharpTransferEngine
+- [ ] Add detailed error tooltips with file paths
+- [ ] Unit tests for RoboSharpTransferEngine and RetryHelper
 - [ ] Performance benchmarking
 - [ ] User documentation for RoboSharp features

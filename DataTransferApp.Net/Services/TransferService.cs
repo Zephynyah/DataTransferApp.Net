@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Helpers;
 using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
@@ -134,12 +135,23 @@ namespace DataTransferApp.Net.Services
                 // Apply blacklisted extensions as exclusions
                 roboOptions.ExcludeFiles = _settings.BlacklistedExtensions.Select(ext => $"*{ext}").ToList();
 
-                // Execute transfer with RoboSharp
-                var roboResult = await _roboSharpEngine!.TransferFolderAsync(
-                    folder.FolderPath,
-                    destinationPath,
-                    roboOptions,
-                    progress,
+                // Execute transfer with RoboSharp using exponential backoff retry
+                var roboResult = await RetryHelper.ExecuteWithRetryAsync(
+                    async () => await _roboSharpEngine!.TransferFolderAsync(
+                        folder.FolderPath,
+                        destinationPath,
+                        roboOptions,
+                        progress,
+                        cancellationToken),
+                    maxRetries: _settings.RobocopyRetries,
+                    baseDelaySeconds: _settings.RobocopyRetryWaitSeconds,
+                    useJitter: true,
+                    onRetry: (attempt, delay) =>
+                    {
+                        LoggingService.Warning(
+                            $"RoboSharp transfer retry {attempt}/{_settings.RobocopyRetries} for {folder.FolderName} " +
+                            $"after {delay.TotalSeconds:F1}s delay (exponential backoff)");
+                    },
                     cancellationToken);
 
                 if (!roboResult.Success)

@@ -40,7 +40,7 @@
   - RoboSharp transfer statistics (speed, counts, duration)
   - Exit codes and error messages
   - Visual distinction for RoboSharp vs Legacy transfers
-- [ ] Add retry logic with exponential backoff
+- [x] Add retry logic with exponential backoff
 - [ ] Add detailed error tooltips with file paths in FileData grid
 - [ ] Create error summary report for bulk transfers
 

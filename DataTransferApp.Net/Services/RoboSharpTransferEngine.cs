@@ -236,8 +236,10 @@ namespace DataTransferApp.Net.Services
 
                 RetryOptions =
                 {
-                    RetryCount = options.RetryCount,
-                    RetryWaitTime = options.RetryWaitSeconds
+                    // Disable RoboSharp's internal retry - we handle all retries at TransferService level
+                    // with exponential backoff for better resilience and predictable behavior
+                    RetryCount = 0,
+                    RetryWaitTime = 0
                 },
 
                 SelectionOptions =

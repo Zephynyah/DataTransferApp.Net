@@ -15,7 +15,7 @@ namespace DataTransferApp.Net.Helpers
                 if (parts.Length == 2)
                 {
                     var unit = number == 1 ? parts[0] : parts[1];
-                    return $"Policy is set for {number} {unit}";
+                    return $"Retention policy is set for {number} {unit}";
                 }
             }
 
