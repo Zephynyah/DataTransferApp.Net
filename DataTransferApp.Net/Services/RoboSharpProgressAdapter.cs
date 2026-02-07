@@ -180,7 +180,7 @@ namespace DataTransferApp.Net.Services
         private double CalculateSpeed()
         {
             var elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
-            
+
             // Need at least 0.1 seconds of data to calculate speed
             if (elapsedSeconds < 0.1)
             {
@@ -196,47 +196,49 @@ namespace DataTransferApp.Net.Services
         /// </summary>
         private TimeSpan? CalculateETA(double bytesPerSecond)
         {
-            // Return null if we're already done
-            if (_copiedBytes >= _totalBytes)
-            {
-                return TimeSpan.Zero;
-            }
-
-            // If we don't have valid totals yet, return null (will show "Calculating...")
+            // If we don't have valid totals yet, return null
             if (_totalBytes <= 0)
             {
                 LoggingService.Debug($"ETA: Waiting for totals (_totalBytes={_totalBytes})");
                 return null;
             }
 
-            // If speed is zero and we have barely started, return null temporarily
+            // If speed is zero, return null temporarily
             if (bytesPerSecond <= 0)
             {
                 // If we've been running for more than 2 seconds with no bytes, something is wrong
                 if (_stopwatch.Elapsed.TotalSeconds > 2)
                 {
                     LoggingService.Debug($"ETA: No bytes transferred after {_stopwatch.Elapsed.TotalSeconds:F1}s");
-                    return null;
                 }
-                // Still in early phase, return null for now
                 return null;
             }
 
             var remainingBytes = _totalBytes - _copiedBytes;
+
+            // Check if we're complete or bytes exceeded total (should only happen at end)
+            if (remainingBytes <= 0)
+            {
+                LoggingService.Debug($"ETA: Transfer complete or bytes exceeded (_copiedBytes={_copiedBytes}, _totalBytes={_totalBytes})");
+                return TimeSpan.Zero;
+            }
+
             var secondsRemaining = remainingBytes / bytesPerSecond;
 
             // Sanity check: don't show crazy ETAs
             if (secondsRemaining < 0)
             {
-                return TimeSpan.Zero;
+                LoggingService.Debug($"ETA: Negative seconds calculated (remainingBytes={remainingBytes}, speed={bytesPerSecond})");
+                return null;
             }
-            
+
             if (secondsRemaining > 86400) // More than 24 hours
             {
                 LoggingService.Debug($"ETA: Capping unrealistic estimate of {secondsRemaining:F0}s");
                 return TimeSpan.FromHours(24);
             }
 
+            LoggingService.Debug($"ETA: {secondsRemaining:F0}s (remaining: {remainingBytes:N0} bytes, speed: {bytesPerSecond:F0} B/s)");
             return TimeSpan.FromSeconds(secondsRemaining);
         }
 

@@ -846,15 +846,26 @@ namespace DataTransferApp.Net.ViewModels
                 if (progress.EstimatedTimeRemaining.HasValue)
                 {
                     var timeRemaining = progress.EstimatedTimeRemaining.Value;
-                    if (timeRemaining.TotalHours >= 1)
+                    
+                    // Check if transfer is complete
+                    if (timeRemaining == TimeSpan.Zero)
+                    {
+                        eta = "Complete";
+                    }
+                    else if (timeRemaining.TotalHours >= 1)
                     {
                         // Show hours for long transfers
                         eta = timeRemaining.ToString(@"h\:mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
                     }
-                    else
+                    else if (timeRemaining.TotalSeconds >= 1)
                     {
                         // Show minutes:seconds for shorter transfers
                         eta = timeRemaining.ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        // Less than 1 second remaining
+                        eta = "< 1s";
                     }
                 }
                 else

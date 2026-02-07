@@ -203,6 +203,7 @@ namespace DataTransferApp.Net.Services
                    Directory.Exists(destinationPath);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
         private async Task<RoboSharpTransferResult> ExecuteTransferWithRetryAsync(
             FolderData folder,
             string destinationPath,
@@ -210,7 +211,6 @@ namespace DataTransferApp.Net.Services
             CancellationToken cancellationToken)
         {
             var roboOptions = CreateRoboSharpOptions();
-            roboOptions.ExcludeFiles = _settings.BlacklistedExtensions.Select(ext => $"*{ext}").ToList();
 
             return await RetryHelper.ExecuteWithRetryAsync(
                 async () => await _roboSharpEngine!.TransferFolderAsync(
@@ -756,7 +756,15 @@ namespace DataTransferApp.Net.Services
 
         private static string CreateRobocopyLogFilePath()
         {
-            var logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            // Use the same appDataPath as the main application logging
+#if DEBUG
+            var appDataPath = Path.Combine("appDataPath", "DataTransferApp");
+#else
+            var appDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "DataTransferApp");
+#endif
+            var logDirectory = Path.Combine(appDataPath, "Logs");
             Directory.CreateDirectory(logDirectory); // Ensure directory exists
             return Path.Combine(logDirectory, $"robocopy_{DateTime.Now:yyyyMMdd_HHmmss}.log");
         }
