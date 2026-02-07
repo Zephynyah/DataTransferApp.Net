@@ -83,9 +83,6 @@ namespace DataTransferApp.Net.ViewModels
         private bool _isProcessing = false;
 
         [ObservableProperty]
-        private string _transferAllButtonText = "Transfer All";
-
-        [ObservableProperty]
         private bool _isSnackbarVisible = false;
 
         private CancellationTokenSource? _transferCts;
@@ -385,6 +382,7 @@ namespace DataTransferApp.Net.ViewModels
             TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
             TransferAllFoldersCommand.NotifyCanExecuteChanged();
             ClearDriveCommand.NotifyCanExecuteChanged();
+            CancelTransferAllCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
@@ -633,13 +631,6 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanTransferAllFolders))]
         private async Task TransferAllFoldersAsync()
         {
-            if (IsProcessing)
-            {
-                // If already processing, this acts as cancel
-                CancelTransferAll();
-                return;
-            }
-
             if (!ValidateTransferPrerequisites(out var passedFolders))
             {
                 return;
@@ -668,7 +659,7 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private bool CanCancelTransferAll() => IsProcessing && _transferCts != null;
+        private bool CanCancelTransferAll() => IsProcessing; // Can cancel whenever processing
 
         private bool ValidateTransferPrerequisites(out List<FolderData> passedFolders)
         {
@@ -975,7 +966,7 @@ namespace DataTransferApp.Net.ViewModels
             !IsProcessing;
 
         private bool CanTransferAllFolders() =>
-            SelectedDrive != null; // Allow button when drive selected (enables both Transfer and Cancel)
+            SelectedDrive != null && !IsProcessing; // Only enabled when not processing
 
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()
