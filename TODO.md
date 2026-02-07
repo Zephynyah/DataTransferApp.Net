@@ -9,9 +9,9 @@
   - `OnFileProcessed` - Reports each completed file with size
   - `OnCopyProgressChanged` - Reports individual file copy progress
   - `RoboSharpProgressAdapter` translates events to `TransferProgress` model
-- [ ] Verify real-time progress updates in UI (test with large transfers)
-- [ ] Add MB/s speed calculation validation
-- [ ] Test ETA accuracy with various file sizes
+- [x] Verify real-time progress updates in UI (test with large transfers)
+- [x] Add MB/s speed calculation validation
+- [x] Test ETA accuracy with various file sizes
 - [ ] Implement pause/resume functionality using RoboSharp job files
 
 ### Settings & Configuration
