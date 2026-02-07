@@ -43,13 +43,13 @@
 - [x] Updated TODO.md to mark retry logic complete
 - [x] **Fixed race condition: Transfer engine now returns to idle after completion**
 - [x] **Added detailed error tooltips for files** with full paths and remediation hints
+- [x] **Implemented cancel functionality** for active transfers (CancellationToken pattern)
+- [x] **Pause/resume functionality** implemented in `feature-pause-resume` branch
 
 ## Next Steps (TODO.md)
 See [TODO.md](../TODO.md) for complete task list. Priority items:
-- [ ] Verify real-time progress accuracy with large transfers
-- [ ] Test pause/resume functionality
+- [ ] Test cancel functionality during active transfers
 - [ ] Unit tests for RoboSharpTransferEngine and RetryHelper
 - [ ] Performance benchmarking
 - [ ] User documentation for RoboSharp features
-- [ ] Performance benchmarking
 - [ ] User documentation for RoboSharp features

@@ -58,6 +58,8 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private int _progressPercent = 0;
 
+        private CancellationTokenSource? _transferCancellationTokenSource;
+
         [ObservableProperty]
         private int _totalFolders = 0;
 
@@ -80,6 +82,7 @@ namespace DataTransferApp.Net.ViewModels
         private string _totalSize = "0 MB";
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(CancelTransferCommand))]
         private bool _isProcessing = false;
 
         [ObservableProperty]
@@ -693,6 +696,8 @@ namespace DataTransferApp.Net.ViewModels
         private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
         {
             IsProcessing = true;
+            _transferCancellationTokenSource = new CancellationTokenSource();
+            CancelTransferCommand.NotifyCanExecuteChanged();
             var total = passedFolders.Count;
             var completed = 0;
             var failed = 0;
@@ -703,10 +708,13 @@ namespace DataTransferApp.Net.ViewModels
                 // ToList to avoid collection modification issues
                 foreach (var folder in passedFolders.ToList())
                 {
+                    // Check for cancellation
+                    _transferCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
 
-                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
+                    var transferResult = await TransferSingleFolderAsync(folder, completed, total, _transferCancellationTokenSource.Token);
 
                     if (transferResult.Success)
                     {
@@ -728,6 +736,12 @@ namespace DataTransferApp.Net.ViewModels
 
                 UpdateTransferResults(total, completed, failed, skipped);
             }
+            catch (OperationCanceledException)
+            {
+                StatusMessage = $"Transfer cancelled at {completed}/{total} folders";
+                LoggingService.Warning($"Transfer cancelled by user after {completed} folders");
+                _ = ShowSnackbar($"Transfer cancelled. Completed {completed} of {total} folders.", "warning");
+            }
             catch (Exception ex)
             {
                 StatusMessage = $"Transfer All error: {ex.Message}";
@@ -741,10 +755,13 @@ namespace DataTransferApp.Net.ViewModels
                 ProgressPercent = 0;
                 ProgressText = "Ready";
                 ProgressIssues = "Idle";
+                _transferCancellationTokenSource?.Dispose();
+                _transferCancellationTokenSource = null;
+                CancelTransferCommand.NotifyCanExecuteChanged();
             }
         }
 
-        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total)
+        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total, CancellationToken cancellationToken = default)
         {
             var progress = new Progress<TransferProgress>(p =>
             {
@@ -757,7 +774,8 @@ namespace DataTransferApp.Net.ViewModels
             return await _transferService.TransferFolderAsync(
                 folder,
                 SelectedDrive!.DriveLetter,
-                progress);
+                progress,
+                cancellationToken);
         }
 
         private void UpdateTransferResults(int total, int completed, int failed, int skipped)
@@ -805,6 +823,8 @@ namespace DataTransferApp.Net.ViewModels
         {
             IsProcessing = true;
             ProgressPercent = 0;
+            _transferCancellationTokenSource = new CancellationTokenSource();
+            CancelTransferCommand.NotifyCanExecuteChanged();
 
             try
             {
@@ -823,9 +843,16 @@ namespace DataTransferApp.Net.ViewModels
                 var result = await _transferService.TransferFolderAsync(
                     SelectedFolder!,
                     SelectedDrive!.DriveLetter,
-                    progress);
+                    progress,
+                    _transferCancellationTokenSource.Token);
 
                 UpdateSingleTransferResults(result, folderName);
+            }
+            catch (OperationCanceledException)
+            {
+                StatusMessage = "Transfer cancelled";
+                LoggingService.Warning($"Transfer cancelled by user: {folderName}");
+                _ = ShowSnackbar("Transfer cancelled by user", "warning");
             }
             catch (Exception ex)
             {
@@ -840,6 +867,9 @@ namespace DataTransferApp.Net.ViewModels
                 ProgressPercent = 0;
                 ProgressText = "Ready";
                 ProgressIssues = "Idle";
+                _transferCancellationTokenSource?.Dispose();
+                _transferCancellationTokenSource = null;
+                CancelTransferCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -933,6 +963,19 @@ namespace DataTransferApp.Net.ViewModels
 
         private bool CanTransferAllFolders() =>
             SelectedDrive != null && !IsProcessing; // Only enabled when not processing
+
+        [RelayCommand(CanExecute = nameof(CanCancelTransfer))]
+        private void CancelTransfer()
+        {
+            if (_transferCancellationTokenSource != null && !_transferCancellationTokenSource.Token.IsCancellationRequested)
+            {
+                _transferCancellationTokenSource.Cancel();
+                StatusMessage = "Cancelling transfer...";
+                LoggingService.Warning("Transfer cancellation requested by user");
+            }
+        }
+
+        private bool CanCancelTransfer() => IsProcessing && _transferCancellationTokenSource != null && !_transferCancellationTokenSource.Token.IsCancellationRequested;
 
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()

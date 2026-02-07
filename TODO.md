@@ -12,7 +12,8 @@
 - [x] Verify real-time progress updates in UI (test with large transfers)
 - [x] Add MB/s speed calculation validation
 - [x] Test ETA accuracy with various file sizes
-- [ ] Implement pause/resume functionality using RoboSharp job files
+- [x] Implement cancel functionality for active transfers
+- [ ] Implement pause/resume functionality using RoboSharp job files (in `feature-pause-resume` branch)
 
 ### Settings & Configuration
 
@@ -51,7 +52,7 @@
 - [ ] Test with very large files (>10GB)
 - [ ] Test with many small files (>10,000)
 - [ ] Benchmark RoboSharp vs legacy transfer method
-- [ ] Test cancellation during transfer
+- [ ] Test cancel functionality during active transfers
 
 ### Performance Optimization
 
