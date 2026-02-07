@@ -55,8 +55,13 @@ namespace DataTransferApp.Net.Services
                 // Create and configure RoboCommand
                 var command = CreateRoboCommand(sourcePath, destinationPath, options);
 
+                // Pre-calculate totals for accurate ETA
+                var (totalFiles, totalBytes) = CalculateDirectoryTotals(sourcePath);
+                LoggingService.Debug($"Pre-scan complete: {totalFiles} files, {totalBytes:N0} bytes");
+
                 // Set up progress tracking
                 var progressAdapter = new RoboSharpProgressAdapter(progress);
+                progressAdapter.SetTotals(totalFiles, totalBytes); // Set totals before starting
                 AttachEventHandlers(command, progressAdapter, cancellationToken);
 
                 // Start the transfer - StartAsync() returns Task<RoboCopyResults>
@@ -393,6 +398,26 @@ namespace DataTransferApp.Net.Services
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Pre-scans a directory to calculate total file count and size for accurate ETA.
+        /// </summary>
+        private (int totalFiles, long totalBytes) CalculateDirectoryTotals(string path)
+        {
+            try
+            {
+                var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                var totalFiles = files.Length;
+                var totalBytes = files.Sum(f => new FileInfo(f).Length);
+
+                return (totalFiles, totalBytes);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Warning($"Failed to pre-scan directory for totals: {ex.Message}");
+                return (0, 0); // Return zeros on error, RoboSharp's estimator will provide fallback
+            }
         }
     }
 }
