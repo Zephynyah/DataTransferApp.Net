@@ -8,9 +8,18 @@ using LiteDB;
 
 namespace DataTransferApp.Net.Models
 {
-    public class AppSettings : INotifyDataErrorInfo
+    public class AppSettings : INotifyDataErrorInfo, INotifyPropertyChanged
     {
         public static string ApplicationVersion => VersionHelper.GetVersion();
+
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
 
         [BsonId]
         public int Id { get; set; } = 1;
@@ -160,25 +169,135 @@ namespace DataTransferApp.Net.Models
 
         public bool UseMultithreadedCopy { get; set; } = true;
 
-        public int RobocopyThreadCount { get; set; } = 8;
+        private int _robocopyThreadCount = 8;
+        public int RobocopyThreadCount
+        {
+            get => _robocopyThreadCount;
+            set
+            {
+                if (_robocopyThreadCount != value)
+                {
+                    _robocopyThreadCount = value;
+                    OnPropertyChanged(nameof(RobocopyThreadCount));
+                }
+            }
+        }
 
-        public int RobocopyRetries { get; set; } = 5;
+        private int _robocopyRetries = 5;
+        public int RobocopyRetries
+        {
+            get => _robocopyRetries;
+            set
+            {
+                if (_robocopyRetries != value)
+                {
+                    _robocopyRetries = value;
+                    OnPropertyChanged(nameof(RobocopyRetries));
+                }
+            }
+        }
 
-        public int RobocopyRetryWaitSeconds { get; set; } = 10;
+        private int _robocopyRetryWaitSeconds = 10;
+        public int RobocopyRetryWaitSeconds
+        {
+            get => _robocopyRetryWaitSeconds;
+            set
+            {
+                if (_robocopyRetryWaitSeconds != value)
+                {
+                    _robocopyRetryWaitSeconds = value;
+                    OnPropertyChanged(nameof(RobocopyRetryWaitSeconds));
+                }
+            }
+        }
 
-        public bool UseRestartableMode { get; set; } = true;
+        private bool _useRestartableMode = true;
+        public bool UseRestartableMode
+        {
+            get => _useRestartableMode;
+            set
+            {
+                if (_useRestartableMode != value)
+                {
+                    _useRestartableMode = value;
+                    OnPropertyChanged(nameof(UseRestartableMode));
+                }
+            }
+        }
 
-        public bool UseBackupMode { get; set; } = true;
+        private bool _useBackupMode = true;
+        public bool UseBackupMode
+        {
+            get => _useBackupMode;
+            set
+            {
+                if (_useBackupMode != value)
+                {
+                    _useBackupMode = value;
+                    OnPropertyChanged(nameof(UseBackupMode));
+                }
+            }
+        }
 
-        public bool VerifyRobocopy { get; set; } = false;
+        private bool _verifyRobocopy = false;
+        public bool VerifyRobocopy
+        {
+            get => _verifyRobocopy;
+            set
+            {
+                if (_verifyRobocopy != value)
+                {
+                    _verifyRobocopy = value;
+                    OnPropertyChanged(nameof(VerifyRobocopy));
+                }
+            }
+        }
 
         public int RobocopyBufferSizeKB { get; set; } = 128;
 
-        public bool RobocopyVerboseOutput { get; set; } = false;
+        private bool _robocopyVerboseOutput = false;
+        public bool RobocopyVerboseOutput
+        {
+            get => _robocopyVerboseOutput;
+            set
+            {
+                if (_robocopyVerboseOutput != value)
+                {
+                    _robocopyVerboseOutput = value;
+                    OnPropertyChanged(nameof(RobocopyVerboseOutput));
+                }
+            }
+        }
 
-        public bool RobocopyDetailedLogging { get; set; } = false;
+        private bool _robocopyDetailedLogging = false;
+        public bool RobocopyDetailedLogging
+        {
+            get => _robocopyDetailedLogging;
+            set
+            {
+                if (_robocopyDetailedLogging != value)
+                {
+                    _robocopyDetailedLogging = value;
+                    OnPropertyChanged(nameof(RobocopyDetailedLogging));
+                }
+            }
+        }
 
         public int RobocopyInterPacketGapMs { get; set; } = 0; // 0 = no throttling
+
+        private string _roboSharpPresetMode = "Manual";
+        public string RoboSharpPresetMode
+        {
+            get => _roboSharpPresetMode;
+            set
+            {
+                if (_roboSharpPresetMode != value)
+                {
+                    _roboSharpPresetMode = value;
+                    OnPropertyChanged(nameof(RoboSharpPresetMode));
+                }
+            }
+        } // Manual, Fast, Safe, Network, Archive
 
         // UI Settings
         public double WindowWidth { get; set; } = 1400;

@@ -13,6 +13,8 @@
         <helpers:ListToStringConverter x:Key="ListToStringConverter"/>
         <helpers:InverseBooleanConverter x:Key="NullToBoolConverter"/>
         <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <helpers:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
+        <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
         
         <!-- Validation Error Style -->
         <Style x:Key="ValidatingTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -321,46 +323,124 @@
                         
                         <!-- Configuration Presets -->
                         <TextBlock Text="Configuration Presets" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                        <TextBlock Text="Quick apply optimized settings for common scenarios"
+                        <TextBlock Text="Select a preset or configure manually. Performance controls are read-only when using presets."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,5"/>
                         
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             
-                            <Button Grid.Column="0" Content="⚡ Fast" 
-                                    Click="ApplyFastPreset_Click"
-                                    IsEnabled="{Binding UseRoboSharp}"
-                                    Margin="0,0,5,0"
-                                    ToolTip="Max speed for local transfers (16 threads, minimal retries)"/>
+                            <!-- Manual Mode -->
+                            <RadioButton Grid.Row="0" Grid.Column="0"
+                                         GroupName="RoboSharpPreset"
+                                         IsChecked="{Binding RoboSharpPresetMode, Converter={StaticResource RadioButtonCheckedConverter}, ConverterParameter=Manual}"
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         Margin="0,0,10,5"
+                                         ToolTip="Configure all settings manually">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Cog" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Manual" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="Full control over all performance and reliability settings"
+                                       Style="{StaticResource FootnoteStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,5"/>
                             
-                            <Button Grid.Column="1" Content="🛡️ Safe" 
-                                    Click="ApplySafePreset_Click"
-                                    IsEnabled="{Binding UseRoboSharp}"
-                                    Margin="5,0,5,0"
-                                    ToolTip="Balanced settings with verification (8 threads, 5 retries)"/>
+                            <!-- Fast Preset -->
+                            <RadioButton Grid.Row="1" Grid.Column="0"
+                                         GroupName="RoboSharpPreset"
+                                         IsChecked="{Binding RoboSharpPresetMode, Converter={StaticResource RadioButtonCheckedConverter}, ConverterParameter=Fast}"
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         Checked="ApplyFastPreset_Checked"
+                                         Margin="0,0,10,5"
+                                         ToolTip="Max speed for local transfers">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Bolt" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Fast" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="16 threads • 3 retries • 5s wait • No verification"
+                                       Style="{StaticResource FootnoteStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,5"/>
                             
-                            <Button Grid.Column="2" Content="🌐 Network" 
-                                    Click="ApplyNetworkPreset_Click"
-                                    IsEnabled="{Binding UseRoboSharp}"
-                                    Margin="5,0,5,0"
-                                    ToolTip="Optimized for unreliable networks (4 threads, 10 retries)"/>
+                            <!-- Safe Preset -->
+                            <RadioButton Grid.Row="2" Grid.Column="0"
+                                         GroupName="RoboSharpPreset"
+                                         IsChecked="{Binding RoboSharpPresetMode, Converter={StaticResource RadioButtonCheckedConverter}, ConverterParameter=Safe}"
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         Checked="ApplySafePreset_Checked"
+                                         Margin="0,0,10,5"
+                                         ToolTip="Balanced settings with verification">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Shield" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Safe" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <TextBlock Grid.Row="2" Grid.Column="1"
+                                       Text="8 threads • 5 retries • 10s wait • Restartable • Backup mode • Logging"
+                                       Style="{StaticResource FootnoteStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,5"/>
                             
-                            <Button Grid.Column="3" Content="📦 Archive" 
-                                    Click="ApplyArchivePreset_Click"
-                                    IsEnabled="{Binding UseRoboSharp}"
-                                    Margin="5,0,0,0"
-                                    ToolTip="High integrity with full verification (8 threads, verify enabled)"/>
+                            <!-- Network Preset -->
+                            <RadioButton Grid.Row="3" Grid.Column="0"
+                                         GroupName="RoboSharpPreset"
+                                         IsChecked="{Binding RoboSharpPresetMode, Converter={StaticResource RadioButtonCheckedConverter}, ConverterParameter=Network}"
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         Checked="ApplyNetworkPreset_Checked"
+                                         Margin="0,0,10,5"
+                                         ToolTip="Optimized for unreliable networks">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Globe" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Network" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <TextBlock Grid.Row="3" Grid.Column="1"
+                                       Text="4 threads • 10 retries • 30s wait • Restartable • Backup mode • Verification"
+                                       Style="{StaticResource FootnoteStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,5"/>
+                            
+                            <!-- Archive Preset -->
+                            <RadioButton Grid.Row="4" Grid.Column="0"
+                                         GroupName="RoboSharpPreset"
+                                         IsChecked="{Binding RoboSharpPresetMode, Converter={StaticResource RadioButtonCheckedConverter}, ConverterParameter=Archive}"
+                                         IsEnabled="{Binding UseRoboSharp}"
+                                         Checked="ApplyArchivePreset_Checked"
+                                         Margin="0,0,10,0"
+                                         ToolTip="High integrity with full verification">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Archive" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Archive" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <TextBlock Grid.Row="4" Grid.Column="1"
+                                       Text="8 threads • 5 retries • 10s wait • Restartable • Backup • Verification • Verbose • Full logging"
+                                       Style="{StaticResource FootnoteStyle}"
+                                       VerticalAlignment="Center"/>
                         </Grid>
                         
                         <Separator Margin="0,5,0,10"/>
                         
                         <TextBlock Text="Performance Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        <TextBlock Text="Available only in Manual mode. Preset configurations are read-only."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Foreground="#95a5a6"
+                                   Margin="0,0,0,5"/>
                         
                         <TextBlock Text="Thread Count:" Style="{StaticResource SubHeaderTextStyle}"/>
                         <Grid Margin="0,0,0,10">
@@ -369,12 +449,12 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Slider Grid.Column="0" 
-                                    Minimum="1" Maximum="128" 
-                                    Value="{Binding RobocopyThreadCount}" 
+                                    Minimum="1" Maximum="16" 
+                                    Value="{Binding RobocopyThreadCount, Mode=TwoWay}" 
                                     TickFrequency="1" 
                                     IsSnapToTickEnabled="True"
                                     VerticalAlignment="Center"
-                                    IsEnabled="{Binding UseRoboSharp}"/>
+                                    IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"/>
                             <TextBlock Grid.Column="1" 
                                        Text="{Binding RobocopyThreadCount}" 
                                        VerticalAlignment="Center" 
@@ -383,7 +463,7 @@
                                        FontWeight="Bold"
                                        Foreground="{StaticResource PrimaryBrush}"/>
                         </Grid>
-                        <TextBlock Text="Number of concurrent file copy operations. Higher values improve speed for many small files. Default: 8"
+                        <TextBlock Text="Number of concurrent file copy operations. Higher values improve speed for many small files. Default: 8 Maximum: 16."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
                         
@@ -399,15 +479,15 @@
                             
                             <StackPanel Grid.Column="0" Margin="0,0,5,0">
                                 <TextBlock Text="Retry Count:" Style="{StaticResource SubHeaderTextStyle}"/>
-                                <TextBox Text="{Binding RobocopyRetries}" 
-                                         IsEnabled="{Binding UseRoboSharp}"
+                                <TextBox Text="{Binding RobocopyRetries, Mode=TwoWay}" 
+                                         IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
                                          ToolTip="Number of retry attempts for failed operations"/>
                             </StackPanel>
                             
                             <StackPanel Grid.Column="1" Margin="5,0,0,0">
                                 <TextBlock Text="Retry Wait (seconds):" Style="{StaticResource SubHeaderTextStyle}"/>
-                                <TextBox Text="{Binding RobocopyRetryWaitSeconds}" 
-                                         IsEnabled="{Binding UseRoboSharp}"
+                                <TextBox Text="{Binding RobocopyRetryWaitSeconds, Mode=TwoWay}" 
+                                         IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
                                          ToolTip="Wait time between retry attempts"/>
                             </StackPanel>
                         </Grid>
