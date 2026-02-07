@@ -50,6 +50,12 @@ namespace DataTransferApp.Net.ViewModels
         private string _progressText = "Ready";
 
         [ObservableProperty]
+        private string _progressIssues = "Idle";
+
+        [ObservableProperty]
+        private bool _isTransferActive = false;
+
+        [ObservableProperty]
         private int _progressPercent = 0;
 
         [ObservableProperty]
@@ -692,6 +698,7 @@ namespace DataTransferApp.Net.ViewModels
                     {
                         ProgressText = $"[{completed}/{total}] {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
                         ProgressPercent = p.PercentComplete;
+                        UpdateTransferStatus(p);
                     });
 
                     var result = await _transferService.TransferFolderAsync(
@@ -728,8 +735,10 @@ namespace DataTransferApp.Net.ViewModels
             finally
             {
                 IsProcessing = false;
+                IsTransferActive = false;
                 ProgressPercent = 0;
                 ProgressText = "Ready";
+                ProgressIssues = "Idle";
             }
         }
 
@@ -781,10 +790,15 @@ namespace DataTransferApp.Net.ViewModels
 
             try
             {
+                // Mark transfer as starting
+                IsTransferActive = true;
+                ProgressIssues = _settings.UseRoboSharp ? "RoboSharp" : "Legacy";
+
                 var progress = new Progress<TransferProgress>(p =>
                 {
                     ProgressText = $"Transferring: {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
                     ProgressPercent = p.PercentComplete;
+                    UpdateTransferStatus(p);
                 });
 
                 var result = await _transferService.TransferFolderAsync(
@@ -803,8 +817,31 @@ namespace DataTransferApp.Net.ViewModels
             finally
             {
                 IsProcessing = false;
+                IsTransferActive = false;
                 ProgressPercent = 0;
                 ProgressText = "Ready";
+                ProgressIssues = "Idle";
+            }
+        }
+
+        private void UpdateTransferStatus(TransferProgress progress)
+        {
+            if (!IsTransferActive)
+            {
+                IsTransferActive = true;
+            }
+
+            var engine = _settings.UseRoboSharp ? "RoboSharp" : "Legacy";
+            
+            if (progress.BytesPerSecond > 0)
+            {
+                var speedMBps = progress.MBPerSecond;
+                var eta = progress.EstimatedTimeRemaining?.ToString(@"mm\:ss") ?? "--:--";
+                ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
+            }
+            else
+            {
+                ProgressIssues = $"{engine} • Starting...";
             }
         }
 
