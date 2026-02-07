@@ -841,7 +841,28 @@ namespace DataTransferApp.Net.ViewModels
             if (progress.BytesPerSecond > 0)
             {
                 var speedMBps = progress.MBPerSecond;
-                var eta = progress.EstimatedTimeRemaining?.ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture) ?? "--:--";
+                string eta;
+                
+                if (progress.EstimatedTimeRemaining.HasValue)
+                {
+                    var timeRemaining = progress.EstimatedTimeRemaining.Value;
+                    if (timeRemaining.TotalHours >= 1)
+                    {
+                        // Show hours for long transfers
+                        eta = timeRemaining.ToString(@"h\:mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        // Show minutes:seconds for shorter transfers
+                        eta = timeRemaining.ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                }
+                else
+                {
+                    // Show "--:--" when ETA is not yet available
+                    eta = "--:--";
+                }
+                
                 ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
             }
             else

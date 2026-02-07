@@ -242,6 +242,7 @@ namespace DataTransferApp.Net.Services
         {
             command.LoggingOptions.VerboseOutput = options.VerboseOutput;
             command.LoggingOptions.ListOnly = options.ListOnly;
+            command.LoggingOptions.ShowEstimatedTimeOfArrival = true; // Enable RoboCopy's built-in ETA for files
 
             if (!string.IsNullOrEmpty(options.LogFilePath))
             {
