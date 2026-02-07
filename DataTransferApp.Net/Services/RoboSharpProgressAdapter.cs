@@ -87,9 +87,24 @@ namespace DataTransferApp.Net.Services
             // Access progress estimator for total counts
             if (e.ResultsEstimate != null)
             {
-                _totalFiles = (int)e.ResultsEstimate.FilesStatistic.Total;
-                _totalBytes = e.ResultsEstimate.BytesStatistic.Total;
-                LoggingService.Debug($"Progress estimator created: {_totalFiles} files, {_totalBytes} bytes");
+                var estimatedFiles = (int)e.ResultsEstimate.FilesStatistic.Total;
+                var estimatedBytes = e.ResultsEstimate.BytesStatistic.Total;
+
+                LoggingService.Debug($"Progress estimator created: {estimatedFiles} files, {estimatedBytes} bytes");
+
+                // Only update totals if RoboSharp provides valid estimates (> 0)
+                // Don't overwrite pre-scanned totals with zeros
+                if (estimatedBytes > 0)
+                {
+                    _totalFiles = estimatedFiles;
+                    _totalBytes = estimatedBytes;
+                    LoggingService.Info($"Updated totals from RoboSharp estimator: {_totalFiles} files, {_totalBytes:N0} bytes");
+                }
+                else if (_totalBytes == 0)
+                {
+                    // Only log warning if we don't already have valid totals from pre-scan
+                    LoggingService.Warning("RoboSharp estimator returned 0 bytes; using pre-scanned totals");
+                }
             }
         }
 

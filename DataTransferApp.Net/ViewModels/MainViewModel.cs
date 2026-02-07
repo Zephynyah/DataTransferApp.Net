@@ -842,11 +842,11 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var speedMBps = progress.MBPerSecond;
                 string eta;
-                
+
                 if (progress.EstimatedTimeRemaining.HasValue)
                 {
                     var timeRemaining = progress.EstimatedTimeRemaining.Value;
-                    
+
                     // Check if transfer is complete
                     if (timeRemaining == TimeSpan.Zero)
                     {
@@ -873,7 +873,7 @@ namespace DataTransferApp.Net.ViewModels
                     // Show "--:--" when ETA is not yet available
                     eta = "--:--";
                 }
-                
+
                 ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
             }
             else
