@@ -62,6 +62,7 @@ namespace DataTransferApp.Net.Services
         {
             _totalFiles = totalFiles;
             _totalBytes = totalBytes;
+            LoggingService.Debug($"Progress adapter totals set: {totalFiles} files, {totalBytes:N0} bytes");
         }
 
         /// <summary>
@@ -158,6 +159,8 @@ namespace DataTransferApp.Net.Services
             var eta = CalculateETA(speed);
             var percent = CalculatePercent();
 
+            LoggingService.Debug($"Progress: {_copiedFiles}/{_totalFiles} files, {_copiedBytes:N0}/{_totalBytes:N0} bytes, {speed:F0} B/s, ETA={eta?.TotalSeconds:F0}s");
+
             _progress?.Report(new TransferProgress
             {
                 CurrentFile = _currentFile,
@@ -192,6 +195,7 @@ namespace DataTransferApp.Net.Services
         {
             if (bytesPerSecond <= 0 || _totalBytes <= 0 || _copiedBytes >= _totalBytes)
             {
+                LoggingService.Debug($"ETA calculation skipped: speed={bytesPerSecond:F0}, total={_totalBytes}, copied={_copiedBytes}");
                 return null;
             }
 
