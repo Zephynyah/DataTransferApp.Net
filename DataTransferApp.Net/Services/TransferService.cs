@@ -77,6 +77,43 @@ namespace DataTransferApp.Net.Services
             }
         }
 
+        private static TransferResult CreateSkippedResult(TransferResult result, string destinationPath, string folderName)
+        {
+            result.Success = true;
+            result.EndTime = DateTime.Now;
+            result.DestinationPath = destinationPath;
+            result.ErrorMessage = "Skipped - folder already exists";
+            LoggingService.Info($"Skipped transfer (already exists): {folderName}");
+            return result;
+        }
+
+        private static void PopulateRoboSharpStatistics(TransferSummary summary, RoboSharpTransferResult roboResult)
+        {
+            summary.TransferMethod = "RoboSharp";
+            summary.RobocopyExitCode = roboResult.ExitCode;
+            summary.FilesCopied = (int)roboResult.FilesCopied;
+            summary.FilesSkipped = (int)roboResult.FilesSkipped;
+            summary.FilesFailed = (int)roboResult.FilesFailed;
+            summary.DirectoriesCopied = (int)roboResult.DirectoriesCopied;
+            summary.BytesCopied = roboResult.BytesCopied;
+
+            // Calculate average speed
+            var duration = roboResult.EndTime - roboResult.StartTime;
+            if (duration.TotalSeconds > 0 && roboResult.BytesCopied > 0)
+            {
+                summary.AverageSpeedBytesPerSecond = roboResult.BytesCopied / duration.TotalSeconds;
+            }
+
+            // Add error messages if any
+            if (roboResult.Errors?.Count > 0)
+            {
+                summary.Errors = roboResult.Errors.Select(e => e.ToString()).ToList();
+                summary.Status = roboResult.FilesFailed > 0 ? "Completed with Errors" : "Completed";
+            }
+
+            LoggingService.Info($"RoboSharp statistics - Copied: {roboResult.FilesCopied}, Skipped: {roboResult.FilesSkipped}, Failed: {roboResult.FilesFailed}, Speed: {summary.FormattedSpeed}");
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "Method readability preferred; refactor later if needed.")]
         public async Task<TransferResult> TransferFolderAsync(
             FolderData folder,
@@ -117,42 +154,13 @@ namespace DataTransferApp.Net.Services
                 LoggingService.Info($"Starting RoboSharp transfer: {folder.FolderName} -> {destinationPath}");
 
                 // Check if skipping due to conflict resolution
-                if (_settings.AutoHandleConflicts &&
-                    _settings.ConflictResolution == "Skip" &&
-                    Directory.Exists(destinationPath))
+                if (ShouldSkipExistingFolder(destinationPath))
                 {
-                    result.Success = true;
-                    result.EndTime = DateTime.Now;
-                    result.DestinationPath = destinationPath;
-                    result.ErrorMessage = "Skipped - folder already exists";
-                    LoggingService.Info($"Skipped transfer (already exists): {folder.FolderName}");
-                    return result;
+                    return CreateSkippedResult(result, destinationPath, folder.FolderName);
                 }
 
-                // Create RoboSharp options from settings
-                var roboOptions = CreateRoboSharpOptions();
-
-                // Apply blacklisted extensions as exclusions
-                roboOptions.ExcludeFiles = _settings.BlacklistedExtensions.Select(ext => $"*{ext}").ToList();
-
-                // Execute transfer with RoboSharp using exponential backoff retry
-                var roboResult = await RetryHelper.ExecuteWithRetryAsync(
-                    async () => await _roboSharpEngine!.TransferFolderAsync(
-                        folder.FolderPath,
-                        destinationPath,
-                        roboOptions,
-                        progress,
-                        cancellationToken),
-                    maxRetries: _settings.RobocopyRetries,
-                    baseDelaySeconds: _settings.RobocopyRetryWaitSeconds,
-                    useJitter: true,
-                    onRetry: (attempt, delay) =>
-                    {
-                        LoggingService.Warning(
-                            $"RoboSharp transfer retry {attempt}/{_settings.RobocopyRetries} for {folder.FolderName} " +
-                            $"after {delay.TotalSeconds:F1}s delay (exponential backoff)");
-                    },
-                    cancellationToken);
+                // Execute transfer with exponential backoff retry
+                var roboResult = await ExecuteTransferWithRetryAsync(folder, destinationPath, progress, cancellationToken);
 
                 if (!roboResult.Success)
                 {
@@ -161,25 +169,10 @@ namespace DataTransferApp.Net.Services
                     return result;
                 }
 
-                // Calculate hashes if enabled (post-transfer)
-                if (_settings.CalculateFileHashes)
-                {
-                    await CalculateHashesForFilesAsync(folder.Files, cancellationToken);
-                }
-
-                // Create transfer log with RoboSharp statistics
-                var transferLog = CreateTransferLog(folder, destinationPath, roboResult);
-                await SaveTransferLogAsync(transferLog);
-
-                result.Success = true;
-                result.EndTime = DateTime.Now;
-                result.DestinationPath = destinationPath;
-                result.TransferLog = transferLog;
+                // Post-transfer processing
+                await ProcessTransferCompletionAsync(folder, destinationPath, roboResult, result, cancellationToken);
 
                 LoggingService.Success($"RoboSharp transfer completed: {folder.FolderName} - {roboResult.Summary}");
-
-                // Move original folder to retention directory
-                await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
             }
             catch (OperationCanceledException)
             {
@@ -193,6 +186,67 @@ namespace DataTransferApp.Net.Services
             }
 
             return result;
+        }
+
+        private bool ShouldSkipExistingFolder(string destinationPath)
+        {
+            return _settings.AutoHandleConflicts &&
+                   _settings.ConflictResolution == "Skip" &&
+                   Directory.Exists(destinationPath);
+        }
+
+        private async Task<RoboSharpTransferResult> ExecuteTransferWithRetryAsync(
+            FolderData folder,
+            string destinationPath,
+            IProgress<TransferProgress>? progress,
+            CancellationToken cancellationToken)
+        {
+            var roboOptions = CreateRoboSharpOptions();
+            roboOptions.ExcludeFiles = _settings.BlacklistedExtensions.Select(ext => $"*{ext}").ToList();
+
+            return await RetryHelper.ExecuteWithRetryAsync(
+                async () => await _roboSharpEngine!.TransferFolderAsync(
+                    folder.FolderPath,
+                    destinationPath,
+                    roboOptions,
+                    progress,
+                    cancellationToken),
+                maxRetries: _settings.RobocopyRetries,
+                baseDelaySeconds: _settings.RobocopyRetryWaitSeconds,
+                useJitter: true,
+                onRetry: (attempt, delay) =>
+                {
+                    LoggingService.Warning(
+                        $"RoboSharp transfer retry {attempt}/{_settings.RobocopyRetries} for {folder.FolderName} " +
+                        $"after {delay.TotalSeconds:F1}s delay (exponential backoff)");
+                },
+                cancellationToken);
+        }
+
+        private async Task ProcessTransferCompletionAsync(
+            FolderData folder,
+            string destinationPath,
+            RoboSharpTransferResult roboResult,
+            TransferResult result,
+            CancellationToken cancellationToken)
+        {
+            // Calculate hashes if enabled (post-transfer)
+            if (_settings.CalculateFileHashes)
+            {
+                await CalculateHashesForFilesAsync(folder.Files, cancellationToken);
+            }
+
+            // Create transfer log with RoboSharp statistics
+            var transferLog = CreateTransferLog(folder, destinationPath, roboResult);
+            await SaveTransferLogAsync(transferLog);
+
+            result.Success = true;
+            result.EndTime = DateTime.Now;
+            result.DestinationPath = destinationPath;
+            result.TransferLog = transferLog;
+
+            // Move original folder to retention directory
+            await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
         }
 
         /// <summary>
@@ -875,60 +929,11 @@ namespace DataTransferApp.Net.Services
 
         private TransferLog CreateTransferLog(FolderData folder, string destinationPath, RoboSharpTransferResult? roboResult = null)
         {
-            var summary = new TransferSummary
-            {
-                TotalFiles = folder.Files.Count,
-                TotalSize = folder.TotalSize,
-                TransferStarted = DateTime.Now,
-                TransferCompleted = DateTime.Now,
-                Status = "Completed"
-            };
-
-            // Populate RoboSharp-specific statistics if available
-            if (roboResult != null)
-            {
-                summary.TransferMethod = "RoboSharp";
-                summary.RobocopyExitCode = roboResult.ExitCode;
-                summary.FilesCopied = (int)roboResult.FilesCopied;
-                summary.FilesSkipped = (int)roboResult.FilesSkipped;
-                summary.FilesFailed = (int)roboResult.FilesFailed;
-                summary.DirectoriesCopied = (int)roboResult.DirectoriesCopied;
-                summary.BytesCopied = roboResult.BytesCopied;
-
-                // Calculate average speed
-                var duration = roboResult.EndTime - roboResult.StartTime;
-                if (duration.TotalSeconds > 0 && roboResult.BytesCopied > 0)
-                {
-                    summary.AverageSpeedBytesPerSecond = roboResult.BytesCopied / duration.TotalSeconds;
-                }
-
-                // Add error messages if any
-                if (roboResult.Errors?.Count > 0)
-                {
-                    summary.Errors = roboResult.Errors.Select(e => e.ToString()).ToList();
-                    summary.Status = roboResult.FilesFailed > 0 ? "Completed with Errors" : "Completed";
-                }
-
-                LoggingService.Info($"RoboSharp statistics - Copied: {roboResult.FilesCopied}, Skipped: {roboResult.FilesSkipped}, Failed: {roboResult.FilesFailed}, Speed: {summary.FormattedSpeed}");
-            }
-            else
-            {
-                summary.TransferMethod = "Legacy";
-            }
+            var summary = CreateTransferSummary(folder, roboResult);
 
             return new TransferLog
             {
-                TransferInfo = new TransferInfo
-                {
-                    DTA = _settings.DataTransferAgent,
-                    Date = DateTime.Now,
-                    Employee = folder.EmployeeId ?? "Unknown",
-                    Origin = folder.FolderPath,
-                    Destination = destinationPath,
-                    FolderName = folder.FolderName,
-                    SourcePath = folder.FolderPath,
-                    DestinationPath = destinationPath
-                },
+                TransferInfo = CreateTransferInfo(folder, destinationPath),
                 Files = folder.Files.Select(f => new TransferredFile
                 {
                     FileName = f.FileName,
@@ -940,6 +945,44 @@ namespace DataTransferApp.Net.Services
                     Status = f.Status
                 }).ToList(),
                 Summary = summary
+            };
+        }
+
+        private TransferSummary CreateTransferSummary(FolderData folder, RoboSharpTransferResult? roboResult)
+        {
+            var summary = new TransferSummary
+            {
+                TotalFiles = folder.Files.Count,
+                TotalSize = folder.TotalSize,
+                TransferStarted = DateTime.Now,
+                TransferCompleted = DateTime.Now,
+                Status = "Completed"
+            };
+
+            if (roboResult != null)
+            {
+                PopulateRoboSharpStatistics(summary, roboResult);
+            }
+            else
+            {
+                summary.TransferMethod = "Legacy";
+            }
+
+            return summary;
+        }
+
+        private TransferInfo CreateTransferInfo(FolderData folder, string destinationPath)
+        {
+            return new TransferInfo
+            {
+                DTA = _settings.DataTransferAgent,
+                Date = DateTime.Now,
+                Employee = folder.EmployeeId ?? "Unknown",
+                Origin = folder.FolderPath,
+                Destination = destinationPath,
+                FolderName = folder.FolderName,
+                SourcePath = folder.FolderPath,
+                DestinationPath = destinationPath
             };
         }
 

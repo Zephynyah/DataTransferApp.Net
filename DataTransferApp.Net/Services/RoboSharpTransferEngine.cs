@@ -24,7 +24,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Event raised when transfer completes.
         /// </summary>
-        public event EventHandler<RoboSharpTransferResult>? OnCompleted;
+        public event EventHandler<RoboSharpTransferResultEventArgs>? OnCompleted;
 
         /// <summary>
         /// Transfers an entire folder and its contents from source to destination.
@@ -68,7 +68,7 @@ namespace DataTransferApp.Net.Services
 
                 LoggingService.Info($"RoboSharp transfer completed: ExitCode={roboResult.Status.ExitCodeValue}, Files={roboResult.FilesStatistic.Copied}");
 
-                OnCompleted?.Invoke(this, result);
+                OnCompleted?.Invoke(this, new RoboSharpTransferResultEventArgs(result));
                 return result;
             }
             catch (OperationCanceledException)
@@ -189,49 +189,44 @@ namespace DataTransferApp.Net.Services
         /// </summary>
         private static RoboCommand CreateRoboCommand(string sourcePath, string destinationPath, RoboSharpOptions options)
         {
-            var command = new RoboCommand
+            var command = new RoboCommand();
+
+            ConfigureCopyOptions(command, sourcePath, destinationPath, options);
+            ConfigureRetryOptions(command);
+            ConfigureSelectionFilters(command, options);
+            ConfigureLogging(command, options);
+
+            return command;
+        }
+
+        private static void ConfigureCopyOptions(RoboCommand command, string sourcePath, string destinationPath, RoboSharpOptions options)
+        {
+            command.CopyOptions.Source = sourcePath;
+            command.CopyOptions.Destination = destinationPath;
+            command.CopyOptions.MultiThreadedCopiesCount = options.ThreadCount;
+            command.CopyOptions.CopySubdirectories = options.CopySubdirectories;
+            command.CopyOptions.CopySubdirectoriesIncludingEmpty = options.CopyEmptySubdirectories;
+            command.CopyOptions.Purge = options.PurgeDestination;
+            command.CopyOptions.Mirror = options.MirrorMode;
+            command.CopyOptions.MoveFiles = options.MoveFiles;
+            command.CopyOptions.MoveFilesAndDirectories = options.MoveTree;
+
+            if (options.InterPacketGapMs > 0)
             {
-                CopyOptions =
-                {
-                    Source = sourcePath,
-                    Destination = destinationPath,
+                command.CopyOptions.InterPacketGap = options.InterPacketGapMs;
+            }
+        }
 
-                    // Threading
-                    MultiThreadedCopiesCount = options.ThreadCount,
+        private static void ConfigureRetryOptions(RoboCommand command)
+        {
+            // Disable RoboSharp's internal retry - we handle all retries at TransferService level
+            // with exponential backoff for better resilience and predictable behavior
+            command.RetryOptions.RetryCount = 0;
+            command.RetryOptions.RetryWaitTime = 0;
+        }
 
-                    // Copy flags
-                    CopySubdirectories = options.CopySubdirectories,
-                    CopySubdirectoriesIncludingEmpty = options.CopyEmptySubdirectories,
-
-                    // Special modes
-                    Purge = options.PurgeDestination,
-                    Mirror = options.MirrorMode,
-                    MoveFiles = options.MoveFiles,
-                    MoveFilesAndDirectories = options.MoveTree
-                },
-
-                RetryOptions =
-                {
-                    // Disable RoboSharp's internal retry - we handle all retries at TransferService level
-                    // with exponential backoff for better resilience and predictable behavior
-                    RetryCount = 0,
-                    RetryWaitTime = 0
-                },
-
-                SelectionOptions =
-                {
-                    // Note: RoboSharp v1.6.0 uses different property types
-                    // ExcludeFiles/ExcludedDirectories may need string format or be read-only
-                },
-
-                LoggingOptions =
-                {
-                    VerboseOutput = options.VerboseOutput,
-                    ListOnly = options.ListOnly
-                }
-            };
-
-            // Configure file exclusion filters if provided
+        private static void ConfigureSelectionFilters(RoboCommand command, RoboSharpOptions options)
+        {
             if (options.ExcludeFiles != null && options.ExcludeFiles.Count > 0)
             {
                 command.SelectionOptions.ExcludedFiles.AddRange(options.ExcludeFiles);
@@ -241,20 +236,17 @@ namespace DataTransferApp.Net.Services
             {
                 command.SelectionOptions.ExcludedDirectories.AddRange(options.ExcludeDirectories);
             }
+        }
 
-            // Configure logging if path specified
+        private static void ConfigureLogging(RoboCommand command, RoboSharpOptions options)
+        {
+            command.LoggingOptions.VerboseOutput = options.VerboseOutput;
+            command.LoggingOptions.ListOnly = options.ListOnly;
+
             if (!string.IsNullOrEmpty(options.LogFilePath))
             {
                 command.LoggingOptions.LogPath = options.LogFilePath;
             }
-
-            // Configure inter-packet gap if specified
-            if (options.InterPacketGapMs > 0)
-            {
-                command.CopyOptions.InterPacketGap = options.InterPacketGapMs;
-            }
-
-            return command;
         }
 
         /// <summary>

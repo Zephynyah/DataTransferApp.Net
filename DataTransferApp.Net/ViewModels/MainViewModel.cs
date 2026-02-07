@@ -694,21 +694,11 @@ namespace DataTransferApp.Net.ViewModels
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
 
-                    var progress = new Progress<TransferProgress>(p =>
-                    {
-                        ProgressText = $"[{completed}/{total}] {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
-                        ProgressPercent = p.PercentComplete;
-                        UpdateTransferStatus(p);
-                    });
+                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
 
-                    var result = await _transferService.TransferFolderAsync(
-                        folder,
-                        SelectedDrive!.DriveLetter,
-                        progress);
-
-                    if (result.Success)
+                    if (transferResult.Success)
                     {
-                        if (result.ErrorMessage == "Skipped - folder already exists")
+                        if (transferResult.ErrorMessage == "Skipped - folder already exists")
                         {
                             skipped++;
                             LoggingService.Info($"Skipped existing folder: {folder.FolderName}");
@@ -720,7 +710,7 @@ namespace DataTransferApp.Net.ViewModels
                     else
                     {
                         failed++;
-                        LoggingService.Warning($"Transfer failed for {folder.FolderName}: {result.ErrorMessage}");
+                        LoggingService.Warning($"Transfer failed for {folder.FolderName}: {transferResult.ErrorMessage}");
                     }
                 }
 
@@ -740,6 +730,21 @@ namespace DataTransferApp.Net.ViewModels
                 ProgressText = "Ready";
                 ProgressIssues = "Idle";
             }
+        }
+
+        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total)
+        {
+            var progress = new Progress<TransferProgress>(p =>
+            {
+                ProgressText = $"[{completed}/{total}] {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
+                ProgressPercent = p.PercentComplete;
+                UpdateTransferStatus(p);
+            });
+
+            return await _transferService.TransferFolderAsync(
+                folder,
+                SelectedDrive!.DriveLetter,
+                progress);
         }
 
         private void UpdateTransferResults(int total, int completed, int failed, int skipped)

@@ -67,28 +67,6 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Event raised when transfer completes (success or failure).
         /// </summary>
-        event EventHandler<RoboSharpTransferResult>? OnCompleted;
-    }
-
-    /// <summary>
-    /// Event arguments for RoboSharp error events.
-    /// </summary>
-    public class RoboSharpErrorEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Gets or sets the error that occurred.
-        /// </summary>
-        public RoboSharpError Error { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether indicates if the error is fatal and will stop the transfer.
-        /// </summary>
-        public bool IsFatal { get; set; }
-
-        public RoboSharpErrorEventArgs(RoboSharpError error, bool isFatal = false)
-        {
-            Error = error;
-            IsFatal = isFatal;
-        }
+        event EventHandler<RoboSharpTransferResultEventArgs>? OnCompleted;
     }
 }
