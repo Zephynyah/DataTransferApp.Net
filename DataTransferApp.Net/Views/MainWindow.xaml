@@ -106,12 +106,6 @@
                                     <Setter Property="Padding" Value="10, 5, 10, 5"/>
                                 </Style>
                             </ContextMenu.ItemContainerStyle>
-                            <MenuItem Header="Cancel Transfer" Command="{Binding CancelTransferAllCommand}" IsEnabled="{Binding IsProcessing}">
-                                <MenuItem.Icon>
-                                    <fa:IconBlock Icon="Stop" Foreground="{StaticResource DangerBrush}" FontSize="16"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <Separator/>
                             <MenuItem Header="Transfer History" Command="{Binding ViewTransferHistoryCommand}">
                                 <MenuItem.Icon>
                                     <fa:IconBlock Icon="History" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/> 
