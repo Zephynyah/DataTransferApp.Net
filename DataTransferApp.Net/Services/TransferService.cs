@@ -76,8 +76,7 @@ namespace DataTransferApp.Net.Services
             {
                 // Only count visible (non-hidden, non-system) directories
                 return Directory.GetDirectories(drivePath)
-                    .Where(d => !IsHiddenOrSystem(d))
-                    .Count();
+                    .Count(d => !IsHiddenOrSystem(d));
             }
             catch
             {
@@ -203,7 +202,7 @@ namespace DataTransferApp.Net.Services
                    Directory.Exists(destinationPath);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Legacy code comments preserved for reference during refactoring")]
         private async Task<RoboSharpTransferResult> ExecuteTransferWithRetryAsync(
             FolderData folder,
             string destinationPath,

@@ -83,7 +83,12 @@ namespace DataTransferApp.Net.ViewModels
         private bool _isProcessing = false;
 
         [ObservableProperty]
+        private string _transferAllButtonText = "Transfer All";
+
+        [ObservableProperty]
         private bool _isSnackbarVisible = false;
+
+        private CancellationTokenSource? _transferCts;
 
         [ObservableProperty]
         private string _snackbarMessage = string.Empty;
@@ -628,6 +633,13 @@ namespace DataTransferApp.Net.ViewModels
         [RelayCommand(CanExecute = nameof(CanTransferAllFolders))]
         private async Task TransferAllFoldersAsync()
         {
+            if (IsProcessing)
+            {
+                // If already processing, this acts as cancel
+                CancelTransferAll();
+                return;
+            }
+
             if (!ValidateTransferPrerequisites(out var passedFolders))
             {
                 return;
@@ -639,8 +651,24 @@ namespace DataTransferApp.Net.ViewModels
                 return;
             }
 
-            await ProcessFolderTransfersAsync(passedFolders);
+            // Create new cancellation token source
+            _transferCts = new CancellationTokenSource();
+
+            await ProcessFolderTransfersAsync(passedFolders, _transferCts.Token);
         }
+
+        [RelayCommand(CanExecute = nameof(CanCancelTransferAll))]
+        private void CancelTransferAll()
+        {
+            if (_transferCts != null && !_transferCts.IsCancellationRequested)
+            {
+                LoggingService.Info("User requested transfer cancellation");
+                _transferCts.Cancel();
+                _ = ShowSnackbar("Cancelling transfer...", "warning");
+            }
+        }
+
+        private bool CanCancelTransferAll() => IsProcessing && _transferCts != null;
 
         private bool ValidateTransferPrerequisites(out List<FolderData> passedFolders)
         {
@@ -678,23 +706,32 @@ namespace DataTransferApp.Net.ViewModels
             return action;
         }
 
-        private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
+        private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders, CancellationToken cancellationToken = default)
         {
             IsProcessing = true;
             var total = passedFolders.Count;
             var completed = 0;
             var failed = 0;
             var skipped = 0;
+            var cancelled = false;
 
             try
             {
                 // ToList to avoid collection modification issues
                 foreach (var folder in passedFolders.ToList())
                 {
+                    // Check for cancellation before starting next folder
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        cancelled = true;
+                        LoggingService.Info($"Transfer cancelled after {completed} of {total} folders");
+                        break;
+                    }
+
                     completed++;
                     StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
 
-                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
+                    var transferResult = await TransferSingleFolderAsync(folder, completed, total, cancellationToken);
 
                     if (transferResult.Success)
                     {
@@ -714,7 +751,23 @@ namespace DataTransferApp.Net.ViewModels
                     }
                 }
 
-                UpdateTransferResults(total, completed, failed, skipped);
+                if (cancelled)
+                {
+                    var successCount = completed - failed;
+                    StatusMessage = $"Transfer cancelled: {successCount} succeeded, {failed} failed, {skipped} skipped";
+                    _ = ShowSnackbar($"Transfer cancelled. Completed {successCount} of {total} folders", "warning");
+                }
+                else
+                {
+                    UpdateTransferResults(total, completed, failed, skipped);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                var successCount = completed - failed;
+                StatusMessage = $"Transfer cancelled: {successCount} succeeded, {failed} failed, {skipped} skipped";
+                LoggingService.Info($"Transfer cancelled by user after {completed} folders");
+                _ = ShowSnackbar($"Transfer cancelled. Completed {successCount} of {total} folders", "warning");
             }
             catch (Exception ex)
             {
@@ -724,6 +777,8 @@ namespace DataTransferApp.Net.ViewModels
             }
             finally
             {
+                _transferCts?.Dispose();
+                _transferCts = null;
                 IsProcessing = false;
                 IsTransferActive = false;
                 ProgressPercent = 0;
@@ -732,11 +787,12 @@ namespace DataTransferApp.Net.ViewModels
             }
         }
 
-        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total)
+        private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total, CancellationToken cancellationToken = default)
         {
             var progress = new Progress<TransferProgress>(p =>
             {
                 ProgressText = $"[{completed}/{total}] {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
+                StatusMessage = $"Copying: {folder.FolderName}";
                 ProgressPercent = p.PercentComplete;
                 UpdateTransferStatus(p);
             });
@@ -744,7 +800,8 @@ namespace DataTransferApp.Net.ViewModels
             return await _transferService.TransferFolderAsync(
                 folder,
                 SelectedDrive!.DriveLetter,
-                progress);
+                progress,
+                cancellationToken);
         }
 
         private void UpdateTransferResults(int total, int completed, int failed, int skipped)
@@ -802,6 +859,7 @@ namespace DataTransferApp.Net.ViewModels
                 var progress = new Progress<TransferProgress>(p =>
                 {
                     ProgressText = $"Transferring: {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
+                    StatusMessage = $"Copying: {folderName}";
                     ProgressPercent = p.PercentComplete;
                     UpdateTransferStatus(p);
                 });
@@ -847,8 +905,8 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     var timeRemaining = progress.EstimatedTimeRemaining.Value;
 
-                    // Check if transfer is complete
-                    if (timeRemaining == TimeSpan.Zero)
+                    // Only show "Complete" when OnCommandCompleted has fired
+                    if (progress.IsCompleted && timeRemaining == TimeSpan.Zero)
                     {
                         eta = "Complete";
                     }
@@ -857,15 +915,10 @@ namespace DataTransferApp.Net.ViewModels
                         // Show hours for long transfers
                         eta = timeRemaining.ToString(@"h\:mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
                     }
-                    else if (timeRemaining.TotalSeconds >= 1)
+                    else
                     {
                         // Show minutes:seconds for shorter transfers
                         eta = timeRemaining.ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        // Less than 1 second remaining
-                        eta = "< 1s";
                     }
                 }
                 else
@@ -874,7 +927,15 @@ namespace DataTransferApp.Net.ViewModels
                     eta = "--:--";
                 }
 
-                ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
+                if (eta == "Complete")
+                {
+                    ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • {eta}";
+                }
+                else
+                {
+                    ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
+                }
+
             }
             else
             {
@@ -914,8 +975,7 @@ namespace DataTransferApp.Net.ViewModels
             !IsProcessing;
 
         private bool CanTransferAllFolders() =>
-            SelectedDrive != null &&
-            !IsProcessing;
+            SelectedDrive != null; // Allow button when drive selected (enables both Transfer and Cancel)
 
         [RelayCommand(CanExecute = nameof(CanTransferWithOverride))]
         private async Task TransferFolderWithOverrideAsync()
@@ -960,7 +1020,9 @@ namespace DataTransferApp.Net.ViewModels
                 var progress = new Progress<TransferProgress>(p =>
                 {
                     ProgressText = $"Transferring (Override): {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
+                    StatusMessage = $"Copying (Override): {folderName}";
                     ProgressPercent = p.PercentComplete;
+                    UpdateTransferStatus(p);
                 });
 
                 var transferResult = await _transferService.TransferFolderAsync(
@@ -1042,6 +1104,7 @@ namespace DataTransferApp.Net.ViewModels
                     ProgressText = $"Clearing Drive: {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
                     ProgressPercent = p.PercentComplete;
                     StatusMessage = $"Clearing: {p.CurrentFile}";
+                    UpdateTransferStatus(p);
                 });
 
                 await _transferService.ClearDriveAsync(SelectedDrive.DriveLetter, progress);

@@ -13,16 +13,22 @@ namespace DataTransferApp.Net.Services
     /// </summary>
     public class RoboSharpProgressAdapter
     {
-        private const int UpdateIntervalMs = 500; // Update UI every 500ms
+        private const int UpdateIntervalMs = 150; // Match IProgressEstimator update frequency (~150ms)
 
         private readonly IProgress<TransferProgress>? _progress;
         private readonly Stopwatch _stopwatch;
 
+        private IProgressEstimator? _estimator;
         private long _totalBytes;
         private long _copiedBytes;
         private int _totalFiles;
         private int _copiedFiles;
         private string _currentFile = string.Empty;
+
+        // Per-file progress tracking for fine-grained updates
+        private long _completedBytesFromPreviousFiles;
+        private long _currentFileSize;
+        private string? _lastProcessedFile;
 
         private DateTime _lastUpdateTime;
 
@@ -67,58 +73,97 @@ namespace DataTransferApp.Net.Services
 
         /// <summary>
         /// Handles RoboSharp OnFileProcessed event.
+        /// Tracks file completion and updates completed bytes counter.
         /// </summary>
         public void OnFileProcessed(IRoboCommand sender, FileProcessedEventArgs e)
         {
-            // In v1.6.0: FileProcessedEventArgs has ProcessedFile property
-            _copiedFiles++;
-            _copiedBytes += e.ProcessedFile.Size;
-            _currentFile = e.ProcessedFile.Name;
+            var fileName = e.ProcessedFile?.Name ?? string.Empty;
+            _currentFile = fileName;
+
+            // When a file completes, add its size to completed bytes
+            // This helps track overall progress across multiple files
+            if (!string.IsNullOrEmpty(fileName) && fileName != _lastProcessedFile)
+            {
+                _lastProcessedFile = fileName;
+                
+                // If we have a current file size, add it to completed bytes
+                if (_currentFileSize > 0)
+                {
+                    _completedBytesFromPreviousFiles += _currentFileSize;
+                    LoggingService.Debug($"File completed: {fileName}, Size: {_currentFileSize:N0}, Total completed: {_completedBytesFromPreviousFiles:N0}");
+                    _currentFileSize = 0; // Reset for next file
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles RoboSharp OnProgressEstimatorCreated event.
+        /// This is the correct way to get accurate progress per RoboSharp wiki.
+        /// </summary>
+        public void OnProgressEstimatorCreated(IRoboCommand sender, ProgressEstimatorCreatedEventArgs e)
+        {
+            if (e.ResultsEstimate != null)
+            {
+                _estimator = e.ResultsEstimate;
+
+                // Subscribe to ValuesUpdated event (fires every ~150ms per RoboSharp wiki)
+                _estimator.ValuesUpdated += OnEstimatorValuesUpdated;
+
+                LoggingService.Info($"Progress estimator created and subscribed to ValuesUpdated");
+            }
+        }
+
+        /// <summary>
+        /// Handles IProgressEstimator.ValuesUpdated event.
+        /// This fires every ~150ms with accurate file/byte counts from RoboSharp.
+        /// </summary>
+        private void OnEstimatorValuesUpdated(object? sender, IProgressEstimatorUpdateEventArgs e)
+        {
+            // Update copied counts from RoboSharp's statistics
+            _copiedFiles = (int)e.FilesStatistic.Copied;
+            _copiedBytes = e.BytesStatistic.Copied;
+
+            // Only use estimator totals if we don't have pre-scan totals
+            // (Pre-scan totals from list-only are more accurate and respect all RoboCopy filters)
+            if (_totalFiles == 0)
+            {
+                _totalFiles = (int)e.FilesStatistic.Total;
+            }
+            if (_totalBytes == 0)
+            {
+                _totalBytes = e.BytesStatistic.Total;
+            }
+
+            LoggingService.Debug($"Estimator update: Files {_copiedFiles}/{_totalFiles}, Bytes {_copiedBytes:N0}/{_totalBytes:N0}");
 
             ReportProgress();
         }
 
         /// <summary>
-        /// Handles RoboSharp OnProgressEstimatorCreated event.
-        /// Note: In RoboSharp 1.6.0, this provides access to the ProgressEstimator.
-        /// </summary>
-        public void OnProgressEstimatorCreated(IRoboCommand sender, ProgressEstimatorCreatedEventArgs e)
-        {
-            // Access progress estimator for total counts
-            if (e.ResultsEstimate != null)
-            {
-                var estimatedFiles = (int)e.ResultsEstimate.FilesStatistic.Total;
-                var estimatedBytes = e.ResultsEstimate.BytesStatistic.Total;
-
-                LoggingService.Debug($"Progress estimator created: {estimatedFiles} files, {estimatedBytes} bytes");
-
-                // Only update totals if RoboSharp provides valid estimates (> 0)
-                // Don't overwrite pre-scanned totals with zeros
-                if (estimatedBytes > 0)
-                {
-                    _totalFiles = estimatedFiles;
-                    _totalBytes = estimatedBytes;
-                    LoggingService.Info($"Updated totals from RoboSharp estimator: {_totalFiles} files, {_totalBytes:N0} bytes");
-                }
-                else if (_totalBytes == 0)
-                {
-                    // Only log warning if we don't already have valid totals from pre-scan
-                    LoggingService.Warning("RoboSharp estimator returned 0 bytes; using pre-scanned totals");
-                }
-            }
-        }
-
-        /// <summary>
         /// Handles RoboSharp OnCopyProgressChanged event.
+        /// This provides per-file copy progress for fine-grained incremental updates (0%, 1%, 2%...100%).
         /// </summary>
         public void OnCopyProgressChanged(IRoboCommand sender, CopyProgressEventArgs e)
         {
-            // This event provides per-file progress
+            // Update current file name if available
             if (e.CurrentFile != null)
             {
                 _currentFile = e.CurrentFile.Name;
+                _currentFileSize = e.CurrentFile.Size;
             }
 
+            // CopyProgressEventArgs provides:
+            // - CurrentFileProgress: progress percentage (0-100) for the current file
+            // - CurrentFile: ProcessedFileInfo with Name, Size, etc.
+            
+            // Calculate bytes transferred for current file based on progress percentage
+            var currentFileProgress = e.CurrentFileProgress; // 0-100
+            var currentFileBytesTransferred = (long)(_currentFileSize * (currentFileProgress / 100.0));
+
+            // Calculate overall bytes: completed files + current file progress
+            _copiedBytes = _completedBytesFromPreviousFiles + currentFileBytesTransferred;
+
+            // Report progress with throttling (ReportProgress has built-in 50ms throttle)
             ReportProgress();
         }
 
@@ -152,7 +197,8 @@ namespace DataTransferApp.Net.Services
                 TotalBytes = _totalBytes,
                 PercentComplete = 100,
                 BytesPerSecond = CalculateSpeed(),
-                EstimatedTimeRemaining = TimeSpan.Zero
+                EstimatedTimeRemaining = TimeSpan.Zero,
+                IsCompleted = true
             });
         }
 
@@ -161,9 +207,10 @@ namespace DataTransferApp.Net.Services
         /// </summary>
         private void ReportProgress()
         {
-            // Throttle updates to avoid UI flooding
+            // OnEstimatorValuesUpdated already fires at ~150ms intervals, so minimal throttling
+            // Only prevent duplicate updates within 50ms window
             var now = DateTime.Now;
-            if ((now - _lastUpdateTime).TotalMilliseconds < UpdateIntervalMs && _copiedFiles < _totalFiles)
+            if ((now - _lastUpdateTime).TotalMilliseconds < 50)
             {
                 return;
             }
@@ -229,12 +276,12 @@ namespace DataTransferApp.Net.Services
                 return null;
             }
 
-            var remainingBytes = _totalBytes - _copiedBytes;
+            var remainingBytes = Math.Max(_totalBytes - _copiedBytes, 0);
 
-            // Check if we're complete or bytes exceeded total (should only happen at end)
+            // If no bytes remaining, transfer is complete or nearly complete
             if (remainingBytes <= 0)
             {
-                LoggingService.Debug($"ETA: Transfer complete or bytes exceeded (_copiedBytes={_copiedBytes}, _totalBytes={_totalBytes})");
+                LoggingService.Debug($"ETA: Transfer complete (_copiedBytes={_copiedBytes}, _totalBytes={_totalBytes})");
                 return TimeSpan.Zero;
             }
 
@@ -247,7 +294,8 @@ namespace DataTransferApp.Net.Services
                 return null;
             }
 
-            if (secondsRemaining > 86400) // More than 24 hours
+            // Cap at 24 hours for unrealistic estimates
+            if (secondsRemaining > 86400)
             {
                 LoggingService.Debug($"ETA: Capping unrealistic estimate of {secondsRemaining:F0}s");
                 return TimeSpan.FromHours(24);
@@ -255,6 +303,7 @@ namespace DataTransferApp.Net.Services
 
             LoggingService.Debug($"ETA: {secondsRemaining:F0}s (remaining: {remainingBytes:N0} bytes, speed: {bytesPerSecond:F0} B/s)");
             return TimeSpan.FromSeconds(secondsRemaining);
+
         }
 
         /// <summary>
@@ -264,12 +313,14 @@ namespace DataTransferApp.Net.Services
         {
             if (_totalBytes > 0)
             {
-                return (int)((_copiedBytes / (double)_totalBytes) * 100);
+                var percent = (int)Math.Round((_copiedBytes / (double)_totalBytes) * 100);
+                return Math.Clamp(percent, 0, 100);
             }
 
             if (_totalFiles > 0)
             {
-                return (int)((_copiedFiles / (double)_totalFiles) * 100);
+                var percent = (int)Math.Round((_copiedFiles / (double)_totalFiles) * 100);
+                return Math.Clamp(percent, 0, 100);
             }
 
             return 0;

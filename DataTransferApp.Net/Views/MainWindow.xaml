@@ -441,7 +441,7 @@
                         <Button Style="{StaticResource SuccessButtonStyle}"  Command="{Binding TransferAllFoldersCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
-                                <TextBlock Text="Transfer All" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding TransferAllButtonText}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
