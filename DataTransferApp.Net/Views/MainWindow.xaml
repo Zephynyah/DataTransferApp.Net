@@ -476,6 +476,14 @@
                                 <TextBlock Text="Transfer All" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
+                        <!-- Cancel Button - Visible when processing -->
+                        <Button Style="{StaticResource DangerButtonStyle}" Command="{Binding CancelTransferAllCommand}"
+                                Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:IconBlock Icon="Stop" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0"/>
+                                <TextBlock Text="Cancel" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
