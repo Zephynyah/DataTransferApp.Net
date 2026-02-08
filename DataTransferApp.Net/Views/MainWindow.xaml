@@ -745,7 +745,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </ToolTip.Style>
-                                            <control:AwesomeToolTip 
+                                            <control:FileListToolTip 
                                                 FileName="{Binding FileName}"  
                                                 FullPath="{Binding FullPath}" 
                                                 SizeFormatted="{Binding SizeFormatted}" 
@@ -831,7 +831,8 @@
                                                 Background="{StaticResource PrimaryBrush}"
                                                 Foreground="{StaticResource BackgroundBrush}"
                                                 BorderThickness="0"
-                                                Cursor="Hand">
+                                                Cursor="Hand"
+                                                ToolTipService.ToolTip="{x:Null}">
                                             <StackPanel Orientation="Horizontal">
                                                 <fa:IconBlock Icon="Eye" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,3,0"/>
                                                 <TextBlock Text="View" VerticalAlignment="Center" FontSize="10"/>

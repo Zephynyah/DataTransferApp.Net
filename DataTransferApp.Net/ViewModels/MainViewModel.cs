@@ -286,12 +286,12 @@ namespace DataTransferApp.Net.ViewModels
                         file.Status = "Blacklisted";
                         file.IsBlacklisted = true;
                         file.ErrorMessage = $"Extension '{violation.Extension}' is not allowed for transfer";
-                        file.ErrorDetails = $"This file extension is blacklisted. Remove the file or convert to an allowed format before transfer.";
+                        file.ErrorDetails = $"This file extension is blacklisted. Remove this folder from the working directory or override.";
                         file.RecommendedActions = new List<string>
                         {
                             "Do not transfer this folder",
                             "Remove the blacklisted file from the folder",
-                            "Notify the point of contact (ISSM/User)"
+                            "Follow organizational procedures for handling blacklisted contents"
                         };
                     }
                 }
@@ -310,14 +310,15 @@ namespace DataTransferApp.Net.ViewModels
                     if (file.Status == "Ready")
                     {
                         file.Status = "Compressed";
-                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
+                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}. Review with the view 👁️ button recommended.";
                         file.ErrorDetails = "Use the view button to inspect contents of compressed files, or verify archive integrity before transfer if possible.";
                         file.RecommendedActions = new List<string>
                         {
                             "Inspect archive contents before transfer",
                             "Verify the archive is not password protected",
                             "Verify the archive is not corrupted",
-                            "Check if files inside meet all requirements"
+                            "Check if files inside meet all requirements",
+                            "Follow organizational procedures for handling compressed contents"
                         };
                     }
                 }
@@ -588,7 +589,7 @@ namespace DataTransferApp.Net.ViewModels
                         {
                             "Do not transfer this folder",
                             "Remove the blacklisted file from the folder",
-                            "Notify the point of contact (ISSM/User)"
+                            "Follow organizational procedures for handling blacklisted contents"
                         };
                     }
                 }
@@ -608,13 +609,14 @@ namespace DataTransferApp.Net.ViewModels
                     if (file.Status == "Ready")
                     {
                         file.Status = "Compressed";
-                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}";
+                        file.ErrorMessage = $"Compressed archive detected: {file.Extension}. Review with the view 👁️ button recommended.";
                         file.ErrorDetails = "Use the view button to inspect contents of compressed files, or verify archive integrity before transfer if possible.";
                         file.RecommendedActions = new List<string>
                         {
                             "Inspect archive contents before transfer",
                             "Verify the archive is not corrupted",
-                            "Check if files inside meet all requirements"
+                            "Check if files inside meet all requirements",
+                            "Follow organizational procedures for handling compressed contents"
                         };
                     }
                 }

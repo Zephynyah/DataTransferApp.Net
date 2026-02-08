@@ -116,3 +116,4 @@ scripts/
 docs/
 publish/
 appDataPath/
+*.xaml.md
