@@ -44,6 +44,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
@@ -62,6 +63,11 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <TextBlock Text="This Month: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding ThisMonthTransfers}" Foreground="{StaticResource WarningBrush}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="4" Orientation="Horizontal">
                     <TextBlock Text="Total Files: " FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding TotalFiles}" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
                 </StackPanel>

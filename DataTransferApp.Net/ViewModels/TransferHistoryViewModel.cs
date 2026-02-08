@@ -39,6 +39,9 @@ namespace DataTransferApp.Net.ViewModels
         private int _thisWeekTransfers;
 
         [ObservableProperty]
+        private int _thisMonthTransfers;
+
+        [ObservableProperty]
         private int _totalFiles;
 
         [ObservableProperty]
@@ -83,6 +86,7 @@ namespace DataTransferApp.Net.ViewModels
                 TotalTransfers = stats["TotalTransfers"];
                 TodayTransfers = stats["TodayTransfers"];
                 ThisWeekTransfers = stats["ThisWeekTransfers"];
+                ThisMonthTransfers = stats["ThisMonthTransfers"];
                 TotalFiles = stats["TotalFiles"];
 
                 StatusMessage = $"Loaded {TotalTransfers} transfers";
