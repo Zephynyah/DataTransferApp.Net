@@ -56,7 +56,7 @@ namespace DataTransferApp.Net.Controls
         public AwesomeDialog()
         {
             InitializeComponent();
-            
+
             // Handle visibility changes
             IsVisibleChanged += (s, e) =>
             {
@@ -64,13 +64,15 @@ namespace DataTransferApp.Net.Controls
                 {
                     var sb = (Storyboard)Resources["PopInAnimation"];
                     sb.Begin();
-                    
+
                     // Set focus to the dialog for keyboard support
-                    Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        Focus();
-                        Keyboard.Focus(this);
-                    }), System.Windows.Threading.DispatcherPriority.Input);
+                    _ = Dispatcher.BeginInvoke(
+                        new Action(() =>
+                        {
+                            Focus();
+                            Keyboard.Focus(this);
+                        }),
+                        System.Windows.Threading.DispatcherPriority.Input);
                 }
             };
 
