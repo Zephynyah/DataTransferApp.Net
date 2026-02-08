@@ -54,7 +54,7 @@ namespace DataTransferApp.Net.ViewModels
         private bool _isDeleteEnabled;
 
         [ObservableProperty]
-        private bool _showTableView = false;
+        private bool _showTableView = true;
 
         public TransferHistoryViewModel(string? databasePath)
         {

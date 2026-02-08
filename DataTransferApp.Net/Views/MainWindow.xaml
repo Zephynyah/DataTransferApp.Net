@@ -728,39 +728,6 @@
                                 <!-- Default: white background -->
                                 <Setter Property="Background" Value="White"/>
 
-                                <!-- Tooltip for files with errors or warnings -->
-                                <Setter Property="ToolTip">
-                                    <Setter.Value>
-                                        <ToolTip Background="Transparent" BorderThickness="0">
-                                            <ToolTip.Style>
-                                                <Style TargetType="ToolTip">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HasError}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsCompressed}" Value="True">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </ToolTip.Style>
-                                            <control:FileListToolTip 
-                                                FileName="{Binding FileName}"  
-                                                FullPath="{Binding FullPath}" 
-                                                SizeFormatted="{Binding SizeFormatted}" 
-                                                IsBlacklisted="{Binding IsBlacklisted}" 
-                                                IsCompressed="{Binding IsCompressed}" 
-                                                Extension="{Binding Extension}"
-                                                Recommendations="{Binding RecommendedActions}"
-                                                ErrorMessage="{Binding ErrorMessage}"
-                                                ErrorDetails="{Binding ErrorDetails}"/>
-                                        </ToolTip>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="ToolTipService.InitialShowDelay" Value="300"/>
-                                <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
-
                                 <Style.Triggers>
                                     <!-- Alternating row - only applies if no other conditions are met -->
                                     <Trigger Property="AlternationIndex" Value="1">
@@ -814,7 +781,47 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="5*"/>
+                            <DataGridTemplateColumn Header="File Name" Width="5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FileName}" VerticalAlignment="Center">
+                                            <TextBlock.ToolTip>
+                                                <ToolTip Background="Transparent" BorderThickness="0">
+                                                    <ToolTip.Style>
+                                                        <Style TargetType="ToolTip">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasError}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsCompressed}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ToolTip.Style>
+                                                    <control:FileListToolTip 
+                                                        FileName="{Binding FileName}"  
+                                                        FullPath="{Binding FullPath}" 
+                                                        SizeFormatted="{Binding SizeFormatted}" 
+                                                        IsBlacklisted="{Binding IsBlacklisted}" 
+                                                        IsCompressed="{Binding IsCompressed}" 
+                                                        Extension="{Binding Extension}"
+                                                        Recommendations="{Binding RecommendedActions}"
+                                                        ErrorMessage="{Binding ErrorMessage}"
+                                                        ErrorDetails="{Binding ErrorDetails}"/>
+                                                </ToolTip>
+                                            </TextBlock.ToolTip>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTipService.InitialShowDelay" Value="300"/>
+                                                    <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Header="Extension" Binding="{Binding Extension}" Width="*"/>
                             <DataGridTextColumn Header="Size" Binding="{Binding SizeFormatted}" Width="*"/>
                             <DataGridTextColumn Header="Modified" Binding="{Binding Modified}" Width="2*"/>

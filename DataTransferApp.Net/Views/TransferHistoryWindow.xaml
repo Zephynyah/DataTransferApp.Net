@@ -4,8 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-        xmlns:local="clr-namespace:DataTransferApp.Net.Views"
-        xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
+        xmlns:local="clr-namespace:DataTransferApp.Net"
         mc:Ignorable="d"
         Title="Transfer History" 
         Height="800" Width="1200"
@@ -319,20 +318,13 @@
                                 <TextBlock Grid.Column="0" Text="Files" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 
                                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                    <RadioButton Content="List" 
-                                                 IsChecked="{Binding ShowTableView, Converter={StaticResource InverseBooleanConverter}}"
-                                                 Margin="0,0,10,0"
-                                                 VerticalAlignment="Center"/>
-                                    <RadioButton Content="Table" 
-                                                 IsChecked="{Binding ShowTableView}"
-                                                 VerticalAlignment="Center"/>
+                                    <RadioButton Content="Table" IsChecked="{Binding ShowTableView}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <RadioButton Content="List" IsChecked="{Binding ShowTableView, Converter={StaticResource InverseBoolConverter}}" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Grid>
                             
                             <!-- List View -->
-                            <ListBox Grid.Row="1" 
-                                     ItemsSource="{Binding TransferFiles}"
-                                     BorderThickness="0"
+                            <ListBox Grid.Row="1" ItemsSource="{Binding TransferFiles}" BorderThickness="0"
                                      Visibility="{Binding ShowTableView, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -358,6 +350,17 @@
                                       AlternatingRowBackground="{StaticResource LightBackgroundBrush}"
                                       BorderThickness="0"
                                       Visibility="{Binding ShowTableView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Padding" Value="5"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="MinHeight" Value="25"/>
+                                    </Style>
+                                </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="2*"/>
                                     <DataGridTextColumn Header="Extension" Binding="{Binding Extension}" Width="*"/>
