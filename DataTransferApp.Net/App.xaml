@@ -51,10 +51,6 @@
             <!-- ScrollBar Size Definitions -->
             <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">4</system:Double>
             <system:Double x:Key="{x:Static SystemParameters.HorizontalScrollBarHeightKey}">4</system:Double>
-
-            <!-- Icon Geometries -->
-            <!-- Icon Geometries -->
-
                     
             <!-- Icon Button Style (Icon Only, No Text) -->
             <Style x:Key="IconButtonStyle" TargetType="Button">
@@ -155,6 +151,13 @@
                 <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
                 <Setter Property="Margin" Value="5,2,5,5"/>
             </Style>
+
+            <!-- ToolTip Style -->
+            <!-- <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style> -->
             
             <!-- TextBox Style -->
             <Style TargetType="TextBox">

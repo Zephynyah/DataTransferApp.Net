@@ -693,18 +693,33 @@
                         <!-- Action Buttons -->                    
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Right" Height="40" VerticalAlignment="Center">
                             <Button Command="{Binding AuditFolderCommand}" Style="{StaticResource ButtonStyle}">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:ModernToolTip Title="Individual Audit" Description="This audits the selected folder individually." />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
                                      <fa:IconBlock Icon="Refresh" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Audit" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding TransferFolderCommand}" Style="{StaticResource SuccessButtonStyle}">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:ModernToolTip Title="Individual Transfer" Description="This transfers the selected folder individually." />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
                                     <fa:IconBlock Icon="Upload" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Transfer" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding TransferFolderWithOverrideCommand}" Style="{StaticResource WarningButtonStyle}" Margin="5,5,0,5" ToolTip="Force transfer even if audit failed">
+                            <Button Command="{Binding TransferFolderWithOverrideCommand}" Style="{StaticResource WarningButtonStyle}" Margin="5,5,0,5">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:ModernToolTip Title="Override a Transfer" Description="Force a transfer even if audit failed" />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
                                     <fa:IconBlock Icon="Warning" Foreground="{StaticResource BackgroundBrush}" Margin="0,0,5,0" FontSize="14"/>
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>

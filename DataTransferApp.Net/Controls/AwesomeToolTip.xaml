@@ -11,122 +11,17 @@
             <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.5"/>
         </Border.Effect>
 
-        <StackPanel>
-            <!-- Header with icon -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                <fa:IconBlock Icon="File" FontSize="18" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding FileName, ElementName=ToolTipControl}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap"/>
-            </StackPanel>
+         <StackPanel Width="200">
+            <!-- Header with Icon -->
+            <DockPanel Margin="0,0,0,8">
+                <Ellipse Width="12" Height="12" Fill="#007ACC" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="Action Required" Foreground="White" FontWeight="Bold" FontSize="14"/>
+            </DockPanel>
             
-            <Separator Background="{StaticResource SecondaryBrush}" Margin="0,5"/>
+            <Separator Background="#444" Margin="0,0,0,8"/>
             
-            <!-- File details -->
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                
-                <fa:IconBlock Grid.Row="0" Grid.Column="0" Icon="FolderOpen" FontSize="12" Margin="0,0,8,4" Foreground="Gray"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FullPath, ElementName=ToolTipControl}" FontSize="11" Foreground="Gray" Margin="0,0,0,4" TextWrapping="Wrap"/>
-                
-                <fa:IconBlock Grid.Row="1" Grid.Column="0" Icon="Database" FontSize="12" Margin="0,0,8,4" Foreground="Gray"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SizeFormatted, ElementName=ToolTipControl}" FontSize="11" Foreground="Gray" Margin="0,0,0,4"/>
-                
-                <fa:IconBlock Grid.Row="2" Grid.Column="0" Icon="Tag" FontSize="12" Margin="0,0,8,0" Foreground="Gray"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Extension, ElementName=ToolTipControl}" FontSize="11" Foreground="Gray"/>
-            </Grid>
-
-            <!-- Blacklisted file section -->
-            <Border Background="#F8D7DA" Padding="10" CornerRadius="4" Margin="0,0,0,6">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsBlacklisted, ElementName=ToolTipControl}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="Ban" Foreground="#721C24" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Blacklisted File Type" FontWeight="Bold" Foreground="#721C24" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    
-                    <TextBlock Foreground="#721C24" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6">
-                        <Run Text="This file extension is not allowed for transfer."/>
-                    </TextBlock>
-                </StackPanel>
-            </Border>
-
-            <!-- Compressed file section -->
-            <Border Background="#FFF3CD" Padding="10" CornerRadius="4" Margin="0,0,0,6">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding IsCompressed, ElementName=ToolTipControl}" Value="True"/>
-                                    <Condition Binding="{Binding IsBlacklisted, ElementName=ToolTipControl}" Value="False"/>
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="InfoCircle" Foreground="#856404" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Caution: Compressed File" FontWeight="Bold" Foreground="#856404" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    
-                    <TextBlock Foreground="#856404" FontSize="11" TextWrapping="Wrap" Margin="24,0,0,6">
-                        <Run Text="Transfer is allowed but review is recommended."/>
-                    </TextBlock>
-                </StackPanel>
-            </Border>
-
-            <!-- Recommended actions section -->
-            <Border Background="#E8DEF8" Padding="10" CornerRadius="4">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsBlacklisted, ElementName=ToolTipControl}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsCompressed, ElementName=ToolTipControl}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <fa:IconBlock Icon="UserCircle" Foreground="#4A148C" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Recommended Actions" FontWeight="Bold" Foreground="#4A148C" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <ItemsControl ItemsSource="{Binding Recommendations, ElementName=ToolTipControl}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="24,0,0,2">
-                                    <fa:IconBlock Icon="CheckCircle" Foreground="#4A148C" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Top"/>
-                                    <TextBlock Text="{Binding}" FontSize="11" FontStyle="Italic" Foreground="#4A148C" TextWrapping="Wrap"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+            <!-- Description Body -->
+            <TextBlock Text="This tooltip supports multi-line text and custom styling for a professional look."  Foreground="#BBB" TextWrapping="Wrap" FontSize="12" LineHeight="18"/>
         </StackPanel>
     </Border>
 </UserControl>

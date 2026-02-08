@@ -4,7 +4,7 @@ using System.Windows.Controls;
 namespace DataTransferApp.Net.Controls
 {
     /// <summary>
-    /// Interaction logic for AwesomeToolTip.xaml
+    /// Interaction logic for FileListToolTip.xaml.
     /// </summary>
     public partial class FileListToolTip : UserControl
     {
