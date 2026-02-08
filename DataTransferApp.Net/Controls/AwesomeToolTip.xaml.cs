@@ -5,16 +5,16 @@ using FontAwesome.Sharp;
 namespace DataTransferApp.Net.Controls
 {
     /// <summary>
-    /// Interaction logic for ModernToolTip.xaml.
+    /// Interaction logic for AnimationToolTip.xaml.
     /// </summary>
-    public partial class ModernToolTip : UserControl
+    public partial class AwesomeToolTip : UserControl
     {
         // The "Title" Property
         public static readonly DependencyProperty TitleProperty =
         DependencyProperty.Register(
             nameof(Title),
             typeof(string),
-            typeof(ModernToolTip),
+            typeof(AwesomeToolTip),
             new PropertyMetadata("Default Title"));
 
         public string Title
@@ -28,7 +28,7 @@ namespace DataTransferApp.Net.Controls
             DependencyProperty.Register(
             nameof(Description),
             typeof(string),
-            typeof(ModernToolTip),
+            typeof(AwesomeToolTip),
             new PropertyMetadata("Default description text."));
 
         public string Description
@@ -41,7 +41,7 @@ namespace DataTransferApp.Net.Controls
             DependencyProperty.Register(
                 nameof(Icon),
                 typeof(IconChar),
-                typeof(ModernToolTip),
+                typeof(AwesomeToolTip),
                 new PropertyMetadata(IconChar.InfoCircle));
 
         public IconChar Icon
@@ -50,7 +50,7 @@ namespace DataTransferApp.Net.Controls
             set => SetValue(IconProperty, value);
         }
 
-        public ModernToolTip()
+        public AwesomeToolTip()
         {
             InitializeComponent();
         }

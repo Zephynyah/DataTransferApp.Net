@@ -231,15 +231,31 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <!-- 1. Left IconBlock -->
-                        <fa:IconBlock Grid.Column="0" Icon="Hdd" Foreground="{StaticResource AnimationBlueBrush}" FontSize="14" VerticalAlignment="Center" Margin="5,0" ToolTip="Select External Drive" />
+                        <fa:IconBlock Grid.Column="0" Icon="Hdd" Foreground="{StaticResource AnimationBlueBrush}" FontSize="14" VerticalAlignment="Center" Margin="5,0" >
+                            <fa:IconBlock.ToolTip>
+                                <ToolTip Background="Transparent" BorderThickness="0">
+                                    <control:AwesomeToolTip Title="Select External Drive" Description="This selects the external drive for data transfer." />
+                                </ToolTip>
+                            </fa:IconBlock.ToolTip>
+                        </fa:IconBlock>
                         <!-- 2. Center ComboBox -->
                         <ComboBox Grid.Column="1" ItemsSource="{Binding RemovableDrives}" SelectedItem="{Binding SelectedDrive}" DisplayMemberPath="DisplayText" Width="300" BorderThickness="1,0,1,0" />
                         <!-- 2. Right Buttons -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="5,0">
-                            <Button Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,10,0" ToolTip="Detect Drives" Background="Transparent" BorderBrush="Transparent">
+                            <Button Command="{Binding DetectDrivesCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,10,0" Background="Transparent" BorderBrush="Transparent">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="Refresh List" Description="This refreshes the list of removable drives." />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <fa:IconBlock Icon="Refresh" Foreground="{StaticResource AnimationBlueBrush}" Margin="0" FontSize="14"/>
                             </Button>
-                            <Button  Command="{Binding ClearDriveCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,5,0" ToolTip="Clear Drive Contents" Background="Transparent" BorderBrush="Transparent">
+                            <Button  Command="{Binding ClearDriveCommand}" Style="{StaticResource ButtonStyle}" Margin="0" Padding="5,0,5,0" Background="Transparent" BorderBrush="Transparent">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="Clear Drive Contents" Description="This clears the contents of the selected external drive." />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <fa:IconBlock Icon="Trash" Foreground="{StaticResource DangerBrush}" Margin="0" FontSize="14" />
                             </Button>
                         </StackPanel>
@@ -273,8 +289,28 @@
                             </Grid.ColumnDefinitions>
 
                             <fa:IconBlock Grid.Column="0" Icon="Dropbox" Foreground="{StaticResource SecondaryBrush}" FontSize="16" Margin="0,0,5,0"/>
-                            <TextBlock Text="Dropbox Folders" FontWeight="Bold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0"/>
-                            <Button Background="Transparent" BorderBrush="Transparent" Padding="0" Margin="0" Grid.Column="2" Command="{Binding LoadDataCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" ToolTip="Refresh List">
+                            <TextBlock Text="Dropbox Folders" FontWeight="Bold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="User Folder list" Description="List of user folders for data transfer." />
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                            <Button 
+                                Background="Transparent" 
+                                BorderBrush="Transparent" 
+                                Padding="0" 
+                                Margin="0" 
+                                Grid.Column="2" 
+                                Command="{Binding LoadDataCommand}" 
+                                IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" 
+                                ToolTipService.InitialShowDelay="250" 
+                                ToolTipService.BetweenShowDelay="0">
+                                <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="Refresh List" Description="This refreshes the list of Dropbox folders." />
+                                    </ToolTip>
+                                </Button.ToolTip>
                                 <fa:IconBlock Icon="Refresh" Foreground="{StaticResource SecondaryBrush}" FontSize="16"/>
                             </Button>
                         </Grid>
@@ -695,7 +731,7 @@
                             <Button Command="{Binding AuditFolderCommand}" Style="{StaticResource ButtonStyle}">
                                 <Button.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
-                                        <control:ModernToolTip Title="Individual Audit" Description="This audits the selected folder individually." />
+                                        <control:AwesomeToolTip Title="Individual Audit" Description="This audits the selected folder individually." />
                                     </ToolTip>
                                 </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
@@ -706,7 +742,7 @@
                             <Button Command="{Binding TransferFolderCommand}" Style="{StaticResource SuccessButtonStyle}">
                                 <Button.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
-                                        <control:ModernToolTip Title="Individual Transfer" Description="This transfers the selected folder individually." />
+                                        <control:AwesomeToolTip Title="Individual Transfer" Description="This transfers the selected folder individually." />
                                     </ToolTip>
                                 </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
@@ -717,7 +753,7 @@
                             <Button Command="{Binding TransferFolderWithOverrideCommand}" Style="{StaticResource WarningButtonStyle}" Margin="5,5,0,5">
                                 <Button.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
-                                        <control:ModernToolTip Title="Override a Transfer" Description="Force a transfer even if audit failed" />
+                                        <control:AwesomeToolTip Title="Override a Transfer" Description="Force a transfer even if audit failed" />
                                     </ToolTip>
                                 </Button.ToolTip>
                                 <StackPanel Orientation="Horizontal">
@@ -725,6 +761,9 @@
                                     <TextBlock Text="Override" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
+
+                            <!-- Your Main App Content Here -->
+                            <Button Content="Delete All Files" Click="ShowDialogBtn_Click"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -1108,5 +1147,8 @@
                        TextWrapping="Wrap"
                        TextAlignment="Center"/>
         </Border>
+        
+         <!-- The Overlay Dialog (Last item in Grid = Top Z-Index) -->
+        <control:AwesomeDialog x:Name="MainDialog" Visibility="Collapsed" Grid.RowSpan="4" Panel.ZIndex="999"/>
     </Grid>
 </Window>

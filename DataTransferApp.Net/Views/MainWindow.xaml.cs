@@ -9,8 +9,11 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DataTransferApp.Net.Controls;
+using DataTransferApp.Net.Models;
 using DataTransferApp.Net.Services;
 using DataTransferApp.Net.ViewModels;
+using FontAwesome.Sharp;
 
 namespace DataTransferApp.Net.Views;
 
@@ -150,6 +153,26 @@ public partial class MainWindow : Window
         WindowStyle = WindowStyle.SingleBorderWindow;
         WindowState = WindowState.Normal;
         UpdateFullScreenUI(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'ShowDialogBtn_Click' a static method", Justification = "Event handler must be instance method")]
+    private void ShowDialogBtn_Click(object sender, RoutedEventArgs e)
+    {
+        // Setup the properties
+        MainDialog.Title = "Are you sure?";
+        MainDialog.Message = "This will permanently delete your data.";
+        MainDialog.Icon = IconChar.ExclamationTriangle;
+
+        // Show it
+        MainDialog.Visibility = Visibility.Visible;
+
+        // Handle the result
+        MainDialog.OnResult += (s, args) =>
+        {
+            MainDialog.Visibility = Visibility.Collapsed;
+            if (args.Result)
+            { /* Do the work */ }
+        };
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("SonarAnalyzer.CSharp", "S2325:Make 'MenuButton_Click' a static method", Justification = "Event handler must be instance method")]
