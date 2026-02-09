@@ -165,9 +165,33 @@ namespace DataTransferApp.Net.Models
         public bool PromptBeforeOverwrite { get; set; } = true;
 
         // RoboSharp Transfer Engine Configuration
-        public bool UseRoboSharp { get; set; } = false; // Feature flag - set to true to enable RoboSharp
+        private bool _useRoboSharp = false;
+        public bool UseRoboSharp
+        {
+            get => _useRoboSharp;
+            set
+            {
+                if (_useRoboSharp != value)
+                {
+                    _useRoboSharp = value;
+                    OnPropertyChanged(nameof(UseRoboSharp));
+                }
+            }
+        }
 
-        public bool UseMultithreadedCopy { get; set; } = true;
+        private bool _useMultithreadedCopy = true;
+        public bool UseMultithreadedCopy
+        {
+            get => _useMultithreadedCopy;
+            set
+            {
+                if (_useMultithreadedCopy != value)
+                {
+                    _useMultithreadedCopy = value;
+                    OnPropertyChanged(nameof(UseMultithreadedCopy));
+                }
+            }
+        }
 
         private int _robocopyThreadCount = 8;
         public int RobocopyThreadCount
