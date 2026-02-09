@@ -94,7 +94,10 @@ namespace DataTransferApp.Net.ViewModels
         private string _snackbarMessage = string.Empty;
 
         [ObservableProperty]
-        private string _snackbarBackground = "#2ECC71";
+        private string _snackbarBackground = "#E62ECC71";
+
+        [ObservableProperty]
+        private double _snackbarOpacity = 1.0;  // Adjust this value (0.0 to 1.0) to control notification brightness
 
         [ObservableProperty]
         private bool _showFolderAuditDetailsIcon = true;
@@ -1312,11 +1315,11 @@ namespace DataTransferApp.Net.ViewModels
             SnackbarMessage = message;
             SnackbarBackground = type switch
             {
-                "success" => "#2ECC71",
-                "error" => "#E74C3C",
-                "warning" => "#F39C12",
-                "info" => "#3498DB",
-                _ => "#2ECC71"
+                "success" => "#E62ECC71",  // 90% opacity green
+                "error" => "#E6E74C3C",    // 90% opacity red
+                "warning" => "#E6F39C12",  // 90% opacity orange
+                "info" => "#E63498DB",     // 90% opacity blue
+                _ => "#E62ECC71"
             };
             IsSnackbarVisible = true;
 
