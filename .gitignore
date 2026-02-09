@@ -117,3 +117,4 @@ docs/
 publish/
 appDataPath/
 *.xaml.md
+*.cs.md

@@ -762,8 +762,10 @@
                                 </StackPanel>
                             </Button>
 
-                            <!-- Your Main App Content Here -->
-                            <Button Content="Delete All Files" Click="ShowDialogBtn_Click"/>
+                            <!-- TEST AREA -->
+                                <!-- <Button Content="Delete All Files" Click="ShowDialogBtn_Click"/> -->
+                                <!-- <Button Content="Delete All Files" Click="ShowTaskDialogButton_Click"/> -->
+                            <!-- END TEST AREA -->
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -1147,8 +1149,5 @@
                        TextWrapping="Wrap"
                        TextAlignment="Center"/>
         </Border>
-        
-         <!-- The Overlay Dialog (Last item in Grid = Top Z-Index) -->
-        <control:AwesomeDialog x:Name="MainDialog" Visibility="Collapsed" Grid.RowSpan="4" Panel.ZIndex="999"/>
     </Grid>
 </Window>
