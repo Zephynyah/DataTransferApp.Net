@@ -904,7 +904,7 @@ namespace DataTransferApp.Net.ViewModels
                     // Only show "Complete" when OnCommandCompleted has fired
                     if (progress.IsCompleted && timeRemaining == TimeSpan.Zero)
                     {
-                        eta = "Complete";
+                        eta = "Moving folder...";
                     }
                     else if (timeRemaining.TotalHours >= 1)
                     {
@@ -923,7 +923,7 @@ namespace DataTransferApp.Net.ViewModels
                     eta = "--:--";
                 }
 
-                if (eta == "Complete")
+                if (eta == "Moving folder...")
                 {
                     ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • {eta}";
                 }
@@ -1146,7 +1146,7 @@ namespace DataTransferApp.Net.ViewModels
                     ProgressText = $"Clearing Drive: {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
                     ProgressPercent = p.PercentComplete;
                     StatusMessage = $"Clearing: {p.CurrentFile}";
-                    UpdateTransferStatus(p);
+                    ProgressIssues = $"Deleting items...";
                 });
 
                 await _transferService.ClearDriveAsync(SelectedDrive.DriveLetter, progress);

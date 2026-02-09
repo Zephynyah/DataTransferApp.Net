@@ -1044,7 +1044,7 @@
             
                             <fa:IconBlock Grid.Column="0" Grid.Row="1" Icon="Tasks" Foreground="{StaticResource SecondaryBrush}" FontSize="16" Margin="0,0,8,0"/>
 
-                            <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontSize="12" Margin="0,0,5,0" Text="{Binding Settings.RetentionDays, Converter={StaticResource PluralizationConverter}, ConverterParameter=Day|Days}"/>
+                            <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" FontSize="12" Margin="0,0,5,0" Text="{Binding Settings.RetentionDays, Converter={StaticResource PluralizationConverter}, ConverterParameter=Day|Days}"/>
 
                             <TextBlock Grid.Column="1" Grid.Row="1"  Text="Retention Cleanup" FontWeight="SemiBold" FontSize="14"/>
 
