@@ -16,8 +16,12 @@
    Indicates whether to publish the application as self-contained.
 .PARAMETER Trimmed
    Indicates whether to enable trimming of unused assemblies to reduce the size of the published application.
+.PARAMETER Packaged
+   Indicates whether to create a zip archive of the published application with version number (e.g., DataTransferApp.v1.4.0.zip).
 .EXAMPLE
    .\build-exe.ps1 -Runtime win-x64 -Configuration Release -SingleFile -SelfContained -Trimmed
+.EXAMPLE
+   .\build-exe.ps1 -Runtime win-x64 -Configuration Release -SingleFile -SelfContained -Packaged
 .EXAMPLE
    .\build-exe.ps1 -Runtime win-x64 -Configuration Debug
 .INPUTS
@@ -51,7 +55,10 @@ param(
     [switch]$SelfContained,
     
     [Parameter(Mandatory=$false)]
-    [switch]$Trimmed
+    [switch]$Trimmed,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Packaged
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,16 +68,26 @@ $ScriptRoot = $PSScriptRoot
 $ProjectPath = Join-Path $ScriptRoot "DataTransferApp.Net\DataTransferApp.Net.csproj"
 $OutputPath = Join-Path $ScriptRoot "publish\$Runtime-$Configuration"
 
+# Extract version from project file
+$ProjectXml = [xml](Get-Content $ProjectPath)
+$Version = $ProjectXml.Project.PropertyGroup.Version
+if ([string]::IsNullOrEmpty($Version)) {
+    Write-Host "WARNING: Version not found in project file, using default 1.0.0" -ForegroundColor Yellow
+    $Version = "1.0.0"
+}
+
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Building Data Transfer Application" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Configuration:" -ForegroundColor Yellow
+Write-Host "  - Version:        $Version" -ForegroundColor White
 Write-Host "  - Runtime:        $Runtime" -ForegroundColor White
 Write-Host "  - Configuration:  $Configuration" -ForegroundColor White
 Write-Host "  - Single File:    $SingleFile" -ForegroundColor White
 Write-Host "  - Self-Contained: $SelfContained" -ForegroundColor White
 Write-Host "  - Trimmed:        $Trimmed" -ForegroundColor White
+Write-Host "  - Packaged:       $Packaged" -ForegroundColor White
 Write-Host "  - Output Path:    $OutputPath" -ForegroundColor White
 Write-Host ""
 
@@ -172,6 +189,39 @@ try {
         Write-Host "To run the application:" -ForegroundColor Yellow
         Write-Host "  $exePath" -ForegroundColor White
         Write-Host ""
+        
+        # Create zip archive if Packaged switch is specified
+        if ($Packaged) {
+            $zipFileName = "DataTransferApp.v$Version.zip"
+            $zipPath = Join-Path $ScriptRoot "publish\$zipFileName"
+            
+            Write-Host "Creating zip archive..." -ForegroundColor Yellow
+            Write-Host "  - Archive: $zipFileName" -ForegroundColor Gray
+            
+            # Remove existing zip if present
+            if (Test-Path $zipPath) {
+                Remove-Item $zipPath -Force
+            }
+            
+            try {
+                Compress-Archive -Path "$OutputPath\*" -DestinationPath $zipPath -Force
+                
+                if (Test-Path $zipPath) {
+                    $zipInfo = Get-Item $zipPath
+                    $zipSizeInMB = [math]::Round($zipInfo.Length / 1MB, 2)
+                    
+                    Write-Host "  - Size: $zipSizeInMB MB" -ForegroundColor Gray
+                    Write-Host "  - Location: $($zipInfo.FullName)" -ForegroundColor Gray
+                    Write-Host "" 
+                    Write-Host "Zip archive created successfully!" -ForegroundColor Green
+                    Write-Host ""
+                }
+            } catch {
+                Write-Host "WARNING: Failed to create zip archive" -ForegroundColor Yellow
+                Write-Host $_.Exception.Message -ForegroundColor Yellow
+                Write-Host ""
+            }
+        }
         
         # Offer to open folder
         $response = Read-Host "Open output folder? (Y/N)"
