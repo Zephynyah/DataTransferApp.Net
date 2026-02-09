@@ -39,6 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - IDisposable pattern implemented for automatic cleanup
 - Updated TODO.md to mark unit testing tasks as complete
 
+### Fixed
+
+- Fixed UseRoboSharp checkbox not updating UI on toggle
+  - Implemented INotifyPropertyChanged for UseRoboSharp property
+  - Implemented INotifyPropertyChanged for UseMultithreadedCopy property
+  - Dependent controls (thread count, retries, etc.) now properly enable/disable when checkbox is toggled
+  - Resolved issue where RoboSharp settings remained stuck in previous state after checkbox change
+
 ### Technical Details
 
 - Test execution time: ~11.2 seconds
