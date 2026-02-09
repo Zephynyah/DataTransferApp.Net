@@ -158,7 +158,7 @@ namespace DataTransferApp.Net.Services
             }
             else if (parts.Length == 4)
             {
-                return ValidateFourPartFormat();
+                return ValidateFourPartFormat(parts);
             }
             else
             {
@@ -194,25 +194,82 @@ namespace DataTransferApp.Net.Services
                 IsValid = false,
                 EmployeeId = parts[0],
                 Date = parts[1],
-                Dataset = parts[2],
-                Message = "Invalid format detected in folder name"
+                Dataset = parts[2]
             };
 
-            if (!IsValidDateFormat(parts[1]))
+            // Check date validity first
+            bool isDateValid = IsValidDateFormat(parts[1]);
+
+            // Build specific error message
+            var issues = new List<string>();
+
+            if (!isDateValid)
             {
-                result.Message = "Invalid date format in folder name";
+                issues.Add("invalid date format");
+            }
+
+            // Check if employee ID has invalid characters (hyphens, special chars, etc.)
+            if (parts[0].Contains('-') || !Regex.IsMatch(parts[0], @"^[a-zA-Z0-9]+$"))
+            {
+                issues.Add("employee ID contains invalid characters (only letters and numbers allowed)");
+            }
+
+            if (issues.Count > 0)
+            {
+                result.Message = $"Invalid folder name: {string.Join(", ", issues)}";
+            }
+            else
+            {
+                result.Message = "Folder name does not match expected pattern";
             }
 
             return result;
         }
 
-        private NameValidation ValidateFourPartFormat()
+        private NameValidation ValidateFourPartFormat(string[] parts)
         {
-            return new NameValidation
+            var result = new NameValidation
             {
                 IsValid = false,
-                Message = "Either employee Name/ID, Date, Dataset or Sequence has an invalid format."
+                EmployeeId = parts[0],
+                Date = parts[1],
+                Dataset = parts[2],
+                Sequence = parts[3]
             };
+
+            // Check date validity first
+            bool isDateValid = IsValidDateFormat(parts[1]);
+
+            // Build specific error message
+            var issues = new List<string>();
+
+            if (!isDateValid)
+            {
+                issues.Add("invalid date format");
+            }
+
+            // Check if employee ID has invalid characters
+            if (parts[0].Contains('-') || !Regex.IsMatch(parts[0], @"^[a-zA-Z0-9]+$"))
+            {
+                issues.Add("employee ID contains invalid characters (only letters and numbers allowed)");
+            }
+
+            // Check if sequence has invalid format (should be numeric or alphanumeric without special chars)
+            if (parts[3].Contains('-') || !Regex.IsMatch(parts[3], @"^[a-zA-Z0-9]+$"))
+            {
+                issues.Add("sequence contains invalid characters");
+            }
+
+            if (issues.Count > 0)
+            {
+                result.Message = $"Invalid folder name: {string.Join(", ", issues)}";
+            }
+            else
+            {
+                result.Message = "Folder name does not match expected pattern";
+            }
+
+            return result;
         }
 
         private NameValidation CreateInvalidFormatResult()
