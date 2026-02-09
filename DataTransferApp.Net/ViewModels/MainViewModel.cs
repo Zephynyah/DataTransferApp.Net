@@ -841,7 +841,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _settings.UseRoboSharp ? "RoboSharp" : "Legacy";
+                ProgressIssues = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
 
                 var progress = new Progress<TransferProgress>(p =>
                 {
@@ -893,7 +893,7 @@ namespace DataTransferApp.Net.ViewModels
                 IsTransferActive = true;
             }
 
-            var engine = _settings.UseRoboSharp ? "RoboSharp" : "Legacy";
+            var engine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
 
             if (progress.BytesPerSecond > 0)
             {
@@ -934,6 +934,12 @@ namespace DataTransferApp.Net.ViewModels
                 {
                     ProgressIssues = $"{engine} • {speedMBps:F1} MB/s • ETA {eta}";
                 }
+            }
+            else if (progress.CompletedFiles > 0 || progress.BytesTransferred > 0)
+            {
+                // Show progress even without speed calculation
+                var percentCompleted = progress.PercentComplete;
+                ProgressIssues = $"{engine} • Transferring... {percentCompleted}%";
             }
             else
             {
@@ -1031,9 +1037,15 @@ namespace DataTransferApp.Net.ViewModels
         {
             IsProcessing = true;
             ProgressPercent = 0;
+            _transferCancellationTokenSource = new CancellationTokenSource();
+            CancelTransferCommand.NotifyCanExecuteChanged();
 
             try
             {
+                // Mark transfer as starting
+                IsTransferActive = true;
+                ProgressIssues = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
+
                 var progress = new Progress<TransferProgress>(p =>
                 {
                     ProgressText = $"Transferring (Override): {p.CurrentFile} ({p.CompletedFiles}/{p.TotalFiles})";
@@ -1045,9 +1057,16 @@ namespace DataTransferApp.Net.ViewModels
                 var transferResult = await _transferService.TransferFolderAsync(
                     SelectedFolder!,
                     SelectedDrive!.DriveLetter,
-                    progress);
+                    progress,
+                    _transferCancellationTokenSource.Token);
 
                 UpdateOverrideResults(transferResult, folderName);
+            }
+            catch (OperationCanceledException)
+            {
+                StatusMessage = "Transfer cancelled";
+                LoggingService.Warning($"Override transfer cancelled by user: {folderName}");
+                _ = ShowSnackbar("Transfer cancelled by user", "warning");
             }
             catch (Exception ex)
             {
@@ -1058,8 +1077,13 @@ namespace DataTransferApp.Net.ViewModels
             finally
             {
                 IsProcessing = false;
+                IsTransferActive = false;
                 ProgressPercent = 0;
                 ProgressText = "Ready";
+                ProgressIssues = "Idle";
+                _transferCancellationTokenSource?.Dispose();
+                _transferCancellationTokenSource = null;
+                CancelTransferCommand.NotifyCanExecuteChanged();
             }
         }
 
