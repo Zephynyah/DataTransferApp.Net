@@ -166,4 +166,84 @@ public partial class MainWindow : Window
             button.ContextMenu.IsOpen = true;
         }
     }
+
+    /// <summary>
+    /// Shows a Task Dialog asking user what to do with existing drive contents.
+    /// </summary>
+    /// <param name="driveLetter">The drive letter</param>
+    /// <param name="folderCount">Number of folders on the drive</param>
+    /// <returns>DriveContentAction enum indicating user's choice</returns>
+    public DriveContentAction ShowDriveContentsDialog(string driveLetter, int folderCount)
+    {
+        if (TaskDialog.OSSupportsTaskDialogs)
+        {
+            using (TaskDialog dialog = new TaskDialog())
+            {
+                dialog.WindowTitle = "Drive Contains Data";
+                dialog.MainInstruction = $"The drive {driveLetter} already contains {folderCount} folder(s)";
+                dialog.Content = "What would you like to do?";
+                dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
+                dialog.MainIcon = TaskDialogIcon.Warning;
+
+                // Create command link buttons with descriptions
+                TaskDialogButton clearButton = new TaskDialogButton("Clear Drive First");
+                clearButton.CommandLinkNote = "Delete all existing contents on the drive before transfer";
+
+                TaskDialogButton appendButton = new TaskDialogButton("Append to Existing Contents");
+                appendButton.CommandLinkNote = "Add new folders alongside existing ones. Use with caution to avoid mixing datasets";
+
+                TaskDialogButton cancelButton = new TaskDialogButton(ButtonType.Cancel);
+
+                // Add buttons in order of appearance
+                dialog.Buttons.Add(appendButton);
+                dialog.Buttons.Add(clearButton);
+                dialog.Buttons.Add(cancelButton);
+
+                // Show dialog and get result
+                TaskDialogButton button = dialog.ShowDialog(this);
+
+                if (button == clearButton)
+                {
+                    LoggingService.Info($"User chose to clear drive {driveLetter} before transfer");
+                    return DriveContentAction.Clear;
+                }
+                else if (button == appendButton)
+                {
+                    LoggingService.Info($"User chose to append to drive {driveLetter}");
+                    return DriveContentAction.Append;
+                }
+                else
+                {
+                    LoggingService.Info($"User cancelled drive contents dialog for {driveLetter}");
+                    return DriveContentAction.Cancel;
+                }
+            }
+        }
+        else
+        {
+            // Fallback to MessageBox for unsupported operating systems
+            var messageResult = MessageBox.Show(
+                $"The drive {driveLetter} already contains {folderCount} folder(s).\n\n" +
+                "Do you want to APPEND to existing contents?\n\n" +
+                "YES = Append/Add to existing\n" +
+                "NO = Clear drive first\n" +
+                "CANCEL = Abort transfer",
+                "Drive Contains Data",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
+
+            if (messageResult == MessageBoxResult.Cancel)
+            {
+                return DriveContentAction.Cancel;
+            }
+            else if (messageResult == MessageBoxResult.No)
+            {
+                return DriveContentAction.Clear;
+            }
+            else
+            {
+                return DriveContentAction.Append;
+            }
+        }
+    }
 }

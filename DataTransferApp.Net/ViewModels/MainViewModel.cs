@@ -1,9 +1,6 @@
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -15,6 +12,10 @@ using DataTransferApp.Net.Views;
 
 namespace DataTransferApp.Net.ViewModels
 {
+    /// <summary>
+    /// Main view model for the Data Transfer Application.
+    /// Handles folder auditing, transfer operations, drive management, and UI state.
+    /// </summary>
     public partial class MainViewModel : ViewModelBase
     {
         private readonly FileService _fileService;
@@ -238,9 +239,8 @@ namespace DataTransferApp.Net.ViewModels
 
         private static void CountAndUpdateCompressedFiles(FolderData folder)
         {
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
             var compressedCount = folder.Files.Count(f =>
-                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                AppConstants.CompressedFileExtensions.Contains(f.Extension.ToLowerInvariant()) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
@@ -263,8 +263,6 @@ namespace DataTransferApp.Net.ViewModels
 
         private static void UpdateFileStatuses(FolderData folder, AuditResult result)
         {
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
-
             // Reset file flags and errors
             foreach (var file in folder.Files)
             {
@@ -301,10 +299,8 @@ namespace DataTransferApp.Net.ViewModels
             foreach (var file in folder.Files)
             {
                 var fileName = file.FileName.ToLowerInvariant();
-                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
+                if (AppConstants.CompressedFileExtensions.Contains(file.Extension.ToLowerInvariant()) ||
+                    AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     file.IsCompressed = true;
                     if (file.Status == "Ready")
@@ -549,9 +545,8 @@ namespace DataTransferApp.Net.ViewModels
 
         private int CountCompressedFiles()
         {
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
             var compressedCount = SelectedFolder!.Files.Count(f =>
-                compressedExtensions.Contains(f.Extension.ToLowerInvariant()) ||
+                AppConstants.CompressedFileExtensions.Contains(f.Extension.ToLowerInvariant()) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.gz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tgz", StringComparison.Ordinal) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.xz", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".txz", StringComparison.Ordinal) ||
                 f.FileName.ToLowerInvariant().EndsWith(".tar.bz2", StringComparison.Ordinal) || f.FileName.ToLowerInvariant().EndsWith(".tbz2", StringComparison.Ordinal));
@@ -596,14 +591,11 @@ namespace DataTransferApp.Net.ViewModels
             }
 
             // Mark compressed files
-            var compressedExtensions = new[] { ".zip", ".rar", ".7z", ".gz", ".tar", ".bz2", ".xz", ".mdzip", ".tar.gz", ".tar.xz", ".tar.bz2", ".tgz", ".tbz2", ".txz" };
             foreach (var file in SelectedFolder.Files)
             {
                 var fileName = file.FileName.ToLowerInvariant();
-                if (compressedExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                    fileName.EndsWith(".tar.gz", StringComparison.Ordinal) || fileName.EndsWith(".tgz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.xz", StringComparison.Ordinal) || fileName.EndsWith(".txz", StringComparison.Ordinal) ||
-                    fileName.EndsWith(".tar.bz2", StringComparison.Ordinal) || fileName.EndsWith(".tbz2", StringComparison.Ordinal))
+                if (AppConstants.CompressedFileExtensions.Contains(file.Extension.ToLowerInvariant()) ||
+                    AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     file.IsCompressed = true;
                     if (file.Status == "Ready")
@@ -1318,29 +1310,48 @@ namespace DataTransferApp.Net.ViewModels
             if (TransferredCount == 0 && TransferService.DriveHasContents(SelectedDrive.DriveLetter))
             {
                 var driveCount = TransferService.GetTransferredFolderCount(SelectedDrive.DriveLetter);
-                var messageResult = MessageBox.Show(
-                    $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
-                    "Do you want to APPEND to existing contents?\n\n" +
-                    "YES = Append/Add to existing\n" +
-                    "NO = Clear drive first\n" +
-                    "CANCEL = Abort transfer",
-                    "Drive Contains Data",
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
 
-                if (messageResult == MessageBoxResult.Cancel)
+                // Get the MainWindow to show the Task Dialog
+                if (Application.Current.MainWindow is Views.MainWindow mainWindow)
                 {
-                    return DriveAction.Abort;
-                }
-                else if (messageResult == MessageBoxResult.No)
-                {
-                    return DriveAction.Clear;
-                }
+                    var result = mainWindow.ShowDriveContentsDialog(
+                        SelectedDrive.DriveLetter,
+                        driveCount);
 
-                // Yes
+                    // Map DriveContentAction to DriveAction
+                    return result switch
+                    {
+                        DriveContentAction.Append => DriveAction.Append,
+                        DriveContentAction.Clear => DriveAction.Clear,
+                        DriveContentAction.Cancel => DriveAction.Abort,
+                        _ => DriveAction.Abort
+                    };
+                }
                 else
                 {
-                    return DriveAction.Append;
+                    // Fallback to MessageBox if MainWindow is not available (shouldn't happen in normal operation)
+                    var messageResult = MessageBox.Show(
+                        $"The drive {SelectedDrive.DriveLetter} already contains {driveCount} folder(s).\n\n" +
+                        "Do you want to APPEND to existing contents?\n\n" +
+                        "YES = Append/Add to existing\n" +
+                        "NO = Clear drive first\n" +
+                        "CANCEL = Abort transfer",
+                        "Drive Contains Data",
+                        MessageBoxButton.YesNoCancel,
+                        MessageBoxImage.Question);
+
+                    if (messageResult == MessageBoxResult.Cancel)
+                    {
+                        return DriveAction.Abort;
+                    }
+                    else if (messageResult == MessageBoxResult.No)
+                    {
+                        return DriveAction.Clear;
+                    }
+                    else
+                    {
+                        return DriveAction.Append;
+                    }
                 }
             }
             else
