@@ -188,10 +188,8 @@ public partial class MainWindow : Window
                 // Create command link buttons with descriptions
                 TaskDialogButton clearButton = new TaskDialogButton("Clear Drive First");
                 clearButton.CommandLinkNote = "Delete all existing contents on the drive before transfer";
-
                 TaskDialogButton appendButton = new TaskDialogButton("Append to Existing Contents");
-                appendButton.CommandLinkNote = "Add new folders alongside existing ones. Use with caution to avoid mixing datasets";
-
+                appendButton.CommandLinkNote = "Add new folders alongside existing ones. Use with caution to avoid mixing with old data";
                 TaskDialogButton cancelButton = new TaskDialogButton(ButtonType.Cancel);
 
                 // Add buttons in order of appearance
@@ -219,31 +217,9 @@ public partial class MainWindow : Window
                 }
             }
         }
-        else
-        {
-            // Fallback to MessageBox for unsupported operating systems
-            var messageResult = MessageBox.Show(
-                $"The drive {driveLetter} already contains {folderCount} folder(s).\n\n" +
-                "Do you want to APPEND to existing contents?\n\n" +
-                "YES = Append/Add to existing\n" +
-                "NO = Clear drive first\n" +
-                "CANCEL = Abort transfer",
-                "Drive Contains Data",
-                MessageBoxButton.YesNoCancel,
-                MessageBoxImage.Question);
 
-            if (messageResult == MessageBoxResult.Cancel)
-            {
-                return DriveContentAction.Cancel;
-            }
-            else if (messageResult == MessageBoxResult.No)
-            {
-                return DriveContentAction.Clear;
-            }
-            else
-            {
-                return DriveContentAction.Append;
-            }
-        }
+        // Default fallback for systems that don't support TaskDialog
+        LoggingService.Warning($"TaskDialog not supported on this OS; defaulting to Cancel for drive {driveLetter}");
+        return DriveContentAction.Cancel;
     }
 }
