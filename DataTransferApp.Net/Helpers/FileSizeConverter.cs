@@ -10,7 +10,7 @@ namespace DataTransferApp.Net.Helpers
         {
             if (value is long bytes)
             {
-                return FormatFileSize(bytes);
+                return FileSizeHelper.FormatFileSize(bytes);
             }
 
             return "0 B";
@@ -19,30 +19,6 @@ namespace DataTransferApp.Net.Helpers
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
-        }
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024L * 1024L * 1024L;
-            const long MB = 1024L * 1024L;
-            const long KB = 1024L;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} B";
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataTransferApp.Net.Helpers;
 using DataTransferApp.Net.Models;
 using OfficeOpenXml;
 
@@ -127,30 +128,6 @@ namespace DataTransferApp.Net.Services
             }
 
             return value;
-        }
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
         }
 
         private static void AddInfoRow(ExcelWorksheet sheet, ref int row, string label, string value)
@@ -310,7 +287,7 @@ namespace DataTransferApp.Net.Services
             txt.AppendLine("Transfer Summary");
             txt.AppendLine($"Total Files,{transfer.Summary.TotalFiles.ToString(CultureInfo.InvariantCulture)}");
             txt.AppendLine($"Total Size (bytes),{transfer.Summary.TotalSize.ToString(CultureInfo.InvariantCulture)}");
-            txt.AppendLine($"Total Size (formatted),{FormatFileSize(transfer.Summary.TotalSize)}");
+            txt.AppendLine($"Total Size (formatted),{FileSizeHelper.FormatFileSize(transfer.Summary.TotalSize)}");
             txt.AppendLine($"Transfer Started,{transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             txt.AppendLine($"Transfer Completed,{transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             txt.AppendLine($"Duration,{(transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds.ToString("F2", CultureInfo.InvariantCulture)} seconds");
@@ -328,7 +305,7 @@ namespace DataTransferApp.Net.Services
                     txt.AppendLine($"\"{EscapeCsv(file.FileName)}\"," +
                                  $"{file.Extension}," +
                                  $"{file.Size.ToString(CultureInfo.InvariantCulture)}," +
-                                 $"\"{FormatFileSize(file.Size)}\"," +
+                                 $"\"{FileSizeHelper.FormatFileSize(file.Size)}\"," +
                                  $"{file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}," +
                                  $"{file.FileHash ?? "N/A"}," +
                                  $"\"{EscapeCsv(file.RelativePath)}\"," +
@@ -379,7 +356,7 @@ namespace DataTransferApp.Net.Services
 
             AddInfoRow(sheet, ref row, "Total Files", transfer.Summary.TotalFiles.ToString(CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Total Size (bytes)", transfer.Summary.TotalSize.ToString(CultureInfo.InvariantCulture));
-            AddInfoRow(sheet, ref row, "Total Size", FormatFileSize(transfer.Summary.TotalSize));
+            AddInfoRow(sheet, ref row, "Total Size", FileSizeHelper.FormatFileSize(transfer.Summary.TotalSize));
             AddInfoRow(sheet, ref row, "Transfer Started", transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             AddInfoRow(sheet, ref row, "Transfer Completed", transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             AddInfoRow(
@@ -411,7 +388,7 @@ namespace DataTransferApp.Net.Services
                 sheet.Cells[row, 1].Value = file.FileName;
                 sheet.Cells[row, 2].Value = file.Extension;
                 sheet.Cells[row, 3].Value = file.Size;
-                sheet.Cells[row, 4].Value = FormatFileSize(file.Size);
+                sheet.Cells[row, 4].Value = FileSizeHelper.FormatFileSize(file.Size);
                 sheet.Cells[row, 5].Value = file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 sheet.Cells[row, 6].Value = file.FileHash ?? "N/A";
                 sheet.Cells[row, 7].Value = file.RelativePath;
@@ -485,7 +462,7 @@ namespace DataTransferApp.Net.Services
                     {
                         TotalFiles = transfer.Summary.TotalFiles,
                         TotalSizeBytes = transfer.Summary.TotalSize,
-                        TotalSizeFormatted = FormatFileSize(transfer.Summary.TotalSize),
+                        TotalSizeFormatted = FileSizeHelper.FormatFileSize(transfer.Summary.TotalSize),
                         TransferStarted = transfer.Summary.TransferStarted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         TransferCompleted = transfer.Summary.TransferCompleted.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         DurationSeconds = (transfer.Summary.TransferCompleted - transfer.Summary.TransferStarted).TotalSeconds,
@@ -496,7 +473,7 @@ namespace DataTransferApp.Net.Services
                         FileName = file.FileName,
                         Extension = file.Extension,
                         SizeBytes = file.Size,
-                        SizeFormatted = FormatFileSize(file.Size),
+                        SizeFormatted = FileSizeHelper.FormatFileSize(file.Size),
                         ModifiedDate = file.Modified.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                         Hash = file.FileHash ?? "N/A",
                         RelativePath = file.RelativePath,

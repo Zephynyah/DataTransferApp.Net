@@ -1,3 +1,5 @@
+using DataTransferApp.Net.Helpers;
+
 namespace DataTransferApp.Net.Services
 {
     public class ArchiveEntry
@@ -12,32 +14,8 @@ namespace DataTransferApp.Net.Services
 
         public string Modified { get; set; } = string.Empty;
 
-        public string SizeFormatted => FormatFileSize(Size);
+        public string SizeFormatted => FileSizeHelper.FormatFileSize(Size);
 
-        public string CompressedSizeFormatted => FormatFileSize(CompressedSize);
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
-        }
+        public string CompressedSizeFormatted => FileSizeHelper.FormatFileSize(CompressedSize);
     }
 }

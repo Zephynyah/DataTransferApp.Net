@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DataTransferApp.Net.Helpers;
 
 namespace DataTransferApp.Net.Models
 {
+    /// <summary>
+    /// Represents folder data with audit results, file information, and transfer capabilities.
+    /// </summary>
     public partial class FolderData : ObservableObject
     {
         [ObservableProperty]
@@ -71,32 +75,8 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private string? _sequence;
 
-        public string SizeFormatted => FormatFileSize(TotalSize);
+        public string SizeFormatted => FileSizeHelper.FormatFileSize(TotalSize);
 
         public bool CanTransfer => AuditStatus == "Passed";
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
-        }
     }
 }

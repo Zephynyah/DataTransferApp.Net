@@ -346,7 +346,7 @@ namespace DataTransferApp.Net.Services
 
                     if (drive.IsReady)
                     {
-                        LoggingService.Debug($"  VolumeLabel='{drive.VolumeLabel}', FreeSpace={FormatFileSize(drive.AvailableFreeSpace)}, TotalSize={FormatFileSize(drive.TotalSize)}");
+                        LoggingService.Debug($"  VolumeLabel='{drive.VolumeLabel}', FreeSpace={FileSizeHelper.FormatFileSize(drive.AvailableFreeSpace)}, TotalSize={FileSizeHelper.FormatFileSize(drive.TotalSize)}");
                     }
                     else
                     {
@@ -367,7 +367,7 @@ namespace DataTransferApp.Net.Services
                             VolumeName = string.IsNullOrEmpty(drive.VolumeLabel) ? "Removable Drive" : drive.VolumeLabel,
                             FreeSpace = drive.AvailableFreeSpace,
                             TotalSize = drive.TotalSize,
-                            DisplayText = $"{drive.Name} - {drive.VolumeLabel} (Free: {FormatFileSize(drive.AvailableFreeSpace)})"
+                            DisplayText = $"{drive.Name} - {drive.VolumeLabel} (Free: {FileSizeHelper.FormatFileSize(drive.AvailableFreeSpace)})"
                         });
                     }
                 }
@@ -732,30 +732,6 @@ namespace DataTransferApp.Net.Services
 
             LoggingService.Info($"Conflict resolved: {folderName} -> {Path.GetFileName(newPath)}");
             return newPath;
-        }
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
         }
 
         private static string CreateRobocopyLogFilePath()

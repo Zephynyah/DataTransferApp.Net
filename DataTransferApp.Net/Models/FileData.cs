@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DataTransferApp.Net.Helpers;
 
 namespace DataTransferApp.Net.Models
 {
@@ -57,35 +58,11 @@ namespace DataTransferApp.Net.Models
         [ObservableProperty]
         private List<string> _recommendedActions = new List<string>();
 
-        public string SizeFormatted => FormatFileSize(Size);
+        public string SizeFormatted => FileSizeHelper.FormatFileSize(Size);
 
         /// <summary>
         /// Gets a value indicating whether this file has an error (blacklisted or other issues).
         /// </summary>
         public bool HasError => IsBlacklisted || !string.IsNullOrEmpty(ErrorMessage);
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            if (bytes >= KB)
-            {
-                return $"{bytes / (double)KB:N2} KB";
-            }
-
-            return $"{bytes} bytes";
-        }
     }
 }

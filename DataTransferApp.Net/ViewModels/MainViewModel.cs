@@ -9,6 +9,8 @@ using DataTransferApp.Net.Helpers;
 using DataTransferApp.Net.Models;
 using DataTransferApp.Net.Services;
 using DataTransferApp.Net.Views;
+using Ookii.Dialogs.Wpf;
+
 
 namespace DataTransferApp.Net.ViewModels
 {
@@ -191,24 +193,6 @@ namespace DataTransferApp.Net.ViewModels
             {
                 IsRetentionCleanupRunning = false;
             }
-        }
-
-        private static string FormatFileSize(long bytes)
-        {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-
-            if (bytes >= GB)
-            {
-                return $"{bytes / (double)GB:N2} GB";
-            }
-
-            if (bytes >= MB)
-            {
-                return $"{bytes / (double)MB:N2} MB";
-            }
-
-            return $"{bytes / 1024.0:N2} KB";
         }
 
         private static void UpdateFolderAuditStatuses(FolderData folder, AuditResult result)
@@ -746,7 +730,7 @@ namespace DataTransferApp.Net.ViewModels
 
                         TransferredList.Add(folder);
                         FolderList.Remove(folder);
-                        
+
                         // Update statistics after each folder transfer so cards update in real-time
                         UpdateStatistics();
                     }
@@ -1026,6 +1010,12 @@ namespace DataTransferApp.Net.ViewModels
 
         private bool ShowOverrideConfirmation(string folderName)
         {
+            if (Application.Current.MainWindow is Views.MainWindow mainWindow)
+            {
+                return mainWindow.ShowOverrideAuditDialog(folderName, SelectedFolder!.AuditStatus);
+            }
+
+            // Fallback to MessageBox if MainWindow is not available
             var result = MessageBox.Show(
                 $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {SelectedFolder!.AuditStatus}",
                 "Override Audit - Confirm Transfer",
@@ -1105,7 +1095,9 @@ namespace DataTransferApp.Net.ViewModels
             await ClearDriveInternalAsync(showConfirmation: true);
         }
 
+#pragma warning disable MA0051 // Method is too long
         private async Task ClearDriveInternalAsync(bool showConfirmation)
+#pragma warning restore MA0051 // Method is too long
         {
             if (SelectedDrive == null)
             {
@@ -1114,13 +1106,31 @@ namespace DataTransferApp.Net.ViewModels
 
             if (showConfirmation)
             {
-                var result = MessageBox.Show(
-                    $"Are you sure you want to clear all data from {SelectedDrive.DisplayText}?",
-                    "Confirm Clear Drive",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                bool userConfirmed;
 
-                if (result != MessageBoxResult.Yes)
+                using (TaskDialog dialog = new TaskDialog())
+                {
+                    dialog.WindowTitle = "Confirm Clear Drive";
+                    dialog.Width = 300;
+                    dialog.MainInstruction = $"Clear all data from {SelectedDrive.DisplayText}?";
+                    dialog.Content = "This action will permanently delete all files and folders on the selected drive.\n\nThis operation cannot be undone.";
+                    dialog.MainIcon = TaskDialogIcon.Warning;
+                    dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
+
+                    var clearButton = new TaskDialogButton("Clear Drive");
+                    clearButton.CommandLinkNote = "Delete all files and folders from the drive";
+                    dialog.Buttons.Add(clearButton);
+
+                    var cancelButton = new TaskDialogButton(ButtonType.Cancel);
+                    dialog.Buttons.Add(cancelButton);
+
+                    var result = dialog.ShowDialog();
+                    userConfirmed = result == clearButton;
+
+                    LoggingService.Info($"Clear drive confirmation: {(userConfirmed ? "Confirmed" : "Cancelled")} for drive {SelectedDrive.DriveLetter}");
+                }
+
+                if (!userConfirmed)
                 {
                     return;
                 }
@@ -1380,7 +1390,7 @@ namespace DataTransferApp.Net.ViewModels
             CautionFolders = FolderList.Count(f => f.AuditStatus == "Caution");
             FailedFolders = FolderList.Count(f => f.AuditStatus == "Failed");
             TransferredCount = TransferredList.Count;
-            TotalSize = FormatFileSize(FolderList.Sum(f => f.TotalSize));
+            TotalSize = FileSizeHelper.FormatFileSize(FolderList.Sum(f => f.TotalSize));
         }
     }
 }

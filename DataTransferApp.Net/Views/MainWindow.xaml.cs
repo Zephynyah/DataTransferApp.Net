@@ -225,4 +225,52 @@ public partial class MainWindow : Window
         LoggingService.Warning($"TaskDialog not supported on this OS; defaulting to Cancel for drive {driveLetter}");
         return DriveContentAction.Cancel;
     }
+
+    public bool ShowOverrideAuditDialog(string folderName, string auditStatus)
+    {
+        if (TaskDialog.OSSupportsTaskDialogs)
+        {
+            using (TaskDialog dialog = new TaskDialog())
+            {
+                dialog.WindowTitle = "Override Audit Failure";
+                dialog.MainInstruction = $"'{folderName}' has failed audit checks";
+                dialog.Content = $"Audit Status: {auditStatus}\n\nTransferring this folder may violate data quality standards. Are you sure you want to proceed?";
+                dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
+                dialog.MainIcon = TaskDialogIcon.Warning;
+
+                // Create command link buttons with descriptions
+                TaskDialogButton transferButton = new TaskDialogButton("Transfer Anyway");
+                transferButton.CommandLinkNote = "Bypass audit checks and transfer this folder. Use only when authorized.";
+                TaskDialogButton cancelButton = new TaskDialogButton(ButtonType.Cancel);
+
+                // Add buttons in order of appearance
+                dialog.Buttons.Add(transferButton);
+                dialog.Buttons.Add(cancelButton);
+
+                // Show dialog and get result
+                TaskDialogButton button = dialog.ShowDialog(this);
+
+                if (button == transferButton)
+                {
+                    LoggingService.Warning($"User chose to override audit and transfer: {folderName} (Status: {auditStatus})");
+                    return true;
+                }
+                else
+                {
+                    LoggingService.Info($"User cancelled override transfer for: {folderName}");
+                    return false;
+                }
+            }
+        }
+
+        // Default fallback for systems that don't support TaskDialog
+        LoggingService.Warning("TaskDialog not supported on this OS; using MessageBox fallback");
+        var result = MessageBox.Show(
+            $"This folder has failed audit. Are you sure you want to transfer '{folderName}' anyway?\n\nAudit Status: {auditStatus}",
+            "Override Audit - Confirm Transfer",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        return result == MessageBoxResult.Yes;
+    }
 }
