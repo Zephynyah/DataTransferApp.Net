@@ -60,6 +60,9 @@ namespace DataTransferApp.Net.ViewModels
         [ObservableProperty]
         private int _progressPercent = 0;
 
+        [ObservableProperty]
+        private string _transferEngine = "Legacy"; // Legacy, Robocopy
+
         private CancellationTokenSource? _transferCancellationTokenSource;
 
         [ObservableProperty]
@@ -162,6 +165,9 @@ namespace DataTransferApp.Net.ViewModels
 
             // Initialize commands
             RunRetentionCleanupAsyncCommand = new AsyncRelayCommand(RunRetentionCleanupAsync, () => !IsRetentionCleanupRunning);
+
+            // Set initial transfer engine status based on settings
+            _transferEngine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
         }
 
         private enum DriveAction
@@ -841,7 +847,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
+                ProgressIssues = _transferEngine; 
 
                 var progress = new Progress<TransferProgress>(p =>
                 {
@@ -893,7 +899,7 @@ namespace DataTransferApp.Net.ViewModels
                 IsTransferActive = true;
             }
 
-            var engine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
+            var engine = _transferEngine;
 
             if (progress.BytesPerSecond > 0)
             {
@@ -1044,7 +1050,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
+                ProgressIssues = _transferEngine;
 
                 var progress = new Progress<TransferProgress>(p =>
                 {
@@ -1249,6 +1255,10 @@ namespace DataTransferApp.Net.ViewModels
                     _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
+                    _settings.UseRoboSharp = updatedSettings.UseRoboSharp;
+
+                    // Update transfer engine display based on settings
+                    TransferEngine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
 
                     StatusMessage = "Settings updated successfully";
                     _ = ShowSnackbar("Settings saved successfully!", "success");
