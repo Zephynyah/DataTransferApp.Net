@@ -170,14 +170,13 @@ public partial class MainWindow : Window
     /// <summary>
     /// Shows a Task Dialog asking user what to do with existing drive contents.
     /// </summary>
-    /// <param name="driveLetter">The drive letter</param>
-    /// <param name="folderCount">Number of folders on the drive</param>
-    /// <returns>DriveContentAction enum indicating user's choice</returns>
+    /// <param name="driveLetter">The drive letter.</param>
+    /// <param name="folderCount">Number of folders on the drive.</param>
+    /// <returns>DriveContentAction enum indicating user's choice.</returns>
     public DriveContentAction ShowDriveContentsDialog(string driveLetter, int folderCount)
     {
         if (TaskDialog.OSSupportsTaskDialogs)
         {
-
             string label = folderCount == 1 ? "folder" : "folders";
 
             using (TaskDialog dialog = new TaskDialog())

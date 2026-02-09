@@ -17,7 +17,7 @@ namespace DataTransferApp.Net.Services
             var fileName = filePath.ToLowerInvariant();
 
             // Check for compound extensions first (.tar.gz, .tar.xz, etc.)
-            if (AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
+            if (Array.Exists(AppConstants.MultiPartCompressedExtensions, ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
             {
                 return true;
             }
@@ -36,7 +36,7 @@ namespace DataTransferApp.Net.Services
                 var fileName = archiveFilePath.ToLowerInvariant();
 
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
-                if (AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
+                if (Array.Exists(AppConstants.MultiPartCompressedExtensions, ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     using var stream = File.OpenRead(archiveFilePath);
                     using var reader = ReaderFactory.Open(stream);
@@ -94,7 +94,7 @@ namespace DataTransferApp.Net.Services
                 var fileName = archiveFilePath.ToLowerInvariant();
 
                 // For compound archives like .tar.gz, .tar.xz, use Reader approach
-                if (AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
+                if (Array.Exists(AppConstants.MultiPartCompressedExtensions, ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     using var stream = File.OpenRead(archiveFilePath);
                     using var reader = ReaderFactory.Open(stream);

@@ -130,6 +130,7 @@ namespace DataTransferApp.Net.Services
             {
                 _totalFiles = (int)e.FilesStatistic.Total;
             }
+
             if (_totalBytes == 0)
             {
                 _totalBytes = e.BytesStatistic.Total;
@@ -274,6 +275,7 @@ namespace DataTransferApp.Net.Services
                 {
                     LoggingService.Debug($"ETA: No bytes transferred after {_stopwatch.Elapsed.TotalSeconds:F1}s");
                 }
+
                 return null;
             }
 

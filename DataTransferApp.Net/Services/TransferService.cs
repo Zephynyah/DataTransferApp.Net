@@ -723,7 +723,7 @@ namespace DataTransferApp.Net.Services
             var newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
 
             // Keep incrementing until we find a non-existing path in BOTH destination and retention
-            while (Directory.Exists(newPath) || 
+            while (Directory.Exists(newPath) ||
                    (!string.IsNullOrEmpty(retentionDirectory) && Directory.Exists(Path.Combine(retentionDirectory, $"{baseFolderName}_{sequence}"))))
             {
                 sequence++;

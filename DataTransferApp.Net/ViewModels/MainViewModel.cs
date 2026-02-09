@@ -11,7 +11,6 @@ using DataTransferApp.Net.Services;
 using DataTransferApp.Net.Views;
 using Ookii.Dialogs.Wpf;
 
-
 namespace DataTransferApp.Net.ViewModels
 {
     /// <summary>
@@ -284,7 +283,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var fileName = file.FileName.ToLowerInvariant();
                 if (AppConstants.CompressedFileExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                    AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
+                    Array.Exists(AppConstants.MultiPartCompressedExtensions, ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     file.IsCompressed = true;
                     if (file.Status == "Ready")
@@ -579,7 +578,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var fileName = file.FileName.ToLowerInvariant();
                 if (AppConstants.CompressedFileExtensions.Contains(file.Extension.ToLowerInvariant()) ||
-                    AppConstants.MultiPartCompressedExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
+                    Array.Exists(AppConstants.MultiPartCompressedExtensions, ext => fileName.EndsWith(ext, StringComparison.Ordinal)))
                 {
                     file.IsCompressed = true;
                     if (file.Status == "Ready")

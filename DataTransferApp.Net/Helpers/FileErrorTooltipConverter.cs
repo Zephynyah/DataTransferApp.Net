@@ -27,9 +27,6 @@ namespace DataTransferApp.Net.Helpers
             // Error details
             AppendErrorDetails(tooltip, file);
 
-            // Custom error messages
-            // AppendCustomErrors(tooltip, file);
-
             // Status
             AppendStatus(tooltip, file);
 
@@ -71,23 +68,6 @@ namespace DataTransferApp.Net.Helpers
                 tooltip.AppendLine("  • Use the view button to inspect contents of compressed files.");
                 tooltip.AppendLine("  • Verify archive contents with hash before transfer if possible.");
                 tooltip.AppendLine("  • Ensure no nested archives");
-            }
-        }
-
-        private static void AppendCustomErrors(StringBuilder tooltip, FileData file)
-        {
-            if (!string.IsNullOrEmpty(file.ErrorMessage))
-            {
-                tooltip.AppendLine();
-                tooltip.AppendLine("❌ ERROR:");
-                tooltip.AppendLine(file.ErrorMessage);
-            }
-
-            if (!string.IsNullOrEmpty(file.ErrorDetails))
-            {
-                tooltip.AppendLine();
-                tooltip.AppendLine("Details:");
-                tooltip.AppendLine(file.ErrorDetails);
             }
         }
 
