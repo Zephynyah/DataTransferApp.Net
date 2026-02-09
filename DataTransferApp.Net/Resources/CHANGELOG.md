@@ -5,6 +5,47 @@ All notable changes to Data Transfer Application (.NET) will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-02-09
+
+### Added
+
+- Comprehensive unit test suite for RoboSharpTransferEngine (24 integration tests)
+  - Transfer folder tests with subdirectories and recursion
+  - Transfer specific files with path structure preservation
+  - Transfer estimation and size calculation
+  - Progress reporting and event handling
+  - Cancellation token support
+  - File and directory exclusion filters
+  - Large file transfers (10MB+) and bulk file operations (100+ files)
+  - Result validation and statistics verification
+- Comprehensive unit test suite for RetryHelper (16 unit tests)
+  - Exponential backoff retry logic (1s → 2s → 4s)
+  - Jitter implementation (±25% randomness) to prevent retry storms
+  - Cancellation handling during retry operations
+  - Success and failure scenarios
+  - Callback invocations for retry events
+  - Argument validation and edge case handling
+- Unit testing documentation (UNIT_TESTS_SUMMARY.md)
+  - Test coverage breakdown
+  - Test design patterns
+  - Key insights and RoboCopy exit code behavior
+  - Future testing priorities
+
+### Changed
+
+- Test project structure enhanced with 40 comprehensive tests
+- All tests passing (100% success rate)
+- Tests use temporary GUID-based directories for isolation
+- IDisposable pattern implemented for automatic cleanup
+- Updated TODO.md to mark unit testing tasks as complete
+
+### Technical Details
+
+- Test execution time: ~11.2 seconds
+- Integration tests use real file system operations with RoboSharp
+- RetryHelper tests validate exponential backoff algorithm
+- Tests cover async operations, cancellation, progress reporting, and error scenarios
+
 ## [1.3.5] - 2026-02-02
 
 ### Added
