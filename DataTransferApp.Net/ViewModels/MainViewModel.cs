@@ -701,8 +701,8 @@ namespace DataTransferApp.Net.ViewModels
             var action = await CheckDriveContentsAsync();
             if (action == DriveAction.Clear)
             {
-                // Clear drive first
-                await ClearDriveAsync(showConfirmation: false); // Already confirmed by user, no need to show confirmation again
+                // Clear drive first (no confirmation needed - user already confirmed in Task Dialog)
+                await ClearDriveInternalAsync(showConfirmation: false);
                 if (IsProcessing)
                 {
                     return DriveAction.Abort; // If clear failed or is still running
@@ -712,9 +712,7 @@ namespace DataTransferApp.Net.ViewModels
             return action;
         }
 
-#pragma warning disable MA0051 // Method is too long
         private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
-#pragma warning restore MA0051 // Method is too long
         {
             IsProcessing = true;
             _transferCancellationTokenSource = new CancellationTokenSource();
@@ -763,6 +761,8 @@ namespace DataTransferApp.Net.ViewModels
             }
             catch (OperationCanceledException)
             {
+                // Update statistics when cancelled so cards reflect actual state
+                UpdateStatistics();
                 StatusMessage = $"Transfer cancelled - {completed} of {total} completed";
                 LoggingService.Warning($"Batch transfer cancelled by user. Completed {completed} of {total} folders");
                 _ = ShowSnackbar($"Transfer cancelled. {completed} of {total} folders completed.", "warning");
@@ -1100,7 +1100,12 @@ namespace DataTransferApp.Net.ViewModels
         private bool CanClearDrive() => SelectedDrive != null && !IsProcessing;
 
         [RelayCommand(CanExecute = nameof(CanClearDrive))]
-        private async Task ClearDriveAsync(bool showConfirmation = true)
+        private async Task ClearDriveAsync()
+        {
+            await ClearDriveInternalAsync(showConfirmation: true);
+        }
+
+        private async Task ClearDriveInternalAsync(bool showConfirmation)
         {
             if (SelectedDrive == null)
             {
