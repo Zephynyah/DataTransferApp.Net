@@ -189,7 +189,7 @@ public partial class MainWindow : Window
                 dialog.MainIcon = TaskDialogIcon.Warning;
 
                 // Create command link buttons with descriptions
-                TaskDialogButton clearButton = new TaskDialogButton("Clear Drive First");
+                TaskDialogButton clearButton = new TaskDialogButton($"Clear {driveLetter} Drive First");
                 clearButton.CommandLinkNote = "Delete all existing contents on the drive before transfer";
                 TaskDialogButton appendButton = new TaskDialogButton("Append to Existing Contents");
                 appendButton.CommandLinkNote = "Add new folders alongside existing ones. Use with caution to avoid mixing with old data";

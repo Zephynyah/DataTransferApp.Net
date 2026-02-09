@@ -702,7 +702,7 @@ namespace DataTransferApp.Net.ViewModels
             if (action == DriveAction.Clear)
             {
                 // Clear drive first
-                await ClearDriveAsync();
+                await ClearDriveAsync(showConfirmation: false); // Already confirmed by user, no need to show confirmation again
                 if (IsProcessing)
                 {
                     return DriveAction.Abort; // If clear failed or is still running
@@ -712,7 +712,9 @@ namespace DataTransferApp.Net.ViewModels
             return action;
         }
 
+#pragma warning disable MA0051 // Method is too long
         private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
+#pragma warning restore MA0051 // Method is too long
         {
             IsProcessing = true;
             _transferCancellationTokenSource = new CancellationTokenSource();
@@ -746,6 +748,9 @@ namespace DataTransferApp.Net.ViewModels
 
                         TransferredList.Add(folder);
                         FolderList.Remove(folder);
+                        
+                        // Update statistics after each folder transfer so cards update in real-time
+                        UpdateStatistics();
                     }
                     else
                     {
@@ -1095,22 +1100,25 @@ namespace DataTransferApp.Net.ViewModels
         private bool CanClearDrive() => SelectedDrive != null && !IsProcessing;
 
         [RelayCommand(CanExecute = nameof(CanClearDrive))]
-        private async Task ClearDriveAsync()
+        private async Task ClearDriveAsync(bool showConfirmation = true)
         {
             if (SelectedDrive == null)
             {
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"Are you sure you want to clear all data from {SelectedDrive.DisplayText}?",
-                "Confirm Clear Drive",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
+            if (showConfirmation)
             {
-                return;
+                var result = MessageBox.Show(
+                    $"Are you sure you want to clear all data from {SelectedDrive.DisplayText}?",
+                    "Confirm Clear Drive",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                {
+                    return;
+                }
             }
 
             IsProcessing = true;
