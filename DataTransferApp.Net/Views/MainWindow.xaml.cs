@@ -233,6 +233,7 @@ public partial class MainWindow : Window
             using (TaskDialog dialog = new TaskDialog())
             {
                 dialog.WindowTitle = "Override Audit Failure";
+                dialog.Width = 300;
                 dialog.MainInstruction = $"'{folderName}' has failed audit checks";
                 dialog.Content = $"Audit Status: {auditStatus}\n\nTransferring this folder may violate data quality standards. Are you sure you want to proceed?";
                 dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
