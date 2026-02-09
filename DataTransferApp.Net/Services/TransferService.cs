@@ -540,6 +540,9 @@ namespace DataTransferApp.Net.Services
                     completedItems += DeleteDirectories(directories, progress, ref completedItems, totalItems, ref skippedItems);
                     completedItems += DeleteFiles(files, progress, ref completedItems, totalItems, ref skippedItems);
 
+                    // Second pass: Clean up any remaining empty folders or files that weren't deleted
+                    CleanupRemainingItems(drivePath, progress, ref completedItems, ref skippedItems);
+
                     ReportFinalProgress(progress, totalItems);
                     LogClearResults(drivePath, completedItems, skippedItems);
                 }
@@ -673,6 +676,143 @@ namespace DataTransferApp.Net.Services
             }
 
             return deletedCount;
+        }
+
+        private static void CleanupRemainingItems(string drivePath, IProgress<TransferProgress>? progress, ref int completedItems, ref int skippedItems)
+        {
+            try
+            {
+                progress?.Report(new TransferProgress
+                {
+                    CurrentFile = "Cleaning up remaining items...",
+                    CompletedFiles = completedItems,
+                    TotalFiles = completedItems + 1,
+                    PercentComplete = 95
+                });
+
+                // System folders to skip
+                var systemFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "$RECYCLE.BIN",
+                    "System Volume Information",
+                    "$Recycle.Bin",
+                    "RECYCLER",
+                    "$WinREAgent"
+                };
+
+                // Get ALL directories and files, including those that might have been missed
+                var allDirs = Directory.GetDirectories(drivePath)
+                    .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
+                    .ToList();
+                
+                var allFiles = Directory.GetFiles(drivePath).ToArray();
+
+                // Delete any remaining files (even hidden ones)
+                foreach (var file in allFiles)
+                {
+                    try
+                    {
+                        // Remove read-only and hidden attributes before deletion
+                        var fileInfo = new FileInfo(file);
+                        if (fileInfo.Exists)
+                        {
+                            fileInfo.Attributes = FileAttributes.Normal;
+                            fileInfo.Delete();
+                            completedItems++;
+                            LoggingService.Info($"Cleaned up remaining file: {Path.GetFileName(file)}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggingService.Warning($"Failed to delete remaining file {Path.GetFileName(file)}: {ex.Message}");
+                        skippedItems++;
+                    }
+                }
+
+                // Delete any remaining directories aggressively
+                foreach (var dir in allDirs)
+                {
+                    try
+                    {
+                        var dirInfo = new DirectoryInfo(dir);
+                        if (dirInfo.Exists)
+                        {
+                            // Remove read-only and hidden attributes from directory and all contents
+                            RemoveAttributesRecursively(dirInfo);
+                            
+                            // Try to delete recursively
+                            Directory.Delete(dir, true);
+                            completedItems++;
+                            LoggingService.Info($"Cleaned up remaining folder: {Path.GetFileName(dir)}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggingService.Warning($"Failed to delete remaining folder {Path.GetFileName(dir)}: {ex.Message}");
+                        skippedItems++;
+                    }
+                }
+
+                if (allDirs.Count > 0 || allFiles.Length > 0)
+                {
+                    LoggingService.Info($"Cleanup pass: {allDirs.Count} folders and {allFiles.Length} files processed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Warning($"Error during cleanup pass: {ex.Message}");
+            }
+        }
+
+        private static void RemoveAttributesRecursively(DirectoryInfo directory)
+        {
+            try
+            {
+                // Remove attributes from the directory itself
+                if ((directory.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly ||
+                    (directory.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                {
+                    directory.Attributes = FileAttributes.Normal;
+                }
+
+                // Remove attributes from all files
+                foreach (var file in directory.GetFiles("*", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        if ((file.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly ||
+                            (file.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            file.Attributes = FileAttributes.Normal;
+                        }
+                    }
+                    catch
+                    {
+                        // Continue even if we can't change attributes
+                    }
+                }
+
+                // Remove attributes from all subdirectories
+                foreach (var subDir in directory.GetDirectories("*", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        if ((subDir.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly ||
+                            (subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            subDir.Attributes = FileAttributes.Normal;
+                        }
+                    }
+                    catch
+                    {
+                        // Continue even if we can't change attributes
+                    }
+                }
+            }
+            catch
+            {
+                // Continue even if attribute removal fails
+            }
         }
 
         private static void ReportFinalProgress(IProgress<TransferProgress>? progress, int totalItems)
