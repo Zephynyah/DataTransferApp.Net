@@ -943,7 +943,10 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             
-                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="12" Margin="0,0,5,5" Text="Transfer Engine Status"/>
+                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="12" Margin="0,0,5,5" Text="">
+                                <Run Text="Transfer Engine: "/>     
+                                <Run Text="{Binding TransferEngine, Mode=OneWay}" FontWeight="SemiBold"/>
+                            </TextBlock>
 
                             <!-- Animated icon when transfer is active -->
                             <fa:IconImage Icon="Sync" 
