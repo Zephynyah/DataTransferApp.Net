@@ -88,5 +88,62 @@ namespace DataTransferApp.Net.Services
                 _ => LogEventLevel.Information
             };
         }
+
+        /// <summary>
+        /// Cleans up old log files in the specified directory.
+        /// </summary>
+        /// <param name="logDirectory">Directory containing log files to clean up.</param>
+        /// <param name="retentionDays">Number of days to retain logs.</param>
+        /// <param name="filePattern">File pattern to match (e.g., "*.log" or "app-*.log").</param>
+        public static void CleanupOldLogs(string logDirectory, int retentionDays, string filePattern = "*.log")
+        {
+            try
+            {
+                if (!Directory.Exists(logDirectory))
+                {
+                    return;
+                }
+
+                var cutoffDate = DateTime.Now.AddDays(-retentionDays);
+                var logFiles = Directory.GetFiles(logDirectory, filePattern);
+                var deletedCount = 0;
+                long totalSizeDeleted = 0;
+
+                foreach (var logFile in logFiles)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(logFile);
+                        if (fileInfo.LastWriteTime < cutoffDate)
+                        {
+                            var fileSize = fileInfo.Length;
+                            File.Delete(logFile);
+                            deletedCount++;
+                            totalSizeDeleted += fileSize;
+                            Debug($"Deleted old log file: {Path.GetFileName(logFile)} ({fileInfo.LastWriteTime:yyyy-MM-dd})");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log error but continue cleanup
+                        Debug($"Failed to delete log file {Path.GetFileName(logFile)}: {ex.Message}");
+                    }
+                }
+
+                if (deletedCount > 0)
+                {
+                    var sizeMB = totalSizeDeleted / (1024.0 * 1024.0);
+                    Info($"Log cleanup: Deleted {deletedCount} old log file(s) ({sizeMB:F2} MB) older than {retentionDays} days");
+                }
+                else
+                {
+                    Debug($"Log cleanup: No old log files found (retention: {retentionDays} days)");
+                }
+            }
+            catch (Exception ex)
+            {
+                Warning($"Error during log cleanup: {ex.Message}");
+            }
+        }
     }
 }

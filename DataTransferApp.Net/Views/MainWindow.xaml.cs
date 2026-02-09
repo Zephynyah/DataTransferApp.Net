@@ -177,10 +177,13 @@ public partial class MainWindow : Window
     {
         if (TaskDialog.OSSupportsTaskDialogs)
         {
+
+            string label = folderCount == 1 ? "folder" : "folders";
+
             using (TaskDialog dialog = new TaskDialog())
             {
                 dialog.WindowTitle = "Drive Contains Data";
-                dialog.MainInstruction = $"The drive {driveLetter} already contains {folderCount} folder(s)";
+                dialog.MainInstruction = $"The drive {driveLetter} already contains {folderCount} {label}.";
                 dialog.Content = "What would you like to do?";
                 dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
                 dialog.MainIcon = TaskDialogIcon.Warning;

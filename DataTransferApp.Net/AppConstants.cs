@@ -6,6 +6,14 @@ namespace DataTransferApp.Net
     public static class AppConstants
     {
         /// <summary>
+        /// Number of days to retain RoboSharp transfer logs specifically.
+        /// Can be set differently from application logs if needed.
+        /// </summary>
+        public const int RoboSharpLogRetentionDays = 5;
+
+        // File Extensions
+
+        /// <summary>
         /// File extensions that are considered compressed/archive files.
         /// Used for audit warning detection and file classification.
         /// </summary>

@@ -51,15 +51,8 @@ public partial class App : Application
 
     private static void InitializeApplicationData()
     {
-#if DEBUG
         // Set debug working directory to project root for easier debugging
-        var appDataPath = Path.Combine("appDataPath", "DataTransferApp");
-#else
-        // Set application data path
-        var appDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "DataTransferApp");
-#endif
+        var appDataPath = GetAppDataPath();
 
         // Ensure directory exists
         Directory.CreateDirectory(appDataPath);
@@ -77,7 +70,8 @@ public partial class App : Application
     private static void InitializeLogging()
     {
         var appDataPath = GetAppDataPath();
-        var logPath = Path.Combine(appDataPath, "Logs", $"app-{DateTime.Now:yyyyMMdd}.log");
+        var logDirectory = Path.Combine(appDataPath, "Logs");
+        var logPath = Path.Combine(logDirectory, "app-.log");
         var logLevel = LoggingService.ParseLogLevel(Settings!.LogLevel);
         LoggingService.Initialize(logPath, logLevel);
 
@@ -85,6 +79,26 @@ public partial class App : Application
         LoggingService.Info($"Version: {AppSettings.ApplicationVersion}");
         LoggingService.Info($"DTA: {Settings!.DataTransferAgent}");
         LoggingService.Info($"AppData: {appDataPath}");
+
+        // Clean up old logs on startup
+        CleanupOldLogs(logDirectory);
+    }
+
+    private static void CleanupOldLogs(string logDirectory)
+    {
+        try
+        {
+            // Clean up RoboSharp transfer logs (robocopy_*.log)
+            // Note: Application logs (app-*.log) are managed automatically by Serilog's retainedFileCountLimit
+            LoggingService.CleanupOldLogs(
+                logDirectory,
+                AppConstants.RoboSharpLogRetentionDays,
+                "robocopy_*.log");
+        }
+        catch (Exception ex)
+        {
+            LoggingService.Warning($"Failed to clean up old RoboSharp logs: {ex.Message}");
+        }
     }
 
     private static string GetAppDataPath()
