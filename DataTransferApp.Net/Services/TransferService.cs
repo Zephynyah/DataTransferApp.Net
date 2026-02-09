@@ -252,8 +252,10 @@ namespace DataTransferApp.Net.Services
             result.DestinationPath = destinationPath;
             result.TransferLog = transferLog;
 
-            // Move original folder to retention directory
-            await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
+            // Move original folder to retention directory using the resolved destination folder name
+            // This ensures both destination and retention use the same name (including sequence number)
+            var destinationFolderName = Path.GetFileName(destinationPath);
+            await MoveToRetentionAsync(folder.FolderPath, destinationFolderName);
         }
 
         /// <summary>
@@ -311,8 +313,10 @@ namespace DataTransferApp.Net.Services
 
                 LoggingService.Success($"Transfer completed: {folder.FolderName}");
 
-                // Move original folder to retention directory
-                await MoveToRetentionAsync(folder.FolderPath, folder.FolderName);
+                // Move original folder to retention directory using the resolved destination folder name
+                // This ensures both destination and retention use the same name (including sequence number)
+                var destinationFolderName = Path.GetFileName(destinationPath);
+                await MoveToRetentionAsync(folder.FolderPath, destinationFolderName);
             }
             catch (OperationCanceledException)
             {
@@ -694,7 +698,7 @@ namespace DataTransferApp.Net.Services
             }
         }
 
-        private static string GetSequencedPath(string destinationDrive, string folderName)
+        private static string GetSequencedPath(string destinationDrive, string folderName, string? retentionDirectory = null)
         {
             // Check if folder name already has a sequence (e.g., X50135_20260116_JTH_2)
             var parts = folderName.Split('_');
@@ -718,8 +722,9 @@ namespace DataTransferApp.Net.Services
             var sequence = currentSequence + 1;
             var newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
 
-            // Keep incrementing until we find a non-existing path
-            while (Directory.Exists(newPath))
+            // Keep incrementing until we find a non-existing path in BOTH destination and retention
+            while (Directory.Exists(newPath) || 
+                   (!string.IsNullOrEmpty(retentionDirectory) && Directory.Exists(Path.Combine(retentionDirectory, $"{baseFolderName}_{sequence}"))))
             {
                 sequence++;
                 newPath = Path.Combine(destinationDrive, $"{baseFolderName}_{sequence}");
@@ -888,19 +893,30 @@ namespace DataTransferApp.Net.Services
                 // Create retention directory if it doesn't exist
                 Directory.CreateDirectory(_settings.RetentionDirectory);
 
-                // Handle existing folder in retention - delete old one and replace
+                // Handle existing folder in retention
                 if (Directory.Exists(retentionPath))
                 {
-                    try
+                    if (_settings.AutoHandleConflicts && _settings.ConflictResolution == "AppendSequence")
                     {
-                        RemoveReadOnlyAttributes(new DirectoryInfo(retentionPath));
-                        Directory.Delete(retentionPath, true);
-                        LoggingService.Info($"Replaced existing retention folder: {folderName}");
-                    }
-                    catch (Exception ex)
-                    {
-                        LoggingService.Warning($"Could not delete existing retention folder, will use alternate path: {ex.Message}");
+                        // Folder name should already be sequenced from ResolveDestinationPath
+                        // If it still exists in retention, get a new sequence (edge case)
+                        LoggingService.Warning($"Sequenced retention folder already exists (edge case): {folderName}");
                         retentionPath = GetSequencedPath(_settings.RetentionDirectory, folderName);
+                    }
+                    else
+                    {
+                        // For Skip/Overwrite modes, replace the existing retention folder
+                        try
+                        {
+                            RemoveReadOnlyAttributes(new DirectoryInfo(retentionPath));
+                            Directory.Delete(retentionPath, true);
+                            LoggingService.Info($"Replaced existing retention folder: {folderName}");
+                        }
+                        catch (Exception ex)
+                        {
+                            LoggingService.Warning($"Could not delete existing retention folder: {ex.Message}");
+                            retentionPath = GetSequencedPath(_settings.RetentionDirectory, folderName);
+                        }
                     }
                 }
 
@@ -953,10 +969,10 @@ namespace DataTransferApp.Net.Services
                     return basePath;
                 }
 
-                // AppendSequence
+                // AppendSequence - check both destination and retention
                 else
                 {
-                    return GetSequencedPath(destinationDrive, folderName);
+                    return GetSequencedPath(destinationDrive, folderName, _settings.RetentionDirectory);
                 }
             }
 
