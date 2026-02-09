@@ -1163,8 +1163,10 @@ namespace DataTransferApp.Net.ViewModels
             finally
             {
                 IsProcessing = false;
+                IsTransferActive = false;
                 ProgressPercent = 0;
                 ProgressText = "Ready";
+                ProgressIssues = "Idle";
             }
         }
 
