@@ -4,6 +4,7 @@
         xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:local="clr-namespace:DataTransferApp.Net.Views"
+        xmlns:control="clr-namespace:DataTransferApp.Net.Controls"
         Title="Application Settings" 
         Height="750" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -48,21 +49,29 @@
                 <!-- Directory Paths -->
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
-                        <TextBlock Text="Staging Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
+                        <TextBlock Style="{StaticResource SubHeaderTextStyle}">
+                            <InlineUIContainer>
+                                <fa:IconBlock Icon="InfoCircle" Foreground="{StaticResource InfoBrush}" FontSize="12" Margin="0,0,2,0" >
+                                    <fa:IconBlock.ToolTip >
+                                        <ToolTip Background="Transparent" BorderThickness="0">
+                                            <control:AwesomeToolTip Title="Staging Directory" Description="The main dropbox directory where files are staged for transfer." />
+                                        </ToolTip>
+                                    </fa:IconBlock.ToolTip>
+                                </fa:IconBlock>
+                            </InlineUIContainer>
+                            <Run Text="Staging Directory:"/>
+                        </TextBlock>
+
+                        <TextBox Grid.ColumnSpan="2" Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Transfer Records Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"   Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Retention Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Retention Period (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDays, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding RetentionDays, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,5"/>
                         <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu" Style="{StaticResource FootnoteStyle}"/>
                     </StackPanel>
                 </GroupBox>
@@ -529,19 +538,36 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource WarningBrush}" Grid.Column="0">
+                    <Button.ToolTip>
+                        <ToolTip Background="Transparent" BorderThickness="0">
+                            <control:AwesomeToolTip Title="Reset to Defaults" Description="This resets all settings to their default values." />
+                        </ToolTip>
+                    </Button.ToolTip>
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock Icon="Redo" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Reset to Defaults" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+          
                     <Button x:Name="CancelButton" Click="CancelButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}">
+                        <Button.ToolTip>
+                            <ToolTip Background="Transparent" BorderThickness="0">
+                                <control:AwesomeToolTip Title="Cancel Changes" Description="This cancels any changes made and closes the settings window." />
+                            </ToolTip>
+                        </Button.ToolTip>
                         <StackPanel Orientation="Horizontal">
                             <fa:IconBlock Icon="Times" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Cancel" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+
                     <Button x:Name="SaveButton" Click="SaveButton_Click" Style="{StaticResource SuccessButtonStyle}">
+                        <Button.ToolTip>
+                            <ToolTip Background="Transparent" BorderThickness="0">
+                                <control:AwesomeToolTip Title="Save Settings" Description="This saves the current settings and applies them to the application." />
+                            </ToolTip>
+                        </Button.ToolTip>
                         <StackPanel Orientation="Horizontal">
                             <fa:IconBlock Icon="Save" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Save Settings" VerticalAlignment="Center"/>

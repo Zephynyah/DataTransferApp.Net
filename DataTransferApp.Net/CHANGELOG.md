@@ -2,6 +2,95 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-02-11
+
+### Added
+
+- Add Packaged parameter to create zip archive
+- Enhance Snackbar notification: adjust background colors for improved visibility, add opacity control, and implement slide-in/out animations for a smoother user experience.
+- Update changelog for version 1.4.0: add comprehensive unit test suites for RoboSharpTransferEngine and RetryHelper, enhance test project structure, and document testing insights. Update TODO to reflect completed unit testing tasks.
+- Refactor error tooltip handling: remove custom error message logic from FileErrorTooltipConverter and streamline archive file checks in ArchiveService. Update MainViewModel to use Array.Exists for extension checks. Improve code readability by removing unnecessary lines and adding spacing in RoboSharpProgressAdapter. Update TODO for tested cancel functionality and add comprehensive tests for RoboSharpTransferEngine.
+- Enhance logging functionality: implement log cleanup for old RoboSharp transfer logs and add retention days constant
+- Remove AwesomeDialog control and associated files; add Ookii.Dialogs.Wpf package for enhanced dialog functionality
+- Add ModernToolTip control for enhanced tooltip functionality; update MainWindow and AwesomeToolTip for improved user guidance
+- Add ThisMonthTransfers property and update TransferHistoryWindow to display monthly transfer count
+- Enhance tooltips with detailed file information and error handling; add FileListToolTip control for improved user guidance on file status and actions
+- Enhance AwesomeToolTip with dynamic error messages and details; update MainViewModel to include additional recommended actions for file transfer
+- Add FileErrorTooltipConverter and enhance AwesomeToolTip with new properties for file status
+- Refactor XAML resources and add AwesomeToolTip control; enhance UI with custom tooltips and improve application startup script
+- Implement cancel functionality for active transfers; add CancelTransfer command and UI button
+- Mark progress tracking tasks as complete; verify real-time updates, add speed calculation validation, and test ETA accuracy
+- Add detailed error tooltips for files; implement FileErrorTooltipConverter and update FileData model
+- Refactor UI layout for statistics display; adjust margins and padding for improved aesthetics
+- Add "Cancel Transfer" menu item and remove visible cancel button; enhance UI for transfer management
+- Enhance progress tracking and cancellation features; improve UI responsiveness and logging; update settings for better user experience
+- Enhance progress tracking and cancellation in transfer operations; implement accurate totals from list-only scans, improve UI responsiveness, and add transfer completion status
+- Filter out hidden and system files in directory checks; add helper method for attribute verification
+- Add pre-scan for directory totals to improve ETA accuracy during transfers
+- Add transfer status indicators and update UI for active transfers
+- Add RoboSharp preset configuration and binding converters for enhanced settings management
+- Add configuration presets for RoboSharp settings and update TODO
+- Add toggle for list and table views in Transfer History with corresponding bindings
+- Add Robocopy verbose output option and update bindings in settings
+- Add RoboSharp file transfer functionality with detailed options and results
+
+### Fixed
+
+- Enhance logging in RoboSharpProgressAdapter for better debugging; adjust UI layout in MainWindow for improved visibility
+
+### Changed
+
+- Enhance folder opening logic with error handling and staging directory validation
+- minor changes
+- Refactor application structure and enhance documentation
+- Refactor application structure and enhance documentation
+- Update CHANGELOG.md
+- Refactor UseRoboSharp and UseMultithreadedCopy properties
+- Introduce transfer engine property and update logic
+- Update Transfer Engine Status display in XAML
+- Update CHANGELOG for version 1.4.0
+- Implement cleanup for remaining items after transfer
+- Update transfer engine name from 'RoboSharp' to 'Robocopy'
+- Refactor validation methods for folder name format
+- Update progress messages and adjust layout in MainWindow: change ETA display to indicate folder movement and expand TextBlock column span for retention days.
+- Enhance audit failure dialog: adjust width of the override audit failure dialog for improved visibility
+- Refactor file size formatting: centralize file size formatting logic into FileSizeHelper class and update references throughout the codebase
+- Refactor retention folder handling: ensure consistent folder naming for retention and destination, and improve conflict resolution logic
+- Refactor drive clearing logic: streamline confirmation handling and separate internal clear drive method
+- Refactor drive clearing confirmation: suppress confirmation dialog when already confirmed by user and update drive clear button label to include drive letter
+- Refactor drive content handling: streamline button descriptions and replace fallback MessageBox with logging for unsupported operating systems
+- Refactor archive handling: centralize compressed file extensions in AppConstants and streamline archive checks in ArchiveService and MainViewModel
+- Refactor AwesomeDialog constructor: clean up whitespace and improve Dispatcher invocation for keyboard focus
+- Implement AwesomeDialog and AwesomeToolTip controls; remove ModernToolTip and update MainWindow for enhanced user interaction
+- Remove AwesomeToolTip control and associated code files to streamline tooltip functionality
+- Update ModernToolTip control: adjust icon font size and clean up unused example code
+- Update TransferHistoryViewModel to show table view by default; enhance MainWindow and TransferHistoryWindow XAML for improved tooltip handling and layout adjustments
+- Enhance AwesomeToolTip with detailed file information, error messages, and recommended actions; update bindings in MainWindow.xaml for improved user guidance
+- Enhance AwesomeToolTip with file details and warnings; update converters in App.xaml and clean up unused resources in various views
+- Update error tooltips and messages for compressed files; enhance user guidance on file inspection and integrity verification
+- Prevent race condition in transfer status update; ensure transfer activation only occurs if not already active and not a completion update
+- Remove cancellation functionality from transfer process; update UI to reflect changes
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+- Refactor transfer button logic and UI; enhance visibility handling for transfer and cancel actions
+- Reduce icon font size in SettingsWindow for improved UI consistency
+- Enhance progress estimation handling in RoboSharpProgressAdapter; update total files and bytes only with valid estimates, and improve logging for better diagnostics
+- Enhance ETA display logic in MainViewModel; improve speed calculation and logging in RoboSharpProgressAdapter; update log file path creation in TransferService
+- Enhance ETA calculations and display in progress updates; improve speed calculation logic for better accuracy
+- Refactor RoboSharp transfer handling; introduce event arguments for error and transfer results, streamline transfer logic, and enhance logging
+- Refactor error handling and improve logging functionality; update collections to use IList for better abstraction
+- Refactor and enhance code documentation across multiple files
+- Reduce minimum width of transfer engine status card for improved layout
+- Enhance transfer engine status UI with animated icons and improve layout for better visibility
+- Refactor logging path generation and enhance transfer engine status UI with animated icons
+- Implement exponential backoff retry logic and update configuration presets
+- Replace RoboSharp statistics border with expander for improved UI and organization
+- Implement confirmation dialog on application close with cleanup handling
+- Enhance documentation for large file copy strategies in TODO.md
+- Document large file copy strategies in TODO.md
+- Update icon for 'Run Retention Cleanup' menu item in MainWindow.xaml
+- Update version to 1.3.5 and enhance CHANGELOG with recent changes
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+
 ## [1.4.0] - 2026-02-08
 
 ### Added
