@@ -690,68 +690,14 @@ namespace DataTransferApp.Net.Services
                     PercentComplete = 95
                 });
 
-                // System folders to skip
-                var systemFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                {
-                    "$RECYCLE.BIN",
-                    "System Volume Information",
-                    "$Recycle.Bin",
-                    "RECYCLER",
-                    "$WinREAgent"
-                };
-
-                // Get ALL directories and files, including those that might have been missed
+                var systemFolders = GetSystemFolders();
                 var allDirs = Directory.GetDirectories(drivePath)
                     .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
                     .ToList();
-                
                 var allFiles = Directory.GetFiles(drivePath).ToArray();
 
-                // Delete any remaining files (even hidden ones)
-                foreach (var file in allFiles)
-                {
-                    try
-                    {
-                        // Remove read-only and hidden attributes before deletion
-                        var fileInfo = new FileInfo(file);
-                        if (fileInfo.Exists)
-                        {
-                            fileInfo.Attributes = FileAttributes.Normal;
-                            fileInfo.Delete();
-                            completedItems++;
-                            LoggingService.Info($"Cleaned up remaining file: {Path.GetFileName(file)}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LoggingService.Warning($"Failed to delete remaining file {Path.GetFileName(file)}: {ex.Message}");
-                        skippedItems++;
-                    }
-                }
-
-                // Delete any remaining directories aggressively
-                foreach (var dir in allDirs)
-                {
-                    try
-                    {
-                        var dirInfo = new DirectoryInfo(dir);
-                        if (dirInfo.Exists)
-                        {
-                            // Remove read-only and hidden attributes from directory and all contents
-                            RemoveAttributesRecursively(dirInfo);
-                            
-                            // Try to delete recursively
-                            Directory.Delete(dir, true);
-                            completedItems++;
-                            LoggingService.Info($"Cleaned up remaining folder: {Path.GetFileName(dir)}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LoggingService.Warning($"Failed to delete remaining folder {Path.GetFileName(dir)}: {ex.Message}");
-                        skippedItems++;
-                    }
-                }
+                CleanupRemainingFiles(allFiles, ref completedItems, ref skippedItems);
+                CleanupRemainingDirectories(allDirs, ref completedItems, ref skippedItems);
 
                 if (allDirs.Count > 0 || allFiles.Length > 0)
                 {
@@ -761,6 +707,64 @@ namespace DataTransferApp.Net.Services
             catch (Exception ex)
             {
                 LoggingService.Warning($"Error during cleanup pass: {ex.Message}");
+            }
+        }
+
+        private static HashSet<string> GetSystemFolders()
+        {
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "$RECYCLE.BIN",
+                "System Volume Information",
+                "$Recycle.Bin",
+                "RECYCLER",
+                "$WinREAgent"
+            };
+        }
+
+        private static void CleanupRemainingFiles(string[] files, ref int completedItems, ref int skippedItems)
+        {
+            foreach (var file in files)
+            {
+                try
+                {
+                    var fileInfo = new FileInfo(file);
+                    if (fileInfo.Exists)
+                    {
+                        fileInfo.Attributes = FileAttributes.Normal;
+                        fileInfo.Delete();
+                        completedItems++;
+                        LoggingService.Info($"Cleaned up remaining file: {Path.GetFileName(file)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Warning($"Failed to delete remaining file {Path.GetFileName(file)}: {ex.Message}");
+                    skippedItems++;
+                }
+            }
+        }
+
+        private static void CleanupRemainingDirectories(List<string> directories, ref int completedItems, ref int skippedItems)
+        {
+            foreach (var dir in directories)
+            {
+                try
+                {
+                    var dirInfo = new DirectoryInfo(dir);
+                    if (dirInfo.Exists)
+                    {
+                        RemoveAttributesRecursively(dirInfo);
+                        Directory.Delete(dir, true);
+                        completedItems++;
+                        LoggingService.Info($"Cleaned up remaining folder: {Path.GetFileName(dir)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.Warning($"Failed to delete remaining folder {Path.GetFileName(dir)}: {ex.Message}");
+                    skippedItems++;
+                }
             }
         }
 

@@ -106,9 +106,7 @@ public partial class App : Application
 #if DEBUG
         return Path.Combine("appDataPath", "DataTransferApp");
 #else
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "DataTransferApp");
+        return Path.Combine(AppConstants.ApplicationDataFolder, "DataTransferApp");
 #endif
     }
 

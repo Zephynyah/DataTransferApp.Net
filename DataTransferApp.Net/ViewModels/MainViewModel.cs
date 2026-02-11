@@ -716,39 +716,7 @@ namespace DataTransferApp.Net.ViewModels
 
             try
             {
-                // ToList to avoid collection modification issues
-                foreach (var folder in passedFolders.ToList())
-                {
-                    // Check for cancellation before starting next folder
-                    _transferCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                    completed++;
-                    StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
-
-                    // Don't pass cancellation token - let current folder complete
-                    var transferResult = await TransferSingleFolderAsync(folder, completed, total);
-
-                    if (transferResult.Success)
-                    {
-                        if (transferResult.ErrorMessage == "Skipped - folder already exists")
-                        {
-                            skipped++;
-                            LoggingService.Info($"Skipped existing folder: {folder.FolderName}");
-                        }
-
-                        TransferredList.Add(folder);
-                        FolderList.Remove(folder);
-
-                        // Update statistics after each folder transfer so cards update in real-time
-                        UpdateStatistics();
-                    }
-                    else
-                    {
-                        failed++;
-                        LoggingService.Warning($"Transfer failed for {folder.FolderName}: {transferResult.ErrorMessage}");
-                    }
-                }
-
+                (completed, failed, skipped) = await ProcessFolderTransferLoopAsync(passedFolders, total);
                 UpdateTransferResults(total, completed, failed, skipped);
             }
             catch (OperationCanceledException)
@@ -776,6 +744,48 @@ namespace DataTransferApp.Net.ViewModels
                 _transferCancellationTokenSource = null;
                 CancelTransferCommand.NotifyCanExecuteChanged();
             }
+        }
+
+        private async Task<(int Completed, int Failed, int Skipped)> ProcessFolderTransferLoopAsync(List<FolderData> passedFolders, int total)
+        {
+            var completed = 0;
+            var failed = 0;
+            var skipped = 0;
+
+            // ToList to avoid collection modification issues
+            foreach (var folder in passedFolders.ToList())
+            {
+                // Check for cancellation before starting next folder
+                _transferCancellationTokenSource!.Token.ThrowIfCancellationRequested();
+
+                completed++;
+                StatusMessage = $"Transferring {completed}/{total}: {folder.FolderName}";
+
+                // Don't pass cancellation token - let current folder complete
+                var transferResult = await TransferSingleFolderAsync(folder, completed, total);
+
+                if (transferResult.Success)
+                {
+                    if (transferResult.ErrorMessage == "Skipped - folder already exists")
+                    {
+                        skipped++;
+                        LoggingService.Info($"Skipped existing folder: {folder.FolderName}");
+                    }
+
+                    TransferredList.Add(folder);
+                    FolderList.Remove(folder);
+
+                    // Update statistics after each folder transfer so cards update in real-time
+                    UpdateStatistics();
+                }
+                else
+                {
+                    failed++;
+                    LoggingService.Warning($"Transfer failed for {folder.FolderName}: {transferResult.ErrorMessage}");
+                }
+            }
+
+            return (completed, failed, skipped);
         }
 
         private async Task<TransferResult> TransferSingleFolderAsync(FolderData folder, int completed, int total, CancellationToken cancellationToken = default)
@@ -847,7 +857,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _transferEngine; 
+                ProgressIssues = TransferEngine;
 
                 var progress = new Progress<TransferProgress>(p =>
                 {
@@ -899,7 +909,7 @@ namespace DataTransferApp.Net.ViewModels
                 IsTransferActive = true;
             }
 
-            var engine = _transferEngine;
+            var engine = TransferEngine;
 
             if (progress.BytesPerSecond > 0)
             {
@@ -1050,7 +1060,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _transferEngine;
+                ProgressIssues = TransferEngine;
 
                 var progress = new Progress<TransferProgress>(p =>
                 {

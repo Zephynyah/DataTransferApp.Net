@@ -1,9 +1,11 @@
-using System.Collections.Generic;
 using System.Windows;
 using DataTransferApp.Net.Services;
 
 namespace DataTransferApp.Net.Views
 {
+    /// <summary>
+    /// Window for viewing archive contents and file entries.
+    /// </summary>
     public partial class ArchiveViewerWindow : Window
     {
         public ArchiveViewerWindow(string fileName, string filePath, IList<ArchiveEntry> entries)

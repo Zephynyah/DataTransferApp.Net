@@ -11,6 +11,11 @@ namespace DataTransferApp.Net
         /// </summary>
         public const int RoboSharpLogRetentionDays = 5;
 
+        /// <summary>
+        /// Path to the user's Application Data folder, used for storing app-specific data and logs.
+        /// </summary>
+        public static readonly string ApplicationDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
         // File Extensions
 
         /// <summary>

@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         mc:Ignorable="d"
-        Title="About" Height="600" Width="600"
+        Title="About" Height="700" Width="600"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="{StaticResource BackgroundBrush}">
@@ -34,9 +34,9 @@
                 <Run Text="The Data Transfer Application is a powerful tool designed to help you manage and transfer files from Dropbox folders to removable drives. It includes comprehensive auditing features to ensure data integrity and compliance."/>
             </TextBlock>
 
-            <TextBlock Text="Key Features:" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#2C3E50"/>
+            <TextBlock Text="Key Features:" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#2C3E50"/>
 
-            <StackPanel Margin="20,0,0,0">
+            <StackPanel Margin="20,0,0,15">
                 <TextBlock Text="• Automated file auditing and validation" FontSize="14" Margin="0,2"/>
                 <TextBlock Text="• Secure transfer to removable drives" FontSize="14" Margin="0,2"/>
                 <TextBlock Text="• Real-time progress tracking" FontSize="14" Margin="0,2"/>
@@ -44,11 +44,19 @@
                 <TextBlock Text="• Archive management and compression detection" FontSize="14" Margin="0,2"/>
             </StackPanel>
 
-            <TextBlock Text="System Requirements:" FontSize="16" FontWeight="SemiBold" Margin="0,20,0,10" Foreground="#2C3E50"/>
+            <TextBlock Text="System Requirements:" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#2C3E50"/>
 
-            <StackPanel Margin="20,0,0,0">
-                <TextBlock Text="• Windows 10 or later" FontSize="14" Margin="0,2"/>
+            <StackPanel Margin="20,0,0,15">
+                <TextBlock Text="• Windows 11 or later" FontSize="14" Margin="0,2"/>
                 <TextBlock Text="• Minimum 4GB RAM" FontSize="14" Margin="0,2"/>
+            </StackPanel>
+
+            <TextBlock Text="Governance:" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#2C3E50"/>
+
+            <StackPanel Margin="20,0,0,15">
+                <TextBlock Text="• NIST SP 800-53 and DAGG" FontSize="14" Margin="0,2"/>
+                <TextBlock Text="  • AU-2  (Event Logging)" FontSize="14" Margin="0,2"/> 
+                <TextBlock Text="  • AU-12 (Audit and Accountability)" FontSize="14" Margin="0,2"/> 
             </StackPanel>
         </StackPanel>
 

@@ -4,6 +4,10 @@ using DataTransferApp.Net.Services;
 
 namespace DataTransferApp.Net.Views
 {
+    /// <summary>
+    /// Interaction logic for SettingsWindow.xaml
+    /// Provides UI for configuring application settings, RoboSharp presets, and transfer options.
+    /// </summary>
     public partial class SettingsWindow : Window
     {
         private readonly SettingsService _settingsService;
