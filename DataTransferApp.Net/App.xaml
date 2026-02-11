@@ -27,6 +27,7 @@
             <helpers:RadioButtonCheckedConverter x:Key="RadioButtonCheckedConverter"/>
             <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
             <helpers:FileErrorTooltipConverter x:Key="FileErrorTooltipConverter"/>
+            <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
 
 
             <!-- Color Palette -->
@@ -46,7 +47,7 @@
             <SolidColorBrush x:Key="IconButtonBrush" Color="#34495E"/>
             <SolidColorBrush x:Key="AnimationBlueBrush" Color="DodgerBlue"/>
             <SolidColorBrush x:Key="FootNoteDarkBrush" Color="#7f868d"/>
-            <SolidColorBrush x:Key="FootNoteLightBrush" Color="#7f8c8d"/>
+            <SolidColorBrush x:Key="FootNoteLightBrush" Color="Black" Opacity="0.8"/>
 
             <!-- ScrollBar Size Definitions -->
             <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">4</system:Double>

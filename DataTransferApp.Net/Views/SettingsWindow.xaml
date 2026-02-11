@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DataTransferApp.Net.Views"
         xmlns:control="clr-namespace:DataTransferApp.Net.Controls"
         Title="Application Settings" 
@@ -49,18 +50,37 @@
                 <!-- Directory Paths -->
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
-                        <control:LabelWithTooltip  Icon="InfoCircle" LabelText="Staging Directory:" TooltipTitle="Staging Directory" TooltipDescription="The main dropbox directory where files are staged for transfer."/>
-                        <TextBox Grid.ColumnSpan="2" Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Transfer Records Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"   Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Retention Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
+                        <control:SettingsItem  Title="Staging Directory"  Description="The main dropbox directory where files are staged for transfer.">
+                            <control:SettingsItem.Footer>
+                                <TextBox Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                        Style="{StaticResource ValidatingTextBoxStyle}" 
+                                        MinWidth="400"/>
+                            </control:SettingsItem.Footer>
+                        </control:SettingsItem>
                         
-                        <TextBlock Text="Retention Period (Days):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding RetentionDays, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,5"/>
-                        <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu" Style="{StaticResource FootnoteStyle}"/>
+                        <control:SettingsItem  Title="Transfer Records Directory" Description="Directory where compliance records and transfer logs are stored for audit trails and troubleshooting.">
+                            <control:SettingsItem.Footer>
+                                <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                        Style="{StaticResource ValidatingTextBoxStyle}" 
+                                        MinWidth="400"/>
+                            </control:SettingsItem.Footer>
+                        </control:SettingsItem>
+                        
+                        <control:SettingsItem  Title="Retention Directory" Description="Directory where transferred folders are moved for retention. Folders are automatically cleaned up after the retention period expires.">
+                            <control:SettingsItem.Footer>
+                                <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                                        Style="{StaticResource ValidatingTextBoxStyle}" 
+                                        MinWidth="400"/>
+                            </control:SettingsItem.Footer>
+                        </control:SettingsItem>
+                        
+                        <control:SettingsItem  Title="Retention Period (Days)" Description="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu.">
+                            <control:SettingsItem.Footer>
+                                <control:NumericUpDown Value="{Binding RetentionDays, Mode=TwoWay}"  Minimum="1"  Maximum="365"  MinWidth="100" Height="30"/>
+                            </control:SettingsItem.Footer>
+                        </control:SettingsItem>
+                        
                     </StackPanel>
                 </GroupBox>
                 
@@ -203,7 +223,10 @@
                                    Margin="20,0,0,10"/>
                         
                         <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" Margin="0,0,0,5">
-                            💡 Database provides 50-200x faster queries than JSON files and supports multi-user access.
+                            <InlineUIContainer>
+                                <fa:IconBlock Icon="Lightbulb"  FontSize="12" Margin="0,0,5,0"  />
+                            </InlineUIContainer>
+                            <Run Text="Database provides 50-200x faster queries than JSON files and supports multi-user access." />
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
@@ -263,7 +286,10 @@
                         </ComboBox>
                         
                         <TextBlock FontSize="10" Foreground="#e74c3c" TextWrapping="Wrap" Margin="0,0,0,5">
-                            ⚠️ Compliance records are required for regulatory audits. Records are automatically generated on transfer completion.
+                            <InlineUIContainer>
+                                <fa:IconBlock Icon="ExclamationTriangle"  FontSize="12" Margin="0,0,5,0"  />
+                            </InlineUIContainer>
+                            <Run Text="Compliance records are required for regulatory audits. Records are automatically generated on transfer completion." />
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
@@ -308,7 +334,10 @@
                                   ToolTip="Enables high-performance file transfers using Robocopy engine"/>
                         
                         <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" TextWrapping="Wrap" Margin="0,0,0,10">
-                            💡 RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations.
+                            <InlineUIContainer>
+                                <fa:IconBlock Icon="Lightbulb"  FontSize="12" Margin="0,0,5,0"  />
+                            </InlineUIContainer>
+                            <Run Text="RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations." />
                         </TextBlock>
                         
                         <Separator Margin="0,5,0,10"/>
@@ -509,8 +538,11 @@
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <TextBlock FontSize="10" Foreground="#e67e22" TextWrapping="Wrap" Margin="0,5,0,0">
-                            ⚠️ RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions.
+                        <TextBlock FontSize="10" Foreground="{StaticResource WarningBrush}" TextWrapping="Wrap" Margin="0,5,0,0">
+                            <InlineUIContainer>
+                                <fa:IconBlock Icon="ExclamationTriangle"  FontSize="12" Margin="0,0,5,0"  />
+                            </InlineUIContainer>
+                            <Run Text="RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions." />
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
