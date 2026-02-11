@@ -12,6 +12,19 @@ namespace DataTransferApp.Net.Models
     {
         public static string ApplicationVersion => VersionHelper.GetVersion();
 
+        // ComboBox Item Collections
+        public static readonly bool EditFileLogging = false; // Set to false to disable editing file logging settings in the UI
+        public static readonly string[] WindowStartupModes = { "Normal", "Maximized", "Fullscreen" };
+        public static readonly string[] LogLevels = { "Debug", "Info", "Warning", "Error" };
+        public static readonly string[] LogFormats = { "TXT", "JSON", "CSV" };
+        public static readonly string[] ComplianceRecordFormats = { "CSV", "Excel", "JSON" };
+        public static readonly string[] ComplianceRecordTypes = { "Standard", "Comprehensive" };
+
+        // Instance properties for binding
+        public static string[] WindowStartupModeOptions => WindowStartupModes;
+        public static string[] LogLevelOptions => LogLevels;
+        public static string[] LogFormatOptions => LogFormats;
+
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;
 

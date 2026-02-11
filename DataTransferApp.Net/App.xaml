@@ -47,8 +47,8 @@
             <!-- Additional Colors -->
             <SolidColorBrush x:Key="IconButtonBrush" Color="#34495E"/>
             <SolidColorBrush x:Key="AnimationBlueBrush" Color="DodgerBlue"/>
-            <SolidColorBrush x:Key="FootNoteDarkBrush" Color="#7f868d"/>
-            <SolidColorBrush x:Key="FootNoteLightBrush" Color="Black" Opacity="0.8"/>
+            <SolidColorBrush x:Key="FootNoteLightBrush" Color="#7f868d"/>
+            <SolidColorBrush x:Key="FootNoteDarkBrush" Color="Black" Opacity="0.8"/>
 
             <!-- ScrollBar Size Definitions -->
             <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">4</system:Double>
@@ -265,9 +265,17 @@
             </Style>
 
             <!-- Footnote Style -->
-            <Style x:Key="FootnoteStyle" TargetType="TextBlock">
+            <!-- <Style x:Key="FootnoteStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="10.5"/>
                 <Setter Property="Foreground" Value="#7f8c8d"/>
+                <Setter Property="Margin" Value="0,0,0,0"/> 
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style> -->
+
+            <Style x:Key="FootnoteStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="10.5"/>
+                <Setter Property="FontStyle" Value="Italic"/>
+                <Setter Property="Foreground" Value="{StaticResource FootNoteDarkBrush}"/>
                 <Setter Property="Margin" Value="0,0,0,0"/> <!-- Top margin for spacing -->
                 <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>

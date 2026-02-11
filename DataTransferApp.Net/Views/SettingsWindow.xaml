@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:helpers="clr-namespace:DataTransferApp.Net.Helpers"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DataTransferApp.Net.Views"
-        xmlns:control="clr-namespace:DataTransferApp.Net.Controls"
+        xmlns:models="clr-namespace:DataTransferApp.Net.Models"
         Title="Application Settings" 
         Height="750" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -23,40 +22,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-
-        <!-- Define the Style and Template -->
-        <Style x:Key="RoundedTextBoxStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBox}">
-                        <!-- The Border provides the rounded corners -->
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10" 
-                                SnapsToDevicePixels="True">
-                            <!-- PART_ContentHost is required for the TextBox to function -->
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" 
-                                        HorizontalScrollBarVisibility="Hidden" 
-                                        VerticalScrollBarVisibility="Hidden"
-                                        Padding="{TemplateBinding Padding}"/>
-                        </Border>
-                        <!-- Optional: Add triggers for hover or focus effects -->
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="BorderBrush" Value="DeepSkyBlue"/>
-                            </Trigger>
-                            <Trigger Property="IsFocused" Value="true">
-                                <Setter TargetName="border" Property="BorderBrush" Value="Blue"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
     </Window.Resources>
     
     <Grid>
@@ -72,7 +37,7 @@
                 <fa:IconBlock Icon="Cog" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
-                    <TextBlock Text="Configure application preferences and behavior" FontSize="12"  Foreground="{StaticResource LightBrush}"/>
+                    <TextBlock Text="Configure application preferences and behavior" FontSize="12" Foreground="{StaticResource LightBrush}"/>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -84,121 +49,83 @@
                 <!-- Directory Paths -->
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
+                        <TextBlock Text="Staging Directory" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Grid.ColumnSpan="2" Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}"/>
+                        <TextBlock Text="The main dropbox directory where files are staged for transfer." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <control:SettingsItem Icon="Dropbox" Title="Staging Directory"  Description="The main dropbox directory where files are staged for transfer.">
-                            <control:SettingsItem.Footer>
-                                <TextBox Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                        Style="{StaticResource ValidatingTextBoxStyle}" 
-                                        MinWidth="400">
-                                    <TextBox.Resources>
-                                        <Style TargetType="{x:Type Border}">
-                                            <Setter Property="CornerRadius" Value="4,4,4,4"/>
-                                        </Style>
-                                    </TextBox.Resources>
-                                </TextBox>
-                            </control:SettingsItem.Footer>
-                        </control:SettingsItem>
+                        <TextBlock Text="Transfer Records Directory" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}" />
+                        <TextBlock Text="Directory where transfer records are stored." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Retention Directory" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}" />
+                        <TextBlock Text="Directory where files are retained before deletion." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <control:SettingsItem Icon="FileAlt" Title="Transfer Records Directory" Description="Directory where compliance records and transfer logs are stored for audit trails and troubleshooting.">
-                            <control:SettingsItem.Footer>
-                                <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                        Style="{StaticResource ValidatingTextBoxStyle}" 
-                                        MinWidth="400"/>
-                            </control:SettingsItem.Footer>
-                        </control:SettingsItem>
-                        
-                        <control:SettingsItem Icon="Archive" Title="Retention Directory" Description="Directory where transferred folders are moved for retention. Folders are automatically cleaned up after the retention period expires.">
-                            <control:SettingsItem.Footer>
-                                <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                        Style="{StaticResource ValidatingTextBoxStyle}" 
-                                        MinWidth="400"/>
-                            </control:SettingsItem.Footer>
-                        </control:SettingsItem>
-                        
-                        <control:SettingsItem Icon="Clock" Title="Retention Period (Days)" Description="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu.">
-                            <control:SettingsItem.Footer>
-                                <control:NumericUpDown Value="{Binding RetentionDays, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  Minimum="1"  Maximum="365"  MinWidth="100" Height="30"/>
-                            </control:SettingsItem.Footer>
-                        </control:SettingsItem>
-                        
+                        <TextBlock Text="Retention Period (Days)" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding RetentionDays, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}" />
+                        <TextBlock Text="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu" Style="{StaticResource FootnoteStyle}"/>
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- Validation Settings -->
                 <GroupBox Header="Validation Rules">
                     <StackPanel>
-                        <TextBlock Text="Folder Name Regex Pattern:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding FolderNameRegex}" Margin="0,0,0,10"/>
+                        <TextBlock Text="Folder Name Regex Pattern" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding FolderNameRegex}" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="Regular expression pattern to validate folder names during staging. Folders that do not match the pattern will be flagged with a warning." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Blacklisted File Extensions (comma-separated):" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Blacklisted File Extensions (comma-separated)" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding BlacklistedExtensions, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="File extensions to exclude from transfers. Use comma-separated format (e.g., .exe, .dll)." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Whitelisted Datasets (comma-separated):" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,2"/>
+                        <TextBlock Text="Whitelisted Datasets (comma-separated)" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding WhiteListDatasets, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <TextBlock Text="Dataset names that are allowed for transfer. Use comma-separated format (e.g., Dataset1, Dataset2)." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                     </StackPanel>
                 </GroupBox>
                 
-                <!-- Excluded Folders -->
+                <!-- Excluded Behaviors -->
 
-                <GroupBox Header="Excluded Folders">
+                <GroupBox Header="Excluded Behaviors">
+                    <!-- Excluded Folders -->
                     <StackPanel>
-                        <TextBlock Text="Folders to exclude from staging directory scan (comma-separated):" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,2"/>
+                        <TextBlock Text="Folders to exclude from staging directory scan (comma-separated)" Style="{StaticResource SubHeaderTextStyle}" />
                         <TextBox Text="{Binding ExcludedFolders, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" AcceptsReturn="True"/>
-                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list. Use wildcards (*) for pattern matching."  Style="{StaticResource FootnoteStyle}" Margin="0"/>
+                        <TextBlock Text="Folder names are case-insensitive. Excluded folders will not appear in the staging list. Use wildcards (*) for pattern matching." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+
+                        <!-- Exclude Drives -->
+                        <TextBlock Text="Exclude Drives (comma-separated)" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}" TextWrapping="Wrap" />
+                        <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\, T:\)." Style="{StaticResource FootnoteStyle}" />
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- Startup Behavior -->
                 <GroupBox Header="Startup Behavior">
                     <StackPanel>
-                        <CheckBox Content="Automatically run audit on all folders at startup" 
-                                  IsChecked="{Binding AutoAuditOnStartup}" 
-                                  Margin="0,0,0,5"/>
-                        <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them." 
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Margin="20,0,0,0"/>
-
-                                                           
+                        <CheckBox Content="Automatically run audit on all folders at startup" IsChecked="{Binding AutoAuditOnStartup}" Margin="0,0,0,5"/>
+                        <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
+                           
                         <TextBlock Text="Window Startup Mode" FontWeight="SemiBold" Margin="0,5,0,5"/>
-                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}" 
-                                  SelectedValuePath="Content" 
-                                  Margin="0,0,0,5">
-                            <ComboBoxItem Content="Normal" />
-                            <ComboBoxItem Content="Maximized" />
-                            <ComboBoxItem Content="Fullscreen" />
-                        </ComboBox>
-                        <TextBlock Text="Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)."
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Margin="0,0,0,10"/>
-
-                        <!-- Exclude Drives -->
-                        <TextBlock Text="Exclude Drives (comma-separated, e.g., C:\, D:\):" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding ExcludeDrives, Converter={StaticResource ListToStringConverter}}"  TextWrapping="Wrap" Margin="0,0,0,5"/>
-                        <TextBlock Text="These drives will not appear in the removable drives list. Use backslash format (e.g., C:\, D:\)." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}" Margin="0,0,0,5" ItemsSource="{x:Static models:AppSettings.WindowStartupModeOptions}"/>
+                        <TextBlock Text="Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)." Style="{StaticResource FootnoteStyle}" />
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- UI Display Options -->
                 <GroupBox Header="Display Options">
                     <StackPanel>
-                        <CheckBox Content="Show audit details icon in folder list" 
-                                  IsChecked="{Binding ShowFolderAuditDetailsIcon}" 
-                                  Margin="0,0,0,5"/>
+                        <CheckBox Content="Show audit details icon in folder list" IsChecked="{Binding ShowFolderAuditDetailsIcon}" Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, folders with audit failures will display an information icon showing detailed audit statistics."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <CheckBox Content="Display audit summary as colored cards" 
-                                  IsChecked="{Binding ShowAuditSummaryAsCards}" 
-                                  Margin="0,0,0,5"/>
+                        <CheckBox Content="Display audit summary as colored cards" IsChecked="{Binding ShowAuditSummaryAsCards}" Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, audit summaries will be displayed as colored badge cards. When disabled, they will show as simple colored text with icons."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
-
                         
-                        <CheckBox Content="Show success notifications" 
-                                  IsChecked="{Binding ShowSuccessNotifications}" 
-                                  Margin="0,0,0,5"/>
+                        <CheckBox Content="Show success notifications" IsChecked="{Binding ShowSuccessNotifications}" Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, the application will show notification messages for successful operations."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,0"/>
@@ -206,24 +133,19 @@
                 </GroupBox>
                 
                 <!-- Application Logging -->
-                <GroupBox Header="Application Logging">
+                <GroupBox Header="Application Logging" IsEnabled="True">
                     <StackPanel>
-                        <CheckBox Content="Enable Application File Logging" IsChecked="{Binding EnableFileLogging}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Enable Application File Logging" IsChecked="{Binding EnableFileLogging}"/>
+                        <TextBlock Text="When enabled, application events and transfer details will be logged to files in the transfer records directory." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
-                        <TextBlock Text="Log Level:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogLevel}" SelectedValuePath="Content" Margin="0,0,0,10">
-                            <ComboBoxItem Content="Debug"/>
-                            <ComboBoxItem Content="Info"/>
-                            <ComboBoxItem Content="Warning"/>
-                            <ComboBoxItem Content="Error"/>
-                        </ComboBox>
+                        <TextBlock Text="Log Level" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <ComboBox SelectedValue="{Binding LogLevel}" SelectedValuePath="Content" ItemsSource="{x:Static models:AppSettings.LogLevelOptions}"/>
+                        <TextBlock Text="Log level determines the verbosity of log output. Debug: Detailed information for troubleshooting. Info: General operational messages. Warning: Indications of potential issues. Error: Errors that occurred during operation." 
+                            Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Log Format:" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogFormat}" SelectedValuePath="Content" Margin="0,0,0,10">
-                            <ComboBoxItem Content="JSON"/>
-                            <ComboBoxItem Content="CSV"/>
-                            <ComboBoxItem Content="TXT"/>
-                        </ComboBox>
+                        <TextBlock Text="Log Format" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <ComboBox SelectedValue="{Binding LogFormat}" SelectedValuePath="Content" ItemsSource="{x:Static models:AppSettings.LogFormatOptions}"/>
+                        <TextBlock Text="Log file format. TXT: Plain text files. JSON: Structured JSON format. CSV: Comma-separated values for spreadsheet compatibility." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -232,13 +154,15 @@
                             </Grid.ColumnDefinitions>
                             
                             <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                                <TextBlock Text="Max Log Size (MB):" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBlock Text="Max Log Size (MB)" Style="{StaticResource SubHeaderTextStyle}"/>
                                 <TextBox Text="{Binding MaxLogSizeMB}"/>
+                                <TextBlock Text="Maximum size of log files before rotation occurs. Set to 0 for unlimited size." Style="{StaticResource FootnoteStyle}"/>
                             </StackPanel>
                             
                             <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                                <TextBlock Text="Keep Log Files:" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBlock Text="Keep Log Files" Style="{StaticResource SubHeaderTextStyle}"/>
                                 <TextBox Text="{Binding KeepLogFiles}"/>
+                                <TextBlock Text="Number of log files to retain before deletion." Style="{StaticResource FootnoteStyle}"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -247,7 +171,7 @@
                 <!-- Transfer History Database -->
                 <GroupBox Header="Transfer History Database">
                     <StackPanel>
-                        <TextBlock Text="Database Storage Location:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Database Storage Location" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding TransferHistoryDatabasePath}" Margin="0,0,0,5" 
                                  ToolTip="Leave empty to use automatic location (shared or local)"/>
                         <TextBlock Text="Leave empty to automatically select shared or local location based on permissions."
@@ -263,10 +187,7 @@
                                    Margin="20,0,0,10"/>
                         
                         <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" Margin="0,0,0,5">
-                            <InlineUIContainer>
-                                <fa:IconBlock Icon="Lightbulb"  FontSize="12" Margin="0,0,5,0"  />
-                            </InlineUIContainer>
-                            <Run Text="Database provides 50-200x faster queries than JSON files and supports multi-user access." />
+                            💡 Database provides 50-200x faster queries than JSON files and supports multi-user access.
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
@@ -279,7 +200,7 @@
                                   Margin="0,0,0,10"
                                   ToolTip="Automatically generate compliance records for regulatory audits"/>
                         
-                        <TextBlock Text="Compliance Record Type:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Compliance Record Type" Style="{StaticResource SubHeaderTextStyle}"/>
                         <ComboBox SelectedValue="{Binding ComplianceRecordType}" 
                                   SelectedValuePath="Content" 
                                   Margin="0,0,0,10" 
@@ -291,7 +212,7 @@
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Compliance Record Format:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Compliance Record Format" Style="{StaticResource SubHeaderTextStyle}"/>
                         <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" 
                                   SelectedValuePath="Content" 
                                   Margin="0,0,0,10" 
@@ -302,7 +223,7 @@
                             <ComboBoxItem Content="JSON"/>
                         </ComboBox>
                         
-                        <TextBlock Text="Source Location:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Source Location" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding ComplianceSourceLocation}" 
                                  Margin="0,0,0,10" 
                                  IsEnabled="{Binding GenerateComplianceRecords}"
@@ -314,7 +235,7 @@
                                   Margin="0,0,0,10"
                                   ToolTip="Generate cryptographic hashes for file integrity verification"/>
                         
-                        <TextBlock Text="Hash Algorithm:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Hash Algorithm" Style="{StaticResource SubHeaderTextStyle}"/>
                         <ComboBox SelectedValue="{Binding HashAlgorithm}" 
                                   SelectedValuePath="Content" 
                                   Margin="0,0,0,10" 
@@ -326,10 +247,7 @@
                         </ComboBox>
                         
                         <TextBlock FontSize="10" Foreground="#e74c3c" TextWrapping="Wrap" Margin="0,0,0,5">
-                            <InlineUIContainer>
-                                <fa:IconBlock Icon="ExclamationTriangle"  FontSize="12" Margin="0,0,5,0"  />
-                            </InlineUIContainer>
-                            <Run Text="Compliance records are required for regulatory audits. Records are automatically generated on transfer completion." />
+                            ⚠️ Compliance records are required for regulatory audits. Records are automatically generated on transfer completion.
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
@@ -339,7 +257,7 @@
                     <StackPanel>
                         <CheckBox Content="Enable Compression" IsChecked="{Binding EnableCompression}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Minimum Free Space on Drive (GB):" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Minimum Free Space on Drive (GB)" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding MinimumFreeSpaceGB}" Margin="0,0,0,0"/>
                         
                         <Separator Margin="0,10,0,10"/>
@@ -347,7 +265,7 @@
                         <TextBlock Text="Conflict Handling" FontWeight="Bold" FontSize="13" Margin="0,5,0,5"/>
                         <CheckBox Content="Automatically Handle Folder Conflicts" IsChecked="{Binding AutoHandleConflicts}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Conflict Resolution Strategy:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Conflict Resolution Strategy" Style="{StaticResource SubHeaderTextStyle}"/>
                         <ComboBox SelectedValue="{Binding ConflictResolution}" SelectedValuePath="Content" Margin="0,0,0,5" IsEnabled="{Binding AutoHandleConflicts}">
                             <ComboBoxItem Content="AppendSequence"/>
                             <ComboBoxItem Content="Skip"/>
@@ -374,10 +292,7 @@
                                   ToolTip="Enables high-performance file transfers using Robocopy engine"/>
                         
                         <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" TextWrapping="Wrap" Margin="0,0,0,10">
-                            <InlineUIContainer>
-                                <fa:IconBlock Icon="Lightbulb"  FontSize="12" Margin="0,0,5,0"  />
-                            </InlineUIContainer>
-                            <Run Text="RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations." />
+                            💡 RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations.
                         </TextBlock>
                         
                         <Separator Margin="0,5,0,10"/>
@@ -503,7 +418,7 @@
                                    Foreground="#95a5a6"
                                    Margin="0,0,0,5"/>
                         
-                        <TextBlock Text="Thread Count:" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Thread Count" Style="{StaticResource SubHeaderTextStyle}"/>
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -539,14 +454,14 @@
                             </Grid.ColumnDefinitions>
                             
                             <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                                <TextBlock Text="Retry Count:" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBlock Text="Retry Count" Style="{StaticResource SubHeaderTextStyle}"/>
                                 <TextBox Text="{Binding RobocopyRetries, Mode=TwoWay}" 
                                          IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
                                          ToolTip="Number of retry attempts for failed operations"/>
                             </StackPanel>
                             
                             <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                                <TextBlock Text="Retry Wait (seconds):" Style="{StaticResource SubHeaderTextStyle}"/>
+                                <TextBlock Text="Retry Wait (seconds)" Style="{StaticResource SubHeaderTextStyle}"/>
                                 <TextBox Text="{Binding RobocopyRetryWaitSeconds, Mode=TwoWay}" 
                                          IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
                                          ToolTip="Wait time between retry attempts"/>
@@ -578,11 +493,8 @@
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <TextBlock FontSize="10" Foreground="{StaticResource WarningBrush}" TextWrapping="Wrap" Margin="0,5,0,0">
-                            <InlineUIContainer>
-                                <fa:IconBlock Icon="ExclamationTriangle"  FontSize="12" Margin="0,0,5,0"  />
-                            </InlineUIContainer>
-                            <Run Text="RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions." />
+                        <TextBlock FontSize="10" Foreground="#e67e22" TextWrapping="Wrap" Margin="0,5,0,0">
+                            ⚠️ RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions.
                         </TextBlock>
                     </StackPanel>
                 </GroupBox>
