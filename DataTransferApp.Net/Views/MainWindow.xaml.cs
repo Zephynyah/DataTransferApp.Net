@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,9 +41,8 @@ public partial class MainWindow : Window
             case "Fullscreen":
                 WindowState = WindowState.Maximized;
                 WindowStyle = WindowStyle.None;
-                UpdateFullScreenUI(true);
+                UpdateFullScreenUI(isFullScreen: true);
                 break;
-            case "Normal":
             default:
                 // Use default window size from XAML
                 break;
@@ -228,18 +228,43 @@ public partial class MainWindow : Window
 
     private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
     {
-        // Requires .NET 8.0 or later
-        OpenFolder(App.Settings?.StagingDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)); // Fallback to user profile if Dropbox path is not set
+        var path = App.Settings?.StagingDirectory;
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            MessageBox.Show(
+                "Staging directory is not set. Please configure the staging directory in settings.",
+                "Staging Directory Not Set",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            LoggingService.Warning("Attempted to open staging folder, but path is not set");
+            return;
+        }
+
+        OpenFolder(path);
     }
 
     private void OpenFolder(string path)
     {
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName = path,
-            UseShellExecute = true,
-            Verb = "open"
-        });
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+
+            LoggingService.Info($"Opened folder in Explorer: {path}");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Failed to open folder: {ex.Message}",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            LoggingService.Error($"Failed to open folder: {path}", ex);
+        }
     }
 
     public bool ShowOverrideAuditDialog(string folderName, string auditStatus)
