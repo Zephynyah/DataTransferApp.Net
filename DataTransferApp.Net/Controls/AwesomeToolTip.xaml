@@ -30,16 +30,16 @@
         <Border.Effect>
             <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
         </Border.Effect>
-        <StackPanel Width="200">
+        <StackPanel Width="200" HorizontalAlignment="Left">
             <!-- Header with Icon -->
-            <DockPanel Margin="0,0,0,8">
+            <DockPanel Margin="0,0,0,8" HorizontalAlignment="Left">
                 <fa:IconBlock Icon="{Binding Icon, ElementName=ToolTipControl}" Foreground="#007ACC" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <TextBlock Text="{Binding Title, ElementName=ToolTipControl}" FontWeight="Bold" FontSize="14"/>
+                <TextBlock Text="{Binding Title, ElementName=ToolTipControl}" FontWeight="Bold" FontSize="14" TextAlignment="Left"/>
             </DockPanel>
             <!-- Separator -->
-            <Separator Background="{StaticResource SecondaryBrush}" Margin="0,0,0,8"/>
+            <Separator Background="{StaticResource SecondaryBrush}" Margin="0,0,0,8" HorizontalAlignment="Stretch"/>
             <!-- Description Body -->
-            <TextBlock Text="{Binding Description, ElementName=ToolTipControl}" TextWrapping="Wrap" FontSize="12" LineHeight="18"/>
+            <TextBlock Text="{Binding Description, ElementName=ToolTipControl}" TextWrapping="Wrap" FontSize="12" LineHeight="18" TextAlignment="Left"/>
         </StackPanel>
     </Border>
 </UserControl>

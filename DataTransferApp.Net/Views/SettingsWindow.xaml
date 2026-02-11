@@ -49,19 +49,7 @@
                 <!-- Directory Paths -->
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
-                        <TextBlock Style="{StaticResource SubHeaderTextStyle}">
-                            <InlineUIContainer>
-                                <fa:IconBlock Icon="InfoCircle" Foreground="{StaticResource InfoBrush}" FontSize="12" Margin="0,0,2,0" >
-                                    <fa:IconBlock.ToolTip >
-                                        <ToolTip Background="Transparent" BorderThickness="0">
-                                            <control:AwesomeToolTip Title="Staging Directory" Description="The main dropbox directory where files are staged for transfer." />
-                                        </ToolTip>
-                                    </fa:IconBlock.ToolTip>
-                                </fa:IconBlock>
-                            </InlineUIContainer>
-                            <Run Text="Staging Directory:"/>
-                        </TextBlock>
-
+                        <control:LabelWithTooltip  Icon="InfoCircle" LabelText="Staging Directory:" TooltipTitle="Staging Directory" TooltipDescription="The main dropbox directory where files are staged for transfer."/>
                         <TextBox Grid.ColumnSpan="2" Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Transfer Records Directory:" Style="{StaticResource SubHeaderTextStyle}"/>
