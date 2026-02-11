@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using FontAwesome.Sharp;
 
 namespace DataTransferApp.Net.Controls;
 
@@ -12,6 +13,22 @@ public partial class SettingsItem : UserControl
     public SettingsItem()
     {
         InitializeComponent();
+    }
+
+    /// <summary>
+    /// The FontAwesome icon to display next to the title (optional).
+    /// </summary>
+    public static readonly DependencyProperty IconProperty =
+        DependencyProperty.Register(
+            nameof(Icon),
+            typeof(IconChar),
+            typeof(SettingsItem),
+            new PropertyMetadata(IconChar.None));
+
+    public IconChar Icon
+    {
+        get => (IconChar)GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
     }
 
     /// <summary>

@@ -23,6 +23,40 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+
+        <!-- Define the Style and Template -->
+        <Style x:Key="RoundedTextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <!-- The Border provides the rounded corners -->
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" 
+                                SnapsToDevicePixels="True">
+                            <!-- PART_ContentHost is required for the TextBox to function -->
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" 
+                                        HorizontalScrollBarVisibility="Hidden" 
+                                        VerticalScrollBarVisibility="Hidden"
+                                        Padding="{TemplateBinding Padding}"/>
+                        </Border>
+                        <!-- Optional: Add triggers for hover or focus effects -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="DeepSkyBlue"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Blue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
     
     <Grid>
@@ -51,15 +85,21 @@
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
                         
-                        <control:SettingsItem  Title="Staging Directory"  Description="The main dropbox directory where files are staged for transfer.">
+                        <control:SettingsItem Icon="Dropbox" Title="Staging Directory"  Description="The main dropbox directory where files are staged for transfer.">
                             <control:SettingsItem.Footer>
                                 <TextBox Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                                         Style="{StaticResource ValidatingTextBoxStyle}" 
-                                        MinWidth="400"/>
+                                        MinWidth="400">
+                                    <TextBox.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="4,4,4,4"/>
+                                        </Style>
+                                    </TextBox.Resources>
+                                </TextBox>
                             </control:SettingsItem.Footer>
                         </control:SettingsItem>
                         
-                        <control:SettingsItem  Title="Transfer Records Directory" Description="Directory where compliance records and transfer logs are stored for audit trails and troubleshooting.">
+                        <control:SettingsItem Icon="FileAlt" Title="Transfer Records Directory" Description="Directory where compliance records and transfer logs are stored for audit trails and troubleshooting.">
                             <control:SettingsItem.Footer>
                                 <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                                         Style="{StaticResource ValidatingTextBoxStyle}" 
@@ -67,7 +107,7 @@
                             </control:SettingsItem.Footer>
                         </control:SettingsItem>
                         
-                        <control:SettingsItem  Title="Retention Directory" Description="Directory where transferred folders are moved for retention. Folders are automatically cleaned up after the retention period expires.">
+                        <control:SettingsItem Icon="Archive" Title="Retention Directory" Description="Directory where transferred folders are moved for retention. Folders are automatically cleaned up after the retention period expires.">
                             <control:SettingsItem.Footer>
                                 <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                                         Style="{StaticResource ValidatingTextBoxStyle}" 
@@ -75,7 +115,7 @@
                             </control:SettingsItem.Footer>
                         </control:SettingsItem>
                         
-                        <control:SettingsItem  Title="Retention Period (Days)" Description="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu.">
+                        <control:SettingsItem Icon="Clock" Title="Retention Period (Days)" Description="Folders older than this will be automatically removed from retention directory on app startup, or manually triggered from the main menu.">
                             <control:SettingsItem.Footer>
                                 <control:NumericUpDown Value="{Binding RetentionDays, Mode=TwoWay}"  Minimum="1"  Maximum="365"  MinWidth="100" Height="30"/>
                             </control:SettingsItem.Footer>

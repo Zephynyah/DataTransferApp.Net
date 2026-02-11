@@ -28,6 +28,7 @@
             <helpers:PresetModeToEnabledConverter x:Key="PresetModeToEnabledConverter"/>
             <helpers:FileErrorTooltipConverter x:Key="FileErrorTooltipConverter"/>
             <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+            <helpers:IconToVisibilityConverter x:Key="IconToVisibilityConverter"/>
 
 
             <!-- Color Palette -->
