@@ -81,6 +81,7 @@ namespace DataTransferApp.Net.Models
             {
                 _retentionDays = value;
                 ValidateProperty(nameof(RetentionDays), value);
+                OnPropertyChanged(nameof(RetentionDays));
             }
         }
 

@@ -1258,6 +1258,7 @@ namespace DataTransferApp.Net.ViewModels
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
                     _settings.UseRoboSharp = updatedSettings.UseRoboSharp;
+                    _settings.RetentionDays = updatedSettings.RetentionDays;
 
                     // Update transfer engine display based on settings
                     TransferEngine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
