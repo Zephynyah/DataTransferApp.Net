@@ -678,7 +678,9 @@ namespace DataTransferApp.Net.Services
             return deletedCount;
         }
 
+#pragma warning disable MA0051 // Method is too long
         private static void CleanupRemainingItems(string drivePath, IProgress<TransferProgress>? progress, ref int completedItems, ref int skippedItems)
+#pragma warning restore MA0051 // Method is too long
         {
             try
             {
@@ -704,7 +706,7 @@ namespace DataTransferApp.Net.Services
                 var allDirs = Directory.GetDirectories(drivePath)
                     .Where(d => !systemFolders.Contains(Path.GetFileName(d)))
                     .ToList();
-                
+
                 var allFiles = Directory.GetFiles(drivePath).ToArray();
 
                 // Delete any remaining files (even hidden ones)
@@ -739,7 +741,7 @@ namespace DataTransferApp.Net.Services
                         {
                             // Remove read-only and hidden attributes from directory and all contents
                             RemoveAttributesRecursively(dirInfo);
-                            
+
                             // Try to delete recursively
                             Directory.Delete(dir, true);
                             completedItems++;

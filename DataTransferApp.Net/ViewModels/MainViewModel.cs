@@ -704,7 +704,9 @@ namespace DataTransferApp.Net.ViewModels
             return action;
         }
 
+#pragma warning disable MA0051 // Method is too long
         private async Task ProcessFolderTransfersAsync(List<FolderData> passedFolders)
+#pragma warning restore MA0051 // Method is too long
         {
             IsProcessing = true;
             _transferCancellationTokenSource = new CancellationTokenSource();
@@ -847,7 +849,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _transferEngine; 
+                ProgressIssues = TransferEngine;
 
                 var progress = new Progress<TransferProgress>(p =>
                 {
@@ -899,7 +901,7 @@ namespace DataTransferApp.Net.ViewModels
                 IsTransferActive = true;
             }
 
-            var engine = _transferEngine;
+            var engine = TransferEngine;
 
             if (progress.BytesPerSecond > 0)
             {
@@ -1050,7 +1052,7 @@ namespace DataTransferApp.Net.ViewModels
             {
                 // Mark transfer as starting
                 IsTransferActive = true;
-                ProgressIssues = _transferEngine;
+                ProgressIssues = TransferEngine;
 
                 var progress = new Progress<TransferProgress>(p =>
                 {

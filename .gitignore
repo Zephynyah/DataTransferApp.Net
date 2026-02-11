@@ -118,3 +118,5 @@ publish/
 appDataPath/
 *.xaml.md
 *.cs.md
+User/
+package.json
