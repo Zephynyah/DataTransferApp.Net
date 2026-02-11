@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -223,6 +224,22 @@ public partial class MainWindow : Window
         // Default fallback for systems that don't support TaskDialog
         LoggingService.Warning($"TaskDialog not supported on this OS; defaulting to Cancel for drive {driveLetter}");
         return DriveContentAction.Cancel;
+    }
+
+    private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Requires .NET 8.0 or later
+        OpenFolder(App.Settings?.StagingDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)); // Fallback to user profile if Dropbox path is not set
+    }
+
+    private void OpenFolder(string path)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = path,
+            UseShellExecute = true,
+            Verb = "open"
+        });
     }
 
     public bool ShowOverrideAuditDialog(string folderName, string auditStatus)

@@ -9,9 +9,15 @@ using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services
 {
-    public class AuditService
+    /// <summary>
+    /// Provides audit functionality for folder validation including name, dataset, and file extension validation.
+    /// </summary>
+    public partial class AuditService
     {
         private readonly AppSettings _settings;
+
+        [GeneratedRegex(@"^[a-zA-Z0-9]+$", RegexOptions.Compiled, matchTimeoutMilliseconds: 5000)]
+        private static partial Regex AlphanumericRegex();
 
         public AuditService(AppSettings settings)
         {
@@ -209,7 +215,7 @@ namespace DataTransferApp.Net.Services
             }
 
             // Check if employee ID has invalid characters (hyphens, special chars, etc.)
-            if (parts[0].Contains('-') || !Regex.IsMatch(parts[0], @"^[a-zA-Z0-9]+$"))
+            if (parts[0].Contains('-') || !AlphanumericRegex().IsMatch(parts[0]))
             {
                 issues.Add("employee ID contains invalid characters (only letters and numbers allowed)");
             }
@@ -249,13 +255,13 @@ namespace DataTransferApp.Net.Services
             }
 
             // Check if employee ID has invalid characters
-            if (parts[0].Contains('-') || !Regex.IsMatch(parts[0], @"^[a-zA-Z0-9]+$"))
+            if (parts[0].Contains('-') || !AlphanumericRegex().IsMatch(parts[0]))
             {
                 issues.Add("employee ID contains invalid characters (only letters and numbers allowed)");
             }
 
             // Check if sequence has invalid format (should be numeric or alphanumeric without special chars)
-            if (parts[3].Contains('-') || !Regex.IsMatch(parts[3], @"^[a-zA-Z0-9]+$"))
+            if (parts[3].Contains('-') || !AlphanumericRegex().IsMatch(parts[3]))
             {
                 issues.Add("sequence contains invalid characters");
             }

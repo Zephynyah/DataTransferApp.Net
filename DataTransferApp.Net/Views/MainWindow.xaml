@@ -286,9 +286,11 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <fa:IconBlock Grid.Column="0" Icon="Dropbox" Foreground="{StaticResource SecondaryBrush}" FontSize="16" Margin="0,0,5,0"/>
+
                             <TextBlock Text="Dropbox Folders" FontWeight="Bold" FontSize="14" Grid.Column="1" Margin="0,0,10,0" Padding="0">
                                 <TextBlock.ToolTip>
                                     <ToolTip Background="Transparent" BorderThickness="0">
@@ -296,12 +298,30 @@
                                     </ToolTip>
                                 </TextBlock.ToolTip>
                             </TextBlock>
+
+                            <Button
+                                Background="Transparent" 
+                                BorderBrush="Transparent" 
+                                Padding="0,0,10,0" 
+                                Margin="0"
+                                Grid.Column="2"  
+                                Click="OpenFolderButton_Click"
+                                ToolTipService.InitialShowDelay="250" 
+                                ToolTipService.BetweenShowDelay="0">
+                                 <Button.ToolTip>
+                                    <ToolTip Background="Transparent" BorderThickness="0">
+                                        <control:AwesomeToolTip Title="Open Folder" Description="This opens the selected Dropbox folder." />
+                                    </ToolTip>
+                                </Button.ToolTip>
+                                <fa:IconBlock Grid.Column="0" Icon="FolderOpen" Foreground="{StaticResource SecondaryBrush}" FontSize="16" Margin="0,0,5,0"/>
+                            </Button>
+
                             <Button 
                                 Background="Transparent" 
                                 BorderBrush="Transparent" 
                                 Padding="0" 
                                 Margin="0" 
-                                Grid.Column="2" 
+                                Grid.Column="3" 
                                 Command="{Binding LoadDataCommand}" 
                                 IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}" 
                                 ToolTipService.InitialShowDelay="250" 
@@ -521,7 +541,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
-                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="30"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
@@ -562,7 +582,7 @@
                             <StackPanel Orientation="Horizontal" Visibility="{Binding ShowAuditSummaryAsCards, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                                 <!-- Naming Audit Card -->
-                                <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,0,10,0">
+                                <Border Background="{Binding SelectedFolder.NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,5,10,5">
                                     <StackPanel Orientation="Horizontal">
                                         <fa:IconBlock Icon="FolderOpen" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Folder Name: " Foreground="{StaticResource BackgroundBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
@@ -571,7 +591,7 @@
                                 </Border>
 
                                 <!-- Blacklist Audit Card -->
-                                <Border Background="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,0,10,0">
+                                <Border Background="{Binding SelectedFolder.BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,5,10,5">
                                     <StackPanel Orientation="Horizontal">
                                         <fa:IconBlock Icon="Ban" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Blacklist: " Foreground="{StaticResource BackgroundBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
@@ -592,7 +612,7 @@
                                 </Border>
                                 
                                 <!-- Compressed Files Audit Card -->
-                                <Border Background="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,0,10,0">
+                                <Border Background="{Binding SelectedFolder.CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}" CornerRadius="3" Padding="8,4" Margin="0,5,10,5">
                                     <StackPanel Orientation="Horizontal">
                                         <fa:IconBlock Icon="Archive" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Compressed: " Foreground="{StaticResource BackgroundBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>

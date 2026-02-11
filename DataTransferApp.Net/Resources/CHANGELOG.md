@@ -9,50 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Comprehensive unit test suite for RoboSharpTransferEngine (24 integration tests)
-  - Transfer folder tests with subdirectories and recursion
-  - Transfer specific files with path structure preservation
-  - Transfer estimation and size calculation
-  - Progress reporting and event handling
-  - Cancellation token support
-  - File and directory exclusion filters
-  - Large file transfers (10MB+) and bulk file operations (100+ files)
-  - Result validation and statistics verification
-- Comprehensive unit test suite for RetryHelper (16 unit tests)
+- Added RoboSharpTransferEngine to hande file transfers with robust features like progress reporting, cancellation support, and retry logic
   - Exponential backoff retry logic (1s → 2s → 4s)
   - Jitter implementation (±25% randomness) to prevent retry storms
   - Cancellation handling during retry operations
   - Success and failure scenarios
   - Callback invocations for retry events
   - Argument validation and edge case handling
-- Unit testing documentation (UNIT_TESTS_SUMMARY.md)
-  - Test coverage breakdown
-  - Test design patterns
-  - Key insights and RoboCopy exit code behavior
-  - Future testing priorities
 
 ### Changed
 
 - Test project structure enhanced with 40 comprehensive tests
-- All tests passing (100% success rate)
 - Tests use temporary GUID-based directories for isolation
 - IDisposable pattern implemented for automatic cleanup
-- Updated TODO.md to mark unit testing tasks as complete
 
 ### Fixed
 
 - Fixed UseRoboSharp checkbox not updating UI on toggle
-  - Implemented INotifyPropertyChanged for UseRoboSharp property
-  - Implemented INotifyPropertyChanged for UseMultithreadedCopy property
-  - Dependent controls (thread count, retries, etc.) now properly enable/disable when checkbox is toggled
-  - Resolved issue where RoboSharp settings remained stuck in previous state after checkbox change
-
-### Technical Details
-
-- Test execution time: ~11.2 seconds
-- Integration tests use real file system operations with RoboSharp
-- RetryHelper tests validate exponential backoff algorithm
-- Tests cover async operations, cancellation, progress reporting, and error scenarios
+- Fixed missing RoboSharpTransferEngine tests and added comprehensive coverage
+- Fixed missing RetryHelper tests and added comprehensive coverage
 
 ## [1.3.5] - 2026-02-02
 
@@ -61,7 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add E:\ and T:\ to excluded drives
 - Add command for transferring all folders
 - Add conditional compilation for TransferHistoryDatabasePath
-- Refactor LoggingService to use Shutdown method; update SizeFormatted and CanTransfer properties in FileData and FolderData models; add missing newlines in SettingsService and TransferHistoryService; introduce timeUpdateTimer in MainViewModel for improved functionality
+- Refactor LoggingService to use Shutdown method;  
+- Add missing newlines in SettingsService and TransferHistoryService
+- Introduce timeUpdateTimer in MainViewModel for improved functionality
 
 ### Fixed
 
@@ -69,17 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update SizeFormatted and CanTransfer properties in FileData and FolderData models
 - Refactor code style and improve logging in TransferService methods
-- Update CHANGELOG for version 1.3.4 enhancements
 - Remove IsEnabled binding from Transfer All button
-- Update CHANGELOG for version 1.3.5
 - Implement subdirectory copying and file retry logic
 - Create Build Configuration Guide
 - Refactor AppSettings for directory paths and regex
 - Enhance retention folder deletion with retries
 - Enhance logging for database file lock handling
-- Refactor converters and improve documentation; remove unused FileToFontAwesomeConverter
-- Update CHANGELOG.md to reflect recent enhancements and refactoring; improve clarity and organization
 
 ## [1.3.4] - 2026-02-01
 
