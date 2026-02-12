@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2026-02-12
+
+### Added
+
+- Add application icon image (app.png) to Assets directory
+- Enhance SettingsWindow: add callback for settings saved notification and clean up ComboBox bindings
+- Add CloseSettingsOnSave option and update settings save behavior
+- Add XML documentation for filePath parameter in IsAsciiFileDotNet6 method
+- Add XML documentation for filePath parameter in IsTextFile method
+- Add application icon for DataTransferApp
+- Add XML documentation for GetTransferByIdAsync method parameter
+- Add viewable file extensions to AppConstants; clean up unused usings in services
+- Add HashAlgorithm and ConflictResolution options to AppSettings; update SettingsWindow for improved compliance record handling
+- Add IconToVisibilityConverter and update SettingsItem to support icons in the UI
+- Add custom NumericUpDown and SettingsItem controls; implement StringToVisibilityConverter for improved UI functionality
+- Add LabelWithTooltip control and update SettingsWindow for improved tooltip integration
+
+### Fixed
+
+- Bump version to 1.4.1 and update changelog; fix settings save notification timing and enhance HelpWindow data binding
+
+### Changed
+
+- Enhance settings saving logic: allow settings reload on save confirmation or dialog closure
+- Refactor constants in services and helpers: replace hardcoded values with AppConstants for improved maintainability and consistency
+- Update snackbar properties: adjust background color and opacity for improved visibility
+- Refactor MainViewModel and ViewModelBase: remove unused properties and enhance snackbar functionality with error handling and loading state management
+- Remove unused using directives in ChangesViewModel and TransferHistoryViewModel
+- Refactor comments for clarity in RoboSharpTransferEngine and TransferProgress classes
+- Remove ShowFolderAuditDetailsIcon property and related bindings from MainViewModel for cleaner code
+- Remove ShowFolderAuditDetailsIcon property and related UI elements from SettingsWindow for cleaner interface
+- Refactor UI components and remove unused controls; update SettingsWindow for improved layout and functionality
+- Update RetentionDays binding in SettingsWindow and ensure property change notification in AppSettings
+- Update CHANGELOG.md and enhance tooltips in Settings and Transfer History windows
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+- Merge branch 'main' of <https://github.com/Zephynyah/DataTransferApp.Net>
+
 ## [1.4.1] - 2026-02-11
 
 ### Added
