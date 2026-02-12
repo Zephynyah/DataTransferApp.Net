@@ -16,10 +16,10 @@ public partial class ViewModelBase : ObservableObject
     private string _snackbarMessage = string.Empty;
 
     [ObservableProperty]
-    private string _snackbarBackground = "#2ECC71"; // Default success color
+    private string _snackbarBackground = "#E62ECC71"; // Default success color
 
     [ObservableProperty]
-    private double _snackbarOpacity = 0.95; // Default opacity for notifications
+    private double _snackbarOpacity = 1.0; // Default opacity for notifications
 
     [ObservableProperty]
     private string _statusMessage = "Ready";
@@ -42,11 +42,11 @@ public partial class ViewModelBase : ObservableObject
         SnackbarMessage = message;
         SnackbarBackground = type switch
         {
-            "success" => "#2ECC71",  // 90% opacity green
-            "error" => "#E74C3C",    // 90% opacity red
-            "warning" => "#F39C12",  // 90% opacity orange
-            "info" => "#3498DB",     // 90% opacity blue
-            _ => "#2ECC71"
+            "success" => "#E62ECC71",  // 90% opacity green
+            "error" => "#E6E74C3C",    // 90% opacity red
+            "warning" => "#E6F39C12",  // 90% opacity orange
+            "info" => "#E63498DB",     // 90% opacity blue
+            _ => "#E62ECC71"
         };
         IsSnackbarVisible = true;
 
