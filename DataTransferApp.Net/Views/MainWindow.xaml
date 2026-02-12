@@ -12,7 +12,7 @@
         Height="1000" Width="1400"
         MinHeight="1000" MinWidth="1400"
         WindowStartupLocation="CenterScreen"
-        Icon="/app.png"
+        Icon="/Assets/app.png"
         Background="{StaticResource BackgroundBrush}"
         Closing="Window_Closing">
     
@@ -40,11 +40,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Image Source="/app.png" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Column="0"/>
+                <Image Source="/Assets/app.png" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Column="0"/>
                 
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="{Binding AppTitle}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
-                    <TextBlock Text="{Binding AppDescription}" FontSize="12" Foreground="{StaticResource LightBrush}"/>
+                    <TextBlock Text="{Binding AppDescription}" FontSize="12" Foreground="{StaticResource LightBrush}" FontWeight="SemiBold"/>
                 </StackPanel>
 
                 <!-- User Info -->
@@ -57,7 +57,7 @@
                 <Button Grid.Column="3" 
                         x:Name="MenuButton"
                         Background="Transparent" 
-                        BorderBrush="{StaticResource SecondaryBrush}" 
+                        BorderBrush="Transparent" 
                         BorderThickness="1"
                         Width="40"
                         Height="40"
@@ -1137,15 +1137,15 @@
         </Grid>
         
          <!-- Status Bar -->
-        <Border Grid.Row="3" Background="{StaticResource SecondaryBrush}" Padding="10,5">
+        <Border Grid.Row="3" Background="{StaticResource DarkBrush}" Padding="10,5">
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="0"/>
-                <TextBlock Text="{Binding AppFooter}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="2"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="0" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding AppFooter}" Foreground="{StaticResource BackgroundBrush}" VerticalAlignment="Center" Grid.Column="2" FontWeight="SemiBold"/>
             </Grid>
         </Border>
 

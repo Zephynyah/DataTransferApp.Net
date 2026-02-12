@@ -11,7 +11,7 @@
         Width="900"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}"
-        Icon="pack://application:,,,/app.ico">
+        Icon="/Assets/app.ico">
 
     <Window.Resources>
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">

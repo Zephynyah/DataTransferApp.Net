@@ -17,7 +17,7 @@
 
         <!-- Main Content -->
         <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Image Source="/app.png" Width="128" Height="128" Margin="0,0,0,20"/>
+            <Image Source="/Assets/app.png" Width="128" Height="128" Margin="0,0,0,20"/>
             <TextBlock Text="Data Transfer Application" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
             <TextBlock Text="Loading..." FontSize="16" Foreground="{StaticResource BackgroundBrush}" HorizontalAlignment="Center"/>
         </StackPanel>

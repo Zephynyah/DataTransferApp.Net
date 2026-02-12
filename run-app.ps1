@@ -7,7 +7,7 @@ Start-Sleep -Seconds 1
 Write-Host "Starting application..." -ForegroundColor Green
 
 # Option 1: Normal run (restart manually after XAML changes)
-dotnet run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj --configuration Debug
+dotnet run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj --configuration Release
 
 # Option 2: Watch mode (works for C# changes, XAML requires restart)
 # dotnet watch run --project ./DataTransferApp.Net\DataTransferApp.Net.csproj --configuration Debug

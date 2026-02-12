@@ -19,7 +19,7 @@
 
         <!-- Header with Logo and Title -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-            <Image Source="/app.png" Width="64" Height="64" Margin="0,0,15,0"/>
+            <Image Source="/Assets/app.png" Width="64" Height="64" Margin="0,0,15,0"/>
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{Binding AppTitle}" FontSize="28" FontWeight="Bold" Foreground="#2C3E50"/>
                 <TextBlock Text="{Binding AppVersion}" FontSize="14" Foreground="#7F8C8D"/>
