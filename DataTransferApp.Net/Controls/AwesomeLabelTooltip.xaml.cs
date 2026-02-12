@@ -7,9 +7,9 @@ namespace DataTransferApp.Net.Controls;
 /// <summary>
 /// A reusable label control with an icon and tooltip.
 /// </summary>
-public partial class LabelWithTooltip : UserControl
+public partial class AwesomeLabelTooltip : UserControl
 {
-    public LabelWithTooltip()
+    public AwesomeLabelTooltip()
     {
         InitializeComponent();
     }
@@ -21,7 +21,7 @@ public partial class LabelWithTooltip : UserControl
         DependencyProperty.Register(
             nameof(Icon),
             typeof(IconChar),
-            typeof(LabelWithTooltip),
+            typeof(AwesomeLabelTooltip),
             new PropertyMetadata(IconChar.InfoCircle));
 
     public IconChar Icon
@@ -37,7 +37,7 @@ public partial class LabelWithTooltip : UserControl
         DependencyProperty.Register(
             nameof(LabelText),
             typeof(string),
-            typeof(LabelWithTooltip),
+            typeof(AwesomeLabelTooltip),
             new PropertyMetadata(string.Empty));
 
     public string LabelText
@@ -53,7 +53,7 @@ public partial class LabelWithTooltip : UserControl
         DependencyProperty.Register(
             nameof(TooltipTitle),
             typeof(string),
-            typeof(LabelWithTooltip),
+            typeof(AwesomeLabelTooltip),
             new PropertyMetadata(string.Empty));
 
     public string TooltipTitle
@@ -69,7 +69,7 @@ public partial class LabelWithTooltip : UserControl
         DependencyProperty.Register(
             nameof(TooltipDescription),
             typeof(string),
-            typeof(LabelWithTooltip),
+            typeof(AwesomeLabelTooltip),
             new PropertyMetadata(string.Empty));
 
     public string TooltipDescription

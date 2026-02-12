@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - Add HashAlgorithm and ConflictResolution options to AppSettings; update SettingsWindow for improved compliance record handling
 - Add IconToVisibilityConverter and update SettingsItem to support icons in the UI
 - Add custom NumericUpDown and SettingsItem controls; implement StringToVisibilityConverter for improved UI functionality
-- Add LabelWithTooltip control and update SettingsWindow for improved tooltip integration
+- Add AwesomeLabelTooltip control and update SettingsWindow for improved tooltip integration
 
 ### Fixed
 
@@ -51,7 +51,7 @@ All notable changes to this project will be documented in this file.
 - Remove AwesomeDialog control and associated files; add Ookii.Dialogs.Wpf package for enhanced dialog functionality
 - Add ModernToolTip control for enhanced tooltip functionality; update MainWindow and AwesomeToolTip for improved user guidance
 - Add ThisMonthTransfers property and update TransferHistoryWindow to display monthly transfer count
-- Enhance tooltips with detailed file information and error handling; add FileListToolTip control for improved user guidance on file status and actions
+- Enhance tooltips with detailed file information and error handling; add AwesomeListTooltip control for improved user guidance on file status and actions
 - Enhance AwesomeToolTip with dynamic error messages and details; update MainViewModel to include additional recommended actions for file transfer
 - Add FileErrorTooltipConverter and enhance AwesomeToolTip with new properties for file status
 - Refactor XAML resources and add AwesomeToolTip control; enhance UI with custom tooltips and improve application startup script

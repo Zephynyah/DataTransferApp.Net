@@ -876,7 +876,7 @@
                                                             </Style.Triggers>
                                                         </Style>
                                                     </ToolTip.Style>
-                                                    <control:FileListToolTip 
+                                                    <control:AwesomeListTooltip 
                                                         FileName="{Binding FileName}"  
                                                         FullPath="{Binding FullPath}" 
                                                         SizeFormatted="{Binding SizeFormatted}" 
