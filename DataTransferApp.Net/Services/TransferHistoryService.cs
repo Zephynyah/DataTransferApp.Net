@@ -42,6 +42,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets a transfer by its ID.
         /// </summary>
+        /// <param name="id">The ID of the transfer to retrieve.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<TransferLog?> GetTransferByIdAsync(string id)
         {
