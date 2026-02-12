@@ -430,8 +430,8 @@ namespace DataTransferApp.Net.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "Retries and logging kept together for clarity.")]
         private static void DeleteRetentionFolder(DirectoryInfo folder)
         {
-            const int maxRetries = 3;
-            const int retryDelayMs = 1000;
+            const int maxRetries = AppConstants.DefaultMaxRetries;
+            const int retryDelayMs = AppConstants.DefaultRetryDelayMs;
 
             for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
@@ -910,8 +910,8 @@ namespace DataTransferApp.Net.Services
 
         private static async Task CopyFileWithRetryAsync(string sourceFile, string destFile, CancellationToken cancellationToken)
         {
-            const int maxRetries = 3;
-            const int retryDelayMs = 500;
+            const int maxRetries = AppConstants.DefaultMaxRetries;
+            const int retryDelayMs = AppConstants.DatabaseRetryDelayMs;
 
             for (int attempt = 1; attempt <= maxRetries; attempt++)
             {

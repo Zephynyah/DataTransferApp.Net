@@ -49,7 +49,7 @@ namespace DataTransferApp.Net.Services
                 LoggingService.Info($"Connection string: {_connectionString}");
 
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 collection.Insert(transfer);
 
                 LoggingService.Success($"Transfer record successfully added to database: {transfer.TransferInfo.FolderName}");
@@ -75,7 +75,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 collection.InsertBulk(transfers);
                 LoggingService.Info($"Batch added {transfers.Count()} transfer records to database");
                 return true;
@@ -93,15 +93,15 @@ namespace DataTransferApp.Net.Services
         /// <returns>A list of all transfer records in the database.</returns>
         public IList<TransferLog> GetAllTransfers()
         {
-            const int maxRetries = 3;
-            const int delayMs = 500;
+            const int maxRetries = AppConstants.DefaultMaxRetries;
+            const int delayMs = AppConstants.DatabaseRetryDelayMs;
 
             for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
                 try
                 {
                     using var db = new LiteDatabase(_connectionString);
-                    var collection = db.GetCollection<TransferLog>("transfers");
+                    var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                     return collection.FindAll().ToList();
                 }
                 catch (IOException ex) when (ex.Message.Contains("being used by another process"))
@@ -138,7 +138,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.FindById(id);
             }
             catch (Exception ex)
@@ -165,7 +165,7 @@ namespace DataTransferApp.Net.Services
                 searchTerm = searchTerm.ToLowerInvariant();
 
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Find(t =>
                     t.TransferInfo.FolderName.ToLowerInvariant().Contains(searchTerm) ||
                     t.TransferInfo.Employee.ToLowerInvariant().Contains(searchTerm) ||
@@ -192,7 +192,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Find(t =>
                     t.TransferInfo.Date >= startDate &&
                     t.TransferInfo.Date <= endDate)
@@ -215,7 +215,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection
                     .Find(Query.All(Query.Descending))
                     .OrderByDescending(t => t.TransferInfo.Date)
@@ -239,7 +239,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Find(t =>
                     t.TransferInfo.Employee == employeeId)
                 .ToList();
@@ -261,7 +261,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Find(t =>
                     t.TransferInfo.DTA == dta)
                 .ToList();
@@ -319,7 +319,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Update(transfer);
             }
             catch (Exception ex)
@@ -336,15 +336,15 @@ namespace DataTransferApp.Net.Services
         /// <returns>True if the transfer was successfully deleted; otherwise false.</returns>
         public bool DeleteTransfer(ObjectId id)
         {
-            const int maxRetries = 3;
-            const int delayMs = 500;
+            const int maxRetries = AppConstants.DefaultMaxRetries;
+            const int delayMs = AppConstants.DatabaseRetryDelayMs;
 
             for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
                 try
                 {
                     using var db = new LiteDatabase(_connectionString);
-                    var collection = db.GetCollection<TransferLog>("transfers");
+                    var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                     return collection.Delete(id);
                 }
                 catch (IOException ex) when (ex.Message.Contains("being used by another process"))
@@ -381,7 +381,7 @@ namespace DataTransferApp.Net.Services
             {
                 var cutoffDate = DateTime.Now.AddDays(-retentionDays);
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 var oldTransfers = collection.Find(t => t.TransferInfo.Date < cutoffDate);
                 var count = oldTransfers.Count(transfer => collection.Delete(transfer.Id));
 
@@ -408,7 +408,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 return collection.Count();
             }
             catch (Exception ex)
@@ -507,7 +507,7 @@ namespace DataTransferApp.Net.Services
             try
             {
                 using var db = new LiteDatabase(_connectionString);
-                var collection = db.GetCollection<TransferLog>("transfers");
+                var collection = db.GetCollection<TransferLog>(AppConstants.TransfersCollectionName);
                 collection.EnsureIndex(x => x.TransferInfo.Date);
                 collection.EnsureIndex(x => x.TransferInfo.FolderName);
                 collection.EnsureIndex(x => x.TransferInfo.DTA);

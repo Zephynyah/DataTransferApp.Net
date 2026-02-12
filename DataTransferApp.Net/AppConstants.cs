@@ -11,10 +11,80 @@ namespace DataTransferApp.Net
         /// </summary>
         public const int RoboSharpLogRetentionDays = 3;
 
+        // Retry and Timeout Constants
+
         /// <summary>
-        /// Path to the user's Application Data folder, used for storing app-specific data and logs.
+        /// Default maximum number of retry attempts for operations.
         /// </summary>
-        public static readonly string ApplicationDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        public const int DefaultMaxRetries = 3;
+
+        /// <summary>
+        /// Default retry delay in milliseconds for file operations.
+        /// </summary>
+        public const int DefaultRetryDelayMs = 1000;
+
+        /// <summary>
+        /// Default retry delay in milliseconds for database operations.
+        /// </summary>
+        public const int DatabaseRetryDelayMs = 500;
+
+        /// <summary>
+        /// Default base delay in seconds for exponential backoff retry logic.
+        /// </summary>
+        public const int DefaultBaseDelaySeconds = 5;
+
+        // File Size Limits
+
+        /// <summary>
+        /// Maximum file size for text file reading operations (5MB).
+        /// </summary>
+        public const long MaxTextFileSizeBytes = 5 * 1024 * 1024;
+
+        /// <summary>
+        /// Maximum file size for encoding detection (10MB).
+        /// </summary>
+        public const long MaxEncodingDetectionFileSizeBytes = 10 * 1024 * 1024;
+
+        /// <summary>
+        /// Maximum file size limit for log files (10MB).
+        /// </summary>
+        public const long MaxLogFileSizeBytes = 10 * 1024 * 1024;
+
+        /// <summary>
+        /// Maximum number of lines to read from a text file before truncating.
+        /// </summary>
+        public const int MaxTextFileLines = 50000;
+
+        // File Size Units
+
+        /// <summary>
+        /// Number of bytes in a kilobyte.
+        /// </summary>
+        public const long BytesPerKB = 1024;
+
+        /// <summary>
+        /// Number of bytes in a megabyte.
+        /// </summary>
+        public const long BytesPerMB = 1024 * 1024;
+
+        /// <summary>
+        /// Number of bytes in a gigabyte.
+        /// </summary>
+        public const long BytesPerGB = 1024 * 1024 * 1024;
+
+        // Buffer Sizes
+
+        /// <summary>
+        /// Default buffer size for file encoding detection (8KB).
+        /// </summary>
+        public const int FileEncodingSampleSize = 8192;
+
+        // Database Constants
+
+        /// <summary>
+        /// Name of the database collection for storing transfer logs.
+        /// </summary>
+        public const string TransfersCollectionName = "transfers";
 
         // File Extensions
 
@@ -65,5 +135,10 @@ namespace DataTransferApp.Net
             ".sql", ".bat", ".cmd", ".sh", ".py", ".java", ".c", ".cpp", ".h",
             ".cs", ".vb", ".php", ".rb", ".pl", ".yml", ".yaml", ".cfg"
         };
+
+        /// <summary>
+        /// Path to the user's Application Data folder, used for storing app-specific data and logs.
+        /// </summary>
+        public static readonly string ApplicationDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
     }
 }

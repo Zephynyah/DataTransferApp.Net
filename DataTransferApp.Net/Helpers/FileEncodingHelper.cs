@@ -5,8 +5,8 @@ namespace DataTransferApp.Net.Helpers
 {
     public static class FileEncodingHelper
     {
-        private const int SAMPLESIZE = 8192; // 8KB sample
-        private const long MAXFILESIZE = 10 * 1024 * 1024; // 10MB limit
+        private const int SAMPLESIZE = AppConstants.FileEncodingSampleSize;
+        private const long MAXFILESIZE = AppConstants.MaxEncodingDetectionFileSizeBytes;
 
         /// <summary>
         /// Determines if a file appears to be a text file that can be safely opened in a viewer

@@ -12,9 +12,9 @@ namespace DataTransferApp.Net.Helpers
         /// <returns>A formatted string representing the file size.</returns>
         public static string FormatFileSize(long bytes)
         {
-            const long GB = 1024L * 1024L * 1024L;
-            const long MB = 1024L * 1024L;
-            const long KB = 1024L;
+            const long GB = AppConstants.BytesPerGB;
+            const long MB = AppConstants.BytesPerMB;
+            const long KB = AppConstants.BytesPerKB;
 
             if (bytes >= GB)
             {

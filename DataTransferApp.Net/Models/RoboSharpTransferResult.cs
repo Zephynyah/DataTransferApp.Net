@@ -232,9 +232,9 @@ namespace DataTransferApp.Net.Models
         /// </summary>
         private static string FormatBytes(long bytes)
         {
-            const long GB = 1024 * 1024 * 1024;
-            const long MB = 1024 * 1024;
-            const long KB = 1024;
+            const long GB = AppConstants.BytesPerGB;
+            const long MB = AppConstants.BytesPerMB;
+            const long KB = AppConstants.BytesPerKB;
 
             if (bytes >= GB)
             {

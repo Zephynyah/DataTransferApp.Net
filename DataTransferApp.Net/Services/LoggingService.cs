@@ -31,7 +31,7 @@ namespace DataTransferApp.Net.Services
                         logFilePath,
                         rollingInterval: RollingInterval.Day,
                         rollOnFileSizeLimit: true,
-                        fileSizeLimitBytes: 10 * 1024 * 1024, // 10MB
+                        fileSizeLimitBytes: AppConstants.MaxLogFileSizeBytes, // 10MB
                         retainedFileCountLimit: 5,
                         outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                     .CreateLogger();

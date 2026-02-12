@@ -19,8 +19,8 @@ public static class RetryHelper
     /// <exception cref="Exception">Throws the last exception if all retries fail.</exception>
     public static async Task<T> ExecuteWithRetryAsync<T>(
         Func<Task<T>> operation,
-        int maxRetries = 3,
-        int baseDelaySeconds = 5,
+        int maxRetries = AppConstants.DefaultMaxRetries,
+        int baseDelaySeconds = AppConstants.DefaultBaseDelaySeconds,
         bool useJitter = true,
         Action<int, TimeSpan>? onRetry = null,
         CancellationToken cancellationToken = default)
@@ -98,8 +98,8 @@ public static class RetryHelper
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task ExecuteWithRetryAsync(
         Func<Task> operation,
-        int maxRetries = 3,
-        int baseDelaySeconds = 5,
+        int maxRetries = AppConstants.DefaultMaxRetries,
+        int baseDelaySeconds = AppConstants.DefaultBaseDelaySeconds,
         bool useJitter = true,
         Action<int, TimeSpan>? onRetry = null,
         CancellationToken cancellationToken = default)

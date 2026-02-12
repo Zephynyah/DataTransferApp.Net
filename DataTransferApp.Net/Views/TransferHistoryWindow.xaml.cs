@@ -1,5 +1,4 @@
 using System.Windows;
-using DataTransferApp.Net.Services;
 using DataTransferApp.Net.ViewModels;
 
 namespace DataTransferApp.Net.Views

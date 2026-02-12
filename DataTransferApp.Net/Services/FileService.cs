@@ -10,12 +10,12 @@ namespace DataTransferApp.Net.Services
         {
         }
 
-        public static string ReadTextFile(string filePath, int maxLines = 50000)
+        public static string ReadTextFile(string filePath, int maxLines = AppConstants.MaxTextFileLines)
         {
             try
             {
                 var fileInfo = new FileInfo(filePath);
-                const long maxSize = 5 * 1024 * 1024; // 5MB
+                const long maxSize = AppConstants.MaxTextFileSizeBytes;
 
                 if (fileInfo.Length > maxSize)
                 {

@@ -30,7 +30,6 @@
             <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
             <helpers:IconToVisibilityConverter x:Key="IconToVisibilityConverter"/>
 
-
             <!-- Color Palette -->
             <SolidColorBrush x:Key="PrimaryBrush" Color="#3498DB"/>
             <SolidColorBrush x:Key="SuccessBrush" Color="#27AE60"/>
@@ -265,18 +264,11 @@
             </Style>
 
             <!-- Footnote Style -->
-            <!-- <Style x:Key="FootnoteStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="10.5"/>
-                <Setter Property="Foreground" Value="#7f8c8d"/>
-                <Setter Property="Margin" Value="0,0,0,0"/> 
-                <Setter Property="TextWrapping" Value="Wrap"/>
-            </Style> -->
-
             <Style x:Key="FootnoteStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="10.5"/>
                 <Setter Property="FontStyle" Value="Italic"/>
                 <Setter Property="Foreground" Value="{StaticResource FootNoteDarkBrush}"/>
-                <Setter Property="Margin" Value="0,0,0,0"/> <!-- Top margin for spacing -->
+                <Setter Property="Margin" Value="0,0,0,0"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>
         
