@@ -1155,14 +1155,14 @@
         <Border Grid.RowSpan="4"
                 Panel.ZIndex="999"
                 HorizontalAlignment="Right" 
-                VerticalAlignment="Top" 
-                Margin="0,60,20,0"
+                VerticalAlignment="Bottom" 
+                Margin="0,0,20,150"
                 Background="{Binding SnackbarBackground}"
                 CornerRadius="4"
                 Padding="16,12"
                 MinWidth="280"
                 MaxWidth="400"
-                IsHitTestVisible="False"
+                IsHitTestVisible="True"
                 RenderTransformOrigin="1,0">
             <Border.RenderTransform>
                 <TranslateTransform X="400"/>
