@@ -13,6 +13,12 @@ namespace DataTransferApp.Net.Views
         private readonly SettingsService _settingsService;
         private readonly AppSettings _settings;
 
+        /// <summary>
+        /// Gets a value indicating whether settings were successfully saved.
+        /// Used by the calling window to determine if settings should be reloaded.
+        /// </summary>
+        public bool SettingsWereSaved { get; private set; } = false;
+
         public SettingsWindow(SettingsService settingsService, AppSettings settings)
         {
             InitializeComponent();
@@ -37,13 +43,19 @@ namespace DataTransferApp.Net.Views
                 _settingsService.SaveSettings(_settings);
                 LoggingService.Info("Settings saved by user");
 
+                SettingsWereSaved = true;
+
                 // Close window only if the user has enabled auto-close
                 if (_settings.CloseSettingsOnSave)
                 {
                     DialogResult = true;
                     Close();
                 }
-                // If auto-close is disabled, just keep the window open (no DialogResult set)
+                else
+                {
+                    // Keep window open - DialogResult remains unset so ShowDialog() returns null/false
+                    // But SettingsWereSaved is true so main window knows to reload settings
+                }
             }
             catch (System.Exception ex)
             {

@@ -1230,7 +1230,7 @@ namespace DataTransferApp.Net.ViewModels
                     App.SettingsService!,
                     App.Settings!);
 
-                if (settingsWindow.ShowDialog() == true)
+                if (settingsWindow.ShowDialog() == true || settingsWindow.SettingsWereSaved)
                 {
                     // Reload settings from database
                     var updatedSettings = App.SettingsService!.GetSettings();
