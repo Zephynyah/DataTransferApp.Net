@@ -103,9 +103,6 @@ namespace DataTransferApp.Net.ViewModels
         private double _snackbarOpacity = 1.0;  // Adjust this value (0.0 to 1.0) to control notification brightness
 
         [ObservableProperty]
-        private bool _showFolderAuditDetailsIcon = true;
-
-        [ObservableProperty]
         private bool _showAuditSummaryAsCards = true;
 
         [ObservableProperty]
@@ -138,7 +135,6 @@ namespace DataTransferApp.Net.ViewModels
             _archiveService = new ArchiveService();
 
             // Initialize settings-based properties
-            ShowFolderAuditDetailsIcon = _settings.ShowFolderAuditDetailsIcon;
             ShowAuditSummaryAsCards = _settings.ShowAuditSummaryAsCards;
 
             // Initialize drive detection timer (check every 10 seconds)
@@ -1250,11 +1246,9 @@ namespace DataTransferApp.Net.ViewModels
                     var updatedSettings = App.SettingsService!.GetSettings();
 
                     // Update observable properties from reloaded settings
-                    ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
 
                     // Copy updated settings back to the _settings reference
-                    _settings.ShowFolderAuditDetailsIcon = updatedSettings.ShowFolderAuditDetailsIcon;
                     _settings.AutoAuditOnStartup = updatedSettings.AutoAuditOnStartup;
                     _settings.ShowAuditSummaryAsCards = updatedSettings.ShowAuditSummaryAsCards;
                     _settings.UseRoboSharp = updatedSettings.UseRoboSharp;
