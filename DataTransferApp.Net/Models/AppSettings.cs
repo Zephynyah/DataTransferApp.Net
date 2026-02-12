@@ -352,8 +352,6 @@ namespace DataTransferApp.Net.Models
 
         public bool AutoAuditOnStartup { get; set; } = false;
 
-        public bool ShowFolderAuditDetailsIcon { get; set; } = false;
-
         public bool ShowAuditSummaryAsCards { get; set; } = false;
 
         public string WindowStartupMode { get; set; } = "Normal"; // Normal, Maximized, Fullscreen

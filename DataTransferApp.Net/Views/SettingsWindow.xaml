@@ -115,11 +115,6 @@
                 <!-- UI Display Options -->
                 <GroupBox Header="Display Options">
                     <StackPanel>
-                        <CheckBox Content="Show audit details icon in folder list" IsChecked="{Binding ShowFolderAuditDetailsIcon}" Margin="0,0,0,5"/>
-                        <TextBlock Text="When enabled, folders with audit failures will display an information icon showing detailed audit statistics."
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Margin="20,0,0,10"/>
-                        
                         <CheckBox Content="Display audit summary as colored cards" IsChecked="{Binding ShowAuditSummaryAsCards}" Margin="0,0,0,5"/>
                         <TextBlock Text="When enabled, audit summaries will be displayed as colored badge cards. When disabled, they will show as simple colored text with icons."
                                    Style="{StaticResource FootnoteStyle}"
