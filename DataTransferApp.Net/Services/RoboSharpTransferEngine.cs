@@ -2,7 +2,6 @@ using System.IO;
 using DataTransferApp.Net.Models;
 using RoboSharp;
 
-
 namespace DataTransferApp.Net.Services
 {
     /// <summary>
