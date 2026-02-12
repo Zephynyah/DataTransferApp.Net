@@ -19,11 +19,17 @@ namespace DataTransferApp.Net.Models
         public static readonly string[] LogFormats = { "TXT", "JSON", "CSV" };
         public static readonly string[] ComplianceRecordFormats = { "CSV", "Excel", "JSON" };
         public static readonly string[] ComplianceRecordTypes = { "Standard", "Comprehensive" };
+        public static readonly string[] HashAlgorithms = { "SHA256", "SHA512", "SHA1", "MD5" };
+        public static readonly string[] ConflictResolutionStrategies = { "AppendSequence", "Skip", "Overwrite" }; // Must match the ComboBox items in SettingsWindow.xaml
 
         // Instance properties for binding
         public static string[] WindowStartupModeOptions => WindowStartupModes;
         public static string[] LogLevelOptions => LogLevels;
         public static string[] LogFormatOptions => LogFormats;
+        public static string[] ComplianceRecordFormatOptions => ComplianceRecordFormats;
+        public static string[] ComplianceRecordTypeOptions => ComplianceRecordTypes;
+        public static string[] HashAlgorithmOptions => HashAlgorithms;
+        public static string[] ConflictResolutionOptions => ConflictResolutionStrategies;
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;

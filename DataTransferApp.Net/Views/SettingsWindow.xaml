@@ -5,6 +5,7 @@
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:local="clr-namespace:DataTransferApp.Net.Views"
         xmlns:models="clr-namespace:DataTransferApp.Net.Models"
+        xmlns:control="clr-namespace:DataTransferApp.Net.Controls"
         Title="Application Settings" 
         Height="750" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -85,7 +86,6 @@
                 </GroupBox>
                 
                 <!-- Excluded Behaviors -->
-
                 <GroupBox Header="Excluded Behaviors">
                     <!-- Excluded Folders -->
                     <StackPanel>
@@ -133,18 +133,25 @@
                 </GroupBox>
                 
                 <!-- Application Logging -->
-                <GroupBox Header="Application Logging" IsEnabled="True">
+                <GroupBox Header="Application Logging" IsEnabled="False">
                     <StackPanel>
                         <CheckBox Content="Enable Application File Logging" IsChecked="{Binding EnableFileLogging}"/>
                         <TextBlock Text="When enabled, application events and transfer details will be logged to files in the transfer records directory." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Log Level" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogLevel}" SelectedValuePath="Content" ItemsSource="{x:Static models:AppSettings.LogLevelOptions}"/>
-                        <TextBlock Text="Log level determines the verbosity of log output. Debug: Detailed information for troubleshooting. Info: General operational messages. Warning: Indications of potential issues. Error: Errors that occurred during operation." 
-                            Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+                        <ComboBox SelectedValue="{Binding LogLevel}"  ItemsSource="{x:Static models:AppSettings.LogLevelOptions}"/>
+                         <TextBlock Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10">
+                            • Debug: Detailed information for troubleshooting.
+                            <LineBreak/>
+                            • Info: General operational messages.
+                            <LineBreak/>
+                            • Warning: Indications of potential issues.
+                            <LineBreak/>
+                            • Error: Errors that occurred during operation.
+                        </TextBlock>
                         
                         <TextBlock Text="Log Format" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogFormat}" SelectedValuePath="Content" ItemsSource="{x:Static models:AppSettings.LogFormatOptions}"/>
+                        <ComboBox SelectedValue="{Binding LogFormat}" ItemsSource="{x:Static models:AppSettings.LogFormatOptions}"/>
                         <TextBlock Text="Log file format. TXT: Plain text files. JSON: Structured JSON format. CSV: Comma-separated values for spreadsheet compatibility." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
                         <Grid>
@@ -186,91 +193,76 @@
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" Margin="0,0,0,5">
-                            💡 Database provides 50-200x faster queries than JSON files and supports multi-user access.
-                        </TextBlock>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <fa:IconBlock Icon="Lightbulb" Grid.Column="0" Foreground="#3498db" FontSize="12" Margin="0,0,5,0"/>
+                            <TextBlock Grid.Column="1" Style="{StaticResource FootnoteStyle}" Foreground="#3498db" Text="Database provides 50-200x faster queries than JSON files and supports multi-user access."/>
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- Compliance Records -->
                 <GroupBox Header="Compliance Records &amp; Transfer Documentation">
                     <StackPanel>
-                        <CheckBox Content="Generate Compliance Records for Each Transfer" 
-                                  IsChecked="{Binding GenerateComplianceRecords}" 
-                                  Margin="0,0,0,10"
-                                  ToolTip="Automatically generate compliance records for regulatory audits"/>
+                        <!-- <CheckBox Content="Generate Compliance Records for Each Transfer" IsChecked="{Binding GenerateComplianceRecords}" IsEnabled="True"/>
+                        <TextBlock Text="Generated for each transfer, including file-level details and transfer metadata." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/> -->
                         
                         <TextBlock Text="Compliance Record Type" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ComplianceRecordType}" 
-                                  SelectedValuePath="Content" 
-                                  Margin="0,0,0,10" 
-                                  IsEnabled="{Binding GenerateComplianceRecords}">
-                            <ComboBoxItem Content="Standard"/>
-                            <ComboBoxItem Content="Comprehensive"/>
-                        </ComboBox>
+                        <ComboBox SelectedValue="{Binding ComplianceRecordType}" SelectedValuePath="Content" IsEnabled="{Binding GenerateComplianceRecords}" ItemsSource="{x:Static models:AppSettings.ComplianceRecordTypeOptions}"/>
                         <TextBlock Text="Standard: Tabular format with file-level details. Comprehensive: Detailed transfer summary with sections."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Compliance Record Format" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" 
-                                  SelectedValuePath="Content" 
-                                  Margin="0,0,0,10" 
-                                  IsEnabled="{Binding GenerateComplianceRecords}">
-                            <ComboBoxItem Content="CSV"/>
-                            <ComboBoxItem Content="TXT"/>
-                            <ComboBoxItem Content="Excel"/>
-                            <ComboBoxItem Content="JSON"/>
-                        </ComboBox>
+                        <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" SelectedValuePath="Content" IsEnabled="{Binding GenerateComplianceRecords}" ItemsSource="{x:Static models:AppSettings.ComplianceRecordFormatOptions}"/>
+                        <TextBlock Text="Format for generated compliance records. CSV: Comma-separated values. Excel: XLSX format. JSON: Structured JSON format."
+                                   Style="{StaticResource FootnoteStyle}"
+                                   Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Source Location" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding ComplianceSourceLocation}" 
-                                 Margin="0,0,0,10" 
-                                 IsEnabled="{Binding GenerateComplianceRecords}"
-                                 ToolTip="Source location name for compliance records (e.g., Unclassified Corporate Network)"/>
+                        <TextBox Text="{Binding ComplianceSourceLocation}" IsEnabled="{Binding GenerateComplianceRecords}"/>
+                        <TextBlock Text="Additional source information to include in compliance records (e.g., department, project, etc.)" Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <CheckBox Content="Calculate File Hashes for Verification" 
-                                  IsChecked="{Binding CalculateFileHashes}" 
-                                  IsEnabled="{Binding GenerateComplianceRecords}" 
-                                  Margin="0,0,0,10"
-                                  ToolTip="Generate cryptographic hashes for file integrity verification"/>
+                        <CheckBox Content="Calculate File Hashes for Verification" IsChecked="{Binding CalculateFileHashes}" IsEnabled="{Binding GenerateComplianceRecords}" />
+                        <TextBlock Text="When enabled, file hashes will be calculated and included in compliance records for data integrity verification." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Hash Algorithm" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding HashAlgorithm}" 
-                                  SelectedValuePath="Content" 
-                                  Margin="0,0,0,10" 
-                                  IsEnabled="{Binding CalculateFileHashes}">
-                            <ComboBoxItem Content="SHA256"/>
-                            <ComboBoxItem Content="SHA512"/>
-                            <ComboBoxItem Content="SHA1"/>
-                            <ComboBoxItem Content="MD5"/>
-                        </ComboBox>
-                        
-                        <TextBlock FontSize="10" Foreground="#e74c3c" TextWrapping="Wrap" Margin="0,0,0,5">
-                            ⚠️ Compliance records are required for regulatory audits. Records are automatically generated on transfer completion.
-                        </TextBlock>
+                        <ComboBox SelectedValue="{Binding HashAlgorithm}"  SelectedValuePath="Content" IsEnabled="{Binding CalculateFileHashes}" ItemsSource="{x:Static models:AppSettings.HashAlgorithmOptions}"/>
+                        <TextBlock Text="Hash algorithm to use for file integrity verification." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+                            
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <fa:IconBlock Icon="ExclamationTriangle" Grid.Column="0" Foreground="#e74c3c" FontSize="12" Margin="0,0,5,0"/>
+                            <TextBlock Grid.Column="1" FontSize="10" Foreground="#e74c3c" TextWrapping="Wrap" Text="Compliance records are required for regulatory audits. Records are automatically generated on transfer completion."/>
+                        </Grid>
+                   
                     </StackPanel>
                 </GroupBox>
                 
-                <!-- Transfer Settings -->
+                <!-- Transfer Options -->
                 <GroupBox Header="Transfer Options">
                     <StackPanel>
-                        <CheckBox Content="Enable Compression" IsChecked="{Binding EnableCompression}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Enable Compression" IsChecked="{Binding EnableCompression}"/>
+                        <TextBlock Text="When enabled, files will be compressed during transfer to save space and potentially speed up the transfer process." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Minimum Free Space on Drive (GB)" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <TextBox Text="{Binding MinimumFreeSpaceGB}" Margin="0,0,0,0"/>
+                        <TextBox Text="{Binding MinimumFreeSpaceGB}" />
+                        <TextBlock Text="Drives with free space below this threshold will be hidden from the drive selection list." Style="{StaticResource FootnoteStyle}"/>
                         
                         <Separator Margin="0,10,0,10"/>
                         
                         <TextBlock Text="Conflict Handling" FontWeight="Bold" FontSize="13" Margin="0,5,0,5"/>
-                        <CheckBox Content="Automatically Handle Folder Conflicts" IsChecked="{Binding AutoHandleConflicts}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Automatically Handle Folder Conflicts" IsChecked="{Binding AutoHandleConflicts}"/>
+                        <TextBlock Text="When enabled, the application will automatically handle folder name conflicts on the destination drive based on the selected strategy." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Conflict Resolution Strategy" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ConflictResolution}" SelectedValuePath="Content" Margin="0,0,0,5" IsEnabled="{Binding AutoHandleConflicts}">
-                            <ComboBoxItem Content="AppendSequence"/>
-                            <ComboBoxItem Content="Skip"/>
-                            <ComboBoxItem Content="Overwrite"/>
-                        </ComboBox>
+                        <ComboBox SelectedValue="{Binding ConflictResolution}" SelectedValuePath="Content" IsEnabled="{Binding AutoHandleConflicts}" ItemsSource="{x:Static models:AppSettings.ConflictResolutionOptions}"/>
                         <TextBlock Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10">
                             • AppendSequence: Add sequence number to duplicate folders (e.g., Folder_1)
                             <LineBreak/>
@@ -279,29 +271,35 @@
                             • Overwrite: Replace existing folder with new transfer
                         </TextBlock>
                         
-                        <CheckBox Content="Prompt Before Overwriting Existing Data" IsChecked="{Binding PromptBeforeOverwrite}" IsEnabled="{Binding AutoHandleConflicts}" Margin="0,0,0,10"/>
+                        <CheckBox Content="Prompt Before Overwriting Existing Data" IsChecked="{Binding PromptBeforeOverwrite}" IsEnabled="{Binding AutoHandleConflicts}"/>
+                        <TextBlock Text="When enabled, the application will prompt the user for confirmation before overwriting existing data on the destination drive." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,0"/>
                     </StackPanel>
                 </GroupBox>
                 
                 <!-- RoboSharp Transfer Engine -->
                 <GroupBox Header="RoboSharp Transfer Engine (Advanced)">
                     <StackPanel>
-                        <CheckBox Content="Use RoboSharp for File Transfers" 
-                                  IsChecked="{Binding UseRoboSharp}" 
-                                  Margin="0,0,0,10"
-                                  ToolTip="Enables high-performance file transfers using Robocopy engine"/>
+                        <CheckBox Content="Use RoboSharp for File Transfers" IsChecked="{Binding UseRoboSharp}"/>
+                        <TextBlock Text="RoboSharp is an optional transfer engine that uses Microsoft Robocopy for high-performance file transfers with advanced features." 
+                            Style="{StaticResource FootnoteStyle}" 
+                            Margin="20,0,0,10"/>
                         
-                        <TextBlock Style="{StaticResource FootnoteStyle}" Foreground="#3498db" TextWrapping="Wrap" Margin="0,0,0,10">
-                            💡 RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations.
-                        </TextBlock>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                                <fa:IconBlock Icon="Lightbulb" Grid.Column="0" Foreground="#3498db" FontSize="12" Margin="0,0,5,0"/>
+                                <TextBlock Grid.Column="1" Style="{StaticResource FootnoteStyle}" 
+                                Foreground="#3498db" 
+                                Text="RoboSharp uses Microsoft Robocopy for enterprise-grade file transfers with multi-threading, automatic retries, and detailed progress tracking. Ideal for large transfers and network operations"/>
+                        </Grid>
                         
-                        <Separator Margin="0,5,0,10"/>
+                        <Separator Margin="0,10,0,10"/>
                         
                         <!-- Configuration Presets -->
                         <TextBlock Text="Configuration Presets" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                        <TextBlock Text="Select a preset or configure manually. Performance controls are read-only when using presets."
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Margin="0,0,0,5"/>
+                        <TextBlock Text="Select a preset or configure manually. Performance controls are read-only when using presets." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,5"/>
                         
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
@@ -412,11 +410,8 @@
                         
                         <Separator Margin="0,5,0,10"/>
                         
-                        <TextBlock Text="Performance Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                        <TextBlock Text="Available only in Manual mode. Preset configurations are read-only."
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Foreground="#95a5a6"
-                                   Margin="0,0,0,5"/>
+                        <TextBlock Text="Performance Settings" FontWeight="Bold" FontSize="13"/>
+                        <TextBlock Text="Available only in Manual mode. Preset configurations are read-only." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,5"/>
                         
                         <TextBlock Text="Thread Count" Style="{StaticResource SubHeaderTextStyle}"/>
                         <Grid Margin="0,0,0,10">
@@ -445,7 +440,8 @@
                         
                         <Separator Margin="0,5,0,10"/>
                         
-                        <TextBlock Text="Reliability Settings" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        <TextBlock Text="Reliability Settings" FontWeight="Bold" FontSize="13"/>
+                        <TextBlock Text="Automatic retry on transient failures (network issues, file locks, etc.)" Style="{StaticResource FootnoteStyle}" Margin="0,0,0,5"/>
                         
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -455,47 +451,41 @@
                             
                             <StackPanel Grid.Column="0" Margin="0,0,5,0">
                                 <TextBlock Text="Retry Count" Style="{StaticResource SubHeaderTextStyle}"/>
-                                <TextBox Text="{Binding RobocopyRetries, Mode=TwoWay}" 
-                                         IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
-                                         ToolTip="Number of retry attempts for failed operations"/>
+                                <TextBox Text="{Binding RobocopyRetries, Mode=TwoWay}"  IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"/>
+                                <TextBlock Text="Number of retry attempts for failed file operations." Style="{StaticResource FootnoteStyle}"/>
                             </StackPanel>
                             
                             <StackPanel Grid.Column="1" Margin="5,0,0,0">
                                 <TextBlock Text="Retry Wait (seconds)" Style="{StaticResource SubHeaderTextStyle}"/>
-                                <TextBox Text="{Binding RobocopyRetryWaitSeconds, Mode=TwoWay}" 
-                                         IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"
-                                         ToolTip="Wait time between retry attempts"/>
+                                <TextBox Text="{Binding RobocopyRetryWaitSeconds, Mode=TwoWay}"  IsEnabled="{Binding RoboSharpPresetMode, Converter={StaticResource PresetModeToEnabledConverter}}"/>
+                                <TextBlock Text="Wait time between retry attempts." Style="{StaticResource FootnoteStyle}"/>
                             </StackPanel>
                         </Grid>
-                        <TextBlock Text="Automatic retry on transient failures (network issues, file locks, etc.)"
-                                   Style="{StaticResource FootnoteStyle}"
-                                   Margin="0,5,0,10"/>
                         
-                        <Separator Margin="0,5,0,10"/>
                         
-                        <TextBlock Text="Logging &amp; Monitoring" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                        <Separator Margin="0,10,0,10"/>
                         
-                        <CheckBox Content="Enable Verbose Output" 
-                                  IsChecked="{Binding RobocopyVerboseOutput}" 
-                                  IsEnabled="{Binding UseRoboSharp}"
-                                  Margin="0,0,0,5"
-                                  ToolTip="Show detailed file-by-file progress information"/>
+                        <TextBlock Text="Logging &amp; Monitoring" FontWeight="Bold" FontSize="13" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Enable Verbose Output"  IsChecked="{Binding RobocopyVerboseOutput}"  IsEnabled="{Binding UseRoboSharp}" ToolTip="Show detailed file-by-file progress information"/>
                         <TextBlock Text="Shows detailed progress for each file. Provides more information but may impact performance with many small files."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <CheckBox Content="Generate Transfer Logs" 
-                                  IsChecked="{Binding RobocopyDetailedLogging}" 
-                                  IsEnabled="{Binding UseRoboSharp}"
-                                  Margin="0,0,0,5"
-                                  ToolTip="Save detailed Robocopy logs for each transfer"/>
+                        <CheckBox Content="Generate Transfer Logs"  IsChecked="{Binding RobocopyDetailedLogging}"  IsEnabled="{Binding UseRoboSharp}" ToolTip="Save detailed Robocopy logs for each transfer"/>
                         <TextBlock Text="Logs are saved in the Transfer Records directory for troubleshooting and audit purposes."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="20,0,0,10"/>
                         
-                        <TextBlock FontSize="10" Foreground="#e67e22" TextWrapping="Wrap" Margin="0,5,0,0">
-                            ⚠️ RoboSharp requires Windows and uses native system APIs. Performance may vary based on hardware and network conditions.
-                        </TextBlock>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <fa:IconBlock Icon="ExclamationTriangle" Grid.Column="0" Foreground="#e74c3c" FontSize="12" Margin="0,0,5,0"/>
+                            <TextBlock Grid.Column="1" FontSize="10" Foreground="#e74c3c" TextWrapping="Wrap" 
+                                Text="Enabling verbose output and detailed logging may impact performance, especially with large transfers. Use for troubleshooting or audits."/>
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
                 
