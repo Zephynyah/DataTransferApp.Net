@@ -41,7 +41,7 @@ namespace DataTransferApp.Net.Services
         {
             settings.Id = 1; // Ensure we're always updating the same record
             settings.LastModified = DateTime.Now;
-            _collection.Update(settings);
+            _collection.Upsert(settings); // Use Upsert to ensure the document is saved even if it doesn't exist
             LoggingService.Info("Settings saved to database");
         }
 

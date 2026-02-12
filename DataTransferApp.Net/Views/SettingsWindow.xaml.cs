@@ -35,12 +35,15 @@ namespace DataTransferApp.Net.Views
             try
             {
                 _settingsService.SaveSettings(_settings);
-
-                MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoggingService.Info("Settings saved by user");
 
-                DialogResult = true;
-                Close();
+                // Close window only if the user has enabled auto-close
+                if (_settings.CloseSettingsOnSave)
+                {
+                    DialogResult = true;
+                    Close();
+                }
+                // If auto-close is disabled, just keep the window open (no DialogResult set)
             }
             catch (System.Exception ex)
             {

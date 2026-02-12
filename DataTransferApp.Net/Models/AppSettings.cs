@@ -332,6 +332,20 @@ namespace DataTransferApp.Net.Models
 
         public bool ShowAuditSummaryAsCards { get; set; } = false;
 
+        private bool _closeSettingsOnSave = false;
+        public bool CloseSettingsOnSave
+        {
+            get => _closeSettingsOnSave;
+            set
+            {
+                if (_closeSettingsOnSave != value)
+                {
+                    _closeSettingsOnSave = value;
+                    OnPropertyChanged(nameof(CloseSettingsOnSave));
+                }
+            }
+        }
+
         public string WindowStartupMode { get; set; } = "Normal"; // Normal, Maximized, Fullscreen
 
         // Last Updated

@@ -33,14 +33,38 @@
         </Grid.RowDefinitions>
 
         <!-- Header with Logo and Title -->
-        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">    
-            <StackPanel Orientation="Horizontal">
-                <fa:IconBlock Icon="Cog" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
-                    <TextBlock Text="Configure application preferences and behavior" FontSize="12" Foreground="{StaticResource LightBrush}"/>
+        <Border Grid.Row="0" Background="{StaticResource DarkBrush}" Padding="15,10">   
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions> 
+            
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <fa:IconBlock Icon="Cog" Foreground="{StaticResource BackgroundBrush}" FontSize="32" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Application Settings" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BackgroundBrush}"/>
+                        <TextBlock Text="Configure application preferences and behavior" FontSize="12" Foreground="{StaticResource LightBrush}"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+
+                <Button
+                    Background="Transparent" 
+                    BorderBrush="Transparent" 
+                    Padding="0,0,10,0" 
+                    Margin="0"
+                    Grid.Column="1"  
+                    Click="ResetButton_Click"
+                    ToolTipService.InitialShowDelay="250" 
+                    ToolTipService.BetweenShowDelay="0">
+                        <Button.ToolTip>
+                        <ToolTip Background="Transparent" BorderThickness="0">
+                            <control:AwesomeToolTip Title="Reset to Defaults" Description="This resets all settings to their default values." />
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <fa:IconBlock Icon="Redo" Foreground="{StaticResource BackgroundBrush}" FontSize="18" Margin="0,0,5,0"/>
+                </Button>
+            </Grid>
         </Border>
         
         <!-- Settings Content -->
@@ -524,17 +548,19 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource WarningBrush}" Grid.Column="0">
-                    <Button.ToolTip>
-                        <ToolTip Background="Transparent" BorderThickness="0">
-                            <control:AwesomeToolTip Title="Reset to Defaults" Description="This resets all settings to their default values." />
-                        </ToolTip>
-                    </Button.ToolTip>
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconBlock Icon="Redo" Foreground="{StaticResource BackgroundBrush}" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Reset to Defaults" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding CloseSettingsOnSave}"
+                              Content="Close after saving"
+                              Margin="0,0,0,5"
+                              VerticalAlignment="Center"
+                              ToolTip="Automatically close the settings window after saving changes"/>
+                    <TextBlock Text="Close settings window after saving changes."
+                               Style="{StaticResource FootnoteStyle}"
+                               TextWrapping="Wrap"
+                               MaxWidth="200"/>
+                </StackPanel>
+           
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
           
                     <Button x:Name="CancelButton" Click="CancelButton_Click" Style="{StaticResource ButtonStyle}" Background="{StaticResource SecondaryBrush}">
