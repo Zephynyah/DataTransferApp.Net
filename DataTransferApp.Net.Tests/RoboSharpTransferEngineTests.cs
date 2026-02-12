@@ -109,6 +109,7 @@ namespace DataTransferApp.Net.Tests
 
             // Assert
             Assert.False(result.Success);
+            Assert.NotNull(result.ErrorMessage);
             Assert.NotEmpty(result.ErrorMessage);
             Assert.Contains("not found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         }

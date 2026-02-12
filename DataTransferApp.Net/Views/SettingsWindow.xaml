@@ -107,7 +107,11 @@
                         <TextBlock Text="When enabled, the application will automatically audit all folders immediately after loading them." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                            
                         <TextBlock Text="Window Startup Mode" FontWeight="SemiBold" Margin="0,5,0,5"/>
-                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}" Margin="0,0,0,5" ItemsSource="{x:Static models:AppSettings.WindowStartupModeOptions}"/>
+                        <ComboBox SelectedValue="{Binding WindowStartupMode, Mode=TwoWay}"  SelectedValuePath="Content"  Margin="0,0,0,5">
+                            <ComboBoxItem Content="Normal" />
+                            <ComboBoxItem Content="Maximized" />
+                            <ComboBoxItem Content="Fullscreen" />
+                        </ComboBox>
                         <TextBlock Text="Normal: Default window size. Maximized: Full screen with title bar. Fullscreen: Full screen without borders (press F11 to toggle)." Style="{StaticResource FootnoteStyle}" />
                     </StackPanel>
                 </GroupBox>
@@ -134,7 +138,12 @@
                         <TextBlock Text="When enabled, application events and transfer details will be logged to files in the transfer records directory." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Log Level" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogLevel}"  ItemsSource="{x:Static models:AppSettings.LogLevelOptions}"/>
+                        <ComboBox SelectedValue="{Binding LogLevel}" SelectedValuePath="Content" Margin="0,0,0,5">
+                            <ComboBoxItem Content="Debug"/>
+                            <ComboBoxItem Content="Info"/>
+                            <ComboBoxItem Content="Warning"/>
+                            <ComboBoxItem Content="Error"/>
+                        </ComboBox>
                          <TextBlock Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10">
                             • Debug: Detailed information for troubleshooting.
                             <LineBreak/>
@@ -146,7 +155,11 @@
                         </TextBlock>
                         
                         <TextBlock Text="Log Format" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding LogFormat}" ItemsSource="{x:Static models:AppSettings.LogFormatOptions}"/>
+                        <ComboBox SelectedValue="{Binding LogFormat}" SelectedValuePath="Content">
+                            <ComboBoxItem Content="JSON"/>
+                            <ComboBoxItem Content="CSV"/>
+                            <ComboBoxItem Content="TXT"/>
+                        </ComboBox>
                         <TextBlock Text="Log file format. TXT: Plain text files. JSON: Structured JSON format. CSV: Comma-separated values for spreadsheet compatibility." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
                         <Grid>
@@ -206,13 +219,21 @@
                         <TextBlock Text="Generated for each transfer, including file-level details and transfer metadata." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/> -->
                         
                         <TextBlock Text="Compliance Record Type" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ComplianceRecordType}" SelectedValuePath="Content" IsEnabled="{Binding GenerateComplianceRecords}" ItemsSource="{x:Static models:AppSettings.ComplianceRecordTypeOptions}"/>
+                        <ComboBox SelectedValue="{Binding ComplianceRecordType}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding GenerateComplianceRecords}">
+                            <ComboBoxItem Content="Standard"/>
+                            <ComboBoxItem Content="Comprehensive"/>
+                        </ComboBox>
                         <TextBlock Text="Standard: Tabular format with file-level details. Comprehensive: Detailed transfer summary with sections."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Compliance Record Format" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" SelectedValuePath="Content" IsEnabled="{Binding GenerateComplianceRecords}" ItemsSource="{x:Static models:AppSettings.ComplianceRecordFormatOptions}"/>
+                         <ComboBox SelectedValue="{Binding ComplianceRecordFormat}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding GenerateComplianceRecords}">
+                            <ComboBoxItem Content="CSV"/>
+                            <ComboBoxItem Content="TXT"/>
+                            <ComboBoxItem Content="Excel"/>
+                            <ComboBoxItem Content="JSON"/>
+                        </ComboBox>
                         <TextBlock Text="Format for generated compliance records. CSV: Comma-separated values. Excel: XLSX format. JSON: Structured JSON format."
                                    Style="{StaticResource FootnoteStyle}"
                                    Margin="0,0,0,10"/>
@@ -225,7 +246,12 @@
                         <TextBlock Text="When enabled, file hashes will be calculated and included in compliance records for data integrity verification." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Hash Algorithm" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding HashAlgorithm}"  SelectedValuePath="Content" IsEnabled="{Binding CalculateFileHashes}" ItemsSource="{x:Static models:AppSettings.HashAlgorithmOptions}"/>
+                        <ComboBox SelectedValue="{Binding HashAlgorithm}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding CalculateFileHashes}">
+                            <ComboBoxItem Content="SHA256"/>
+                            <ComboBoxItem Content="SHA512"/>
+                            <ComboBoxItem Content="SHA1"/>
+                            <ComboBoxItem Content="MD5"/>
+                        </ComboBox>
                         <TextBlock Text="Hash algorithm to use for file integrity verification." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                             
                         <Grid Margin="0,0,0,10">
@@ -257,7 +283,11 @@
                         <TextBlock Text="When enabled, the application will automatically handle folder name conflicts on the destination drive based on the selected strategy." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Conflict Resolution Strategy" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding ConflictResolution}" SelectedValuePath="Content" IsEnabled="{Binding AutoHandleConflicts}" ItemsSource="{x:Static models:AppSettings.ConflictResolutionOptions}"/>
+                        <ComboBox SelectedValue="{Binding ConflictResolution}" SelectedValuePath="Content" Margin="0,0,0,5" IsEnabled="{Binding AutoHandleConflicts}">
+                            <ComboBoxItem Content="AppendSequence"/>
+                            <ComboBoxItem Content="Skip"/>
+                            <ComboBoxItem Content="Overwrite"/>
+                        </ComboBox>
                         <TextBlock Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10">
                             • AppendSequence: Add sequence number to duplicate folders (e.g., Folder_1)
                             <LineBreak/>
@@ -294,7 +324,7 @@
                         
                         <!-- Configuration Presets -->
                         <TextBlock Text="Configuration Presets" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                        <TextBlock Text="Select a preset or configure manually. Performance controls are read-only when using presets." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,5"/>
+                        <TextBlock Text="Select a preset or configure manually. Performance controls are read-only when using presets." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>

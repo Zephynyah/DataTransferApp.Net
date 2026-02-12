@@ -9,7 +9,7 @@ namespace DataTransferApp.Net
         /// Number of days to retain RoboSharp transfer logs specifically.
         /// Can be set differently from application logs if needed.
         /// </summary>
-        public const int RoboSharpLogRetentionDays = 5;
+        public const int RoboSharpLogRetentionDays = 3;
 
         /// <summary>
         /// Path to the user's Application Data folder, used for storing app-specific data and logs.

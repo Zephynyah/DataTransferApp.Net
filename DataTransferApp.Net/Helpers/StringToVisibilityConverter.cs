@@ -16,11 +16,13 @@ public class StringToVisibilityConverter : IValueConverter
         {
             return Visibility.Visible;
         }
+
         return Visibility.Collapsed;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("StringToVisibilityConverter does not support ConvertBack.");
     }
 }
+

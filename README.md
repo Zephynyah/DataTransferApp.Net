@@ -25,7 +25,7 @@ A secure, user-friendly application for transferring data between air-gapped sys
 ### System Requirements
 
 - Windows 10/11
-- .NET 8.0 Runtime (automatically installed if needed)
+- .NET 10.0 Runtime (automatically installed if needed)
 - 100MB free disk space
 
 ### Installation
