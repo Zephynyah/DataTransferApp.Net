@@ -58,6 +58,7 @@ namespace DataTransferApp.Net.Helpers
         /// <summary>
         /// Legacy method - kept for compatibility but IsTextFile is preferred.
         /// </summary>
+        /// <param name="filePath">The full path to the file to check.</param>
         /// <returns>True if the file contains only ASCII characters; otherwise, false.</returns>
         public static bool IsAsciiFileDotNet6(string filePath)
         {
