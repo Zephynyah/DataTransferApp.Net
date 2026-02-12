@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace DataTransferApp.Net.Models
@@ -258,7 +257,13 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Creates a success result.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="sourcePath">The source path of the transfer.</param>
+        /// <param name="destPath">The destination path of the transfer.</param>
+        /// <param name="filesCopied">The number of files successfully copied.</param>
+        /// <param name="bytesCopied">The total bytes successfully copied.</param>
+        /// <param name="startTime">The start time of the transfer operation.</param>
+        /// <param name="endTime">The end time of the transfer operation.</param>
+        /// <returns>A new RoboSharpTransferResult instance with success status and the provided statistics.</returns>
         public static RoboSharpTransferResult CreateSuccess(string sourcePath, string destPath, long filesCopied, long bytesCopied, DateTime startTime, DateTime endTime)
         {
             return new RoboSharpTransferResult
@@ -277,7 +282,12 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Creates a failure result.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="sourcePath">The source path of the transfer.</param>
+        /// <param name="destPath">The destination path of the transfer.</param>
+        /// <param name="exitCode">The robocopy exit code indicating the type of failure.</param>
+        /// <param name="errorMessage">The error message describing the failure.</param>
+        /// <param name="startTime">The start time of the transfer operation.</param>
+        /// <returns>A new RoboSharpTransferResult instance with failure status and the provided error information.</returns>
         public static RoboSharpTransferResult CreateFailure(string sourcePath, string destPath, int exitCode, string errorMessage, DateTime startTime)
         {
             return new RoboSharpTransferResult

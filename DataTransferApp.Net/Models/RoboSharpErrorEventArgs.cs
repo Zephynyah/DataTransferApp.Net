@@ -1,5 +1,3 @@
-using System;
-
 namespace DataTransferApp.Net.Models
 {
     /// <summary>

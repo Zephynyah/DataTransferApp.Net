@@ -391,6 +391,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="4"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <!-- Status Indicator Bar -->
@@ -414,6 +415,88 @@
                                                 </TextBlock>
                                             </StackPanel>
                                         </StackPanel>
+                                        
+                                        <!-- Information Icon with Details (shown when audited and has issues) -->
+                                        <Border Grid.Column="2" VerticalAlignment="Center" Margin="5,0,0,0">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <!-- Show icon when folder is audited and has violations AND setting is enabled -->
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding AuditStatus}" Value="Failed"/>
+                                                                <Condition Binding="{Binding DataContext.ShowFolderAuditDetailsIcon, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <fa:IconBlock Icon="InfoCircle" Foreground="#e74c3c" FontSize="14" ToolTipService.ShowDuration="10000">
+                                                <fa:IconBlock.ToolTip>
+                                                    <ToolTip MaxWidth="300">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Audit Issues"   FontWeight="Bold"  FontSize="12" Margin="0,0,0,5"/>
+                                                            
+                                                            <!-- Naming Status -->
+                                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                                <TextBlock Text="• Naming: " FontSize="11"/>
+                                                                <TextBlock Text="{Binding NamingAuditStatus}" 
+                                                                           FontSize="11"
+                                                                           FontWeight="SemiBold"
+                                                                           Foreground="{Binding NamingAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
+                                                            </StackPanel>
+                                                            
+                                                            <!-- Blacklist Status -->
+                                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                                <TextBlock Text="• Blacklist: " FontSize="11"/>
+                                                                <TextBlock Text="{Binding BlacklistAuditStatus}" FontSize="11" FontWeight="SemiBold"
+                                                                           Foreground="{Binding BlacklistAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
+                                                                <TextBlock Text="{Binding BlacklistViolationCount, StringFormat=' ({0} violations)'}" 
+                                                                           FontSize="11"
+                                                                           Foreground="#e74c3c">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding BlacklistAuditStatus}" Value="Failed">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            
+                                                            <!-- Compressed Status -->
+                                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                                <TextBlock Text="• Compressed: " FontSize="11"/>
+                                                                <TextBlock Text="{Binding CompressedAuditStatus}" FontSize="11" FontWeight="SemiBold"
+                                                                           Foreground="{Binding CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}"/>
+                                                                <TextBlock Text="{Binding CompressedFileCount, StringFormat=' ({0} files)'}" 
+                                                                           FontSize="11"
+                                                                           Foreground="{Binding CompressedAuditStatus, Converter={StaticResource AuditStatusToBrushConverter}}">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding CompressedAuditStatus}" Value="Caution">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding CompressedAuditStatus}" Value="Failed">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </ToolTip>
+                                                </fa:IconBlock.ToolTip>
+                                            </fa:IconBlock>
+                                        </Border>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

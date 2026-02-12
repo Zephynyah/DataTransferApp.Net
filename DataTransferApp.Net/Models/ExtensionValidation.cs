@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace DataTransferApp.Net.Models
 {
     public class ExtensionValidation

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace DataTransferApp.Net.Models
 {
     /// <summary>
@@ -213,7 +211,7 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Creates options optimized for large file transfers over network.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Configured RoboSharpOptions optimized for network transfers with higher retry counts and verification.</returns>
         public static RoboSharpOptions CreateForNetworkTransfer()
         {
             return new RoboSharpOptions
@@ -234,7 +232,7 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Creates options optimized for quick local transfers.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Configured RoboSharpOptions optimized for local transfers with higher thread count and minimal retries.</returns>
         public static RoboSharpOptions CreateForLocalTransfer()
         {
             return new RoboSharpOptions

@@ -1,5 +1,3 @@
-using System;
-
 namespace DataTransferApp.Net.Models
 {
     /// <summary>
@@ -123,7 +121,7 @@ namespace DataTransferApp.Net.Models
         /// <summary>
         /// Returns a detailed string representation of the error.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A detailed string representation containing error type, message, file path, directory path, and error code.</returns>
         public override string ToString()
         {
             var details = $"[{ErrorType}] {Message}";
