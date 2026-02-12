@@ -1298,7 +1298,7 @@ namespace DataTransferApp.Net.ViewModels
         {
             try
             {
-                var helpWindow = new HelpWindow();
+                var helpWindow = new HelpWindow(this);
                 helpWindow.ShowDialog();
             }
             catch (Exception ex)

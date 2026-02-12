@@ -7,9 +7,10 @@ namespace DataTransferApp.Net.Views
     /// </summary>
     public partial class HelpWindow : Window
     {
-        public HelpWindow()
+        public HelpWindow(object dataContext)
         {
             InitializeComponent();
+            DataContext = dataContext;
         }
     }
 }

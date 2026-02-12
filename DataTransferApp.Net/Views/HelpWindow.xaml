@@ -333,7 +333,7 @@
 
                 <!-- Footer -->
                 <Border Background="{StaticResource LightBrush}" CornerRadius="5" Padding="15" Margin="0,20,0,0">
-                    <TextBlock Text="Data Transfer Application v1.2.0 - © 2024" FontSize="11" Foreground="{StaticResource SecondaryBrush}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding AppVersion, StringFormat='Data Transfer Application v{0} - © 2024'}" FontSize="11" Foreground="{StaticResource SecondaryBrush}" HorizontalAlignment="Center"/>
                 </Border>
             </StackPanel>
         </ScrollViewer>

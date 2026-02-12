@@ -74,13 +74,13 @@
                 <!-- Directory Paths -->
                 <GroupBox Header="Directory Paths">
                     <StackPanel>
-                        <TextBlock Text="Staging Directory" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Staging Directory (DropBox)" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Grid.ColumnSpan="2" Text="{Binding StagingDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}"/>
                         <TextBlock Text="The main dropbox directory where files are staged for transfer." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
                         
-                        <TextBlock Text="Transfer Records Directory" Style="{StaticResource SubHeaderTextStyle}"/>
+                        <TextBlock Text="Compliance Records Directory (DT Logs)" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding TransferRecordsDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}" />
-                        <TextBlock Text="Directory where transfer records are stored." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
+                        <TextBlock Text="Directory where compliance records are stored." Style="{StaticResource FootnoteStyle}" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Retention Directory" Style="{StaticResource SubHeaderTextStyle}"/>
                         <TextBox Text="{Binding RetentionDirectory, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ValidatingTextBoxStyle}" />
@@ -270,7 +270,7 @@
                         <TextBlock Text="When enabled, file hashes will be calculated and included in compliance records for data integrity verification." Style="{StaticResource FootnoteStyle}" Margin="20,0,0,10"/>
                         
                         <TextBlock Text="Hash Algorithm" Style="{StaticResource SubHeaderTextStyle}"/>
-                        <ComboBox SelectedValue="{Binding HashAlgorithm}" SelectedValuePath="Content" Margin="0,0,0,10" IsEnabled="{Binding CalculateFileHashes}">
+                        <ComboBox SelectedValue="{Binding HashAlgorithm}" SelectedValuePath="Content" IsEnabled="{Binding CalculateFileHashes}">
                             <ComboBoxItem Content="SHA256"/>
                             <ComboBoxItem Content="SHA512"/>
                             <ComboBoxItem Content="SHA1"/>

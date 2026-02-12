@@ -119,7 +119,11 @@ namespace DataTransferApp.Net.Models
         // Application Logging
         public bool EnableFileLogging { get; set; } = true;
 
+#if DEBUG
+        public string LogLevel { get; set; } = "Debug"; // Debug, Info, Warning, Error
+#else
         public string LogLevel { get; set; } = "Info"; // Debug, Info, Warning, Error
+#endif
 
         public string LogFormat { get; set; } = "TXT"; // JSON, CSV, TXT
 
@@ -163,7 +167,7 @@ namespace DataTransferApp.Net.Models
         public bool PromptBeforeOverwrite { get; set; } = true;
 
         // RoboSharp Transfer Engine Configuration
-        private bool _useRoboSharp = false;
+        private bool _useRoboSharp = true; // Use RoboSharp for file transfers instead of built-in .NET methods
         public bool UseRoboSharp
         {
             get => _useRoboSharp;
@@ -307,7 +311,7 @@ namespace DataTransferApp.Net.Models
 
         public int RobocopyInterPacketGapMs { get; set; } = 0; // 0 = no throttling
 
-        private string _roboSharpPresetMode = "Manual";
+        private string _roboSharpPresetMode = "Safe"; // Manual, Fast, Safe, Network, Archive
         public string RoboSharpPresetMode
         {
             get => _roboSharpPresetMode;
