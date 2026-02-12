@@ -87,22 +87,6 @@ namespace DataTransferApp.Net.ViewModels
         private string _totalSize = "0 MB";
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(CancelTransferCommand))]
-        private bool _isProcessing = false;
-
-        [ObservableProperty]
-        private bool _isSnackbarVisible = false;
-
-        [ObservableProperty]
-        private string _snackbarMessage = string.Empty;
-
-        [ObservableProperty]
-        private string _snackbarBackground = "#E62ECC71";
-
-        [ObservableProperty]
-        private double _snackbarOpacity = 1.0;  // Adjust this value (0.0 to 1.0) to control notification brightness
-
-        [ObservableProperty]
         private bool _showAuditSummaryAsCards = true;
 
         [ObservableProperty]
@@ -379,14 +363,20 @@ namespace DataTransferApp.Net.ViewModels
             ClearDriveCommand.NotifyCanExecuteChanged();
         }
 
-        partial void OnIsProcessingChanged(bool value)
+        protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // Notify all commands to re-evaluate when processing state changes
-            AuditFolderCommand.NotifyCanExecuteChanged();
-            TransferFolderCommand.NotifyCanExecuteChanged();
-            TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
-            TransferAllFoldersCommand.NotifyCanExecuteChanged();
-            ClearDriveCommand.NotifyCanExecuteChanged();
+            base.OnPropertyChanged(e);
+
+            // Handle IsProcessing changes to notify commands
+            if (e.PropertyName == nameof(IsProcessing))
+            {
+                // Notify all commands to re-evaluate when processing state changes
+                AuditFolderCommand.NotifyCanExecuteChanged();
+                TransferFolderCommand.NotifyCanExecuteChanged();
+                TransferFolderWithOverrideCommand.NotifyCanExecuteChanged();
+                TransferAllFoldersCommand.NotifyCanExecuteChanged();
+                ClearDriveCommand.NotifyCanExecuteChanged();
+            }
         }
 
         [RelayCommand]
@@ -1339,23 +1329,6 @@ namespace DataTransferApp.Net.ViewModels
             {
                 SelectedFolder = FolderList[0];
             }
-        }
-
-        private async Task ShowSnackbar(string message, string type = "success")
-        {
-            SnackbarMessage = message;
-            SnackbarBackground = type switch
-            {
-                "success" => "#E62ECC71",  // 90% opacity green
-                "error" => "#E6E74C3C",    // 90% opacity red
-                "warning" => "#E6F39C12",  // 90% opacity orange
-                "info" => "#E63498DB",     // 90% opacity blue
-                _ => "#E62ECC71"
-            };
-            IsSnackbarVisible = true;
-
-            await Task.Delay(4000);
-            IsSnackbarVisible = false;
         }
 
         private async Task<DriveAction> CheckDriveContentsAsync()
