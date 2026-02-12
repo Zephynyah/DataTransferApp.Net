@@ -12,6 +12,7 @@ namespace DataTransferApp.Net.Helpers
         /// Determines if a file appears to be a text file that can be safely opened in a viewer
         /// by checking if it's ASCII-compatible and doesn't contain binary data patterns.
         /// </summary>
+        /// <param name="filePath">The full path to the file to check.</param>
         /// <returns>True if the file appears to be a text file; otherwise, false.</returns>
         public static bool IsTextFile(string filePath)
         {
