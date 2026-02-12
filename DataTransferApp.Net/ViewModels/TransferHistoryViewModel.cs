@@ -1,8 +1,4 @@
-using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataTransferApp.Net.Models;
@@ -10,6 +6,9 @@ using DataTransferApp.Net.Services;
 
 namespace DataTransferApp.Net.ViewModels
 {
+    /// <summary>
+    /// ViewModel for managing transfer history, including loading, searching, and deleting transfer records.
+    /// </summary>
     public partial class TransferHistoryViewModel : ViewModelBase
     {
         private readonly TransferHistoryService _historyService;
