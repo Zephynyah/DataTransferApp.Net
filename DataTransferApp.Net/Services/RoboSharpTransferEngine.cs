@@ -1,12 +1,7 @@
-using System;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using DataTransferApp.Net.Models;
 using RoboSharp;
-using RoboSharp.EventArgObjects;
-using RoboSharp.Interfaces;
+
 
 namespace DataTransferApp.Net.Services
 {
@@ -29,6 +24,11 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Transfers an entire folder and its contents from source to destination.
         /// </summary>
+        /// <param name="sourcePath">The source directory path to transfer from.</param>
+        /// <param name="destinationPath">The destination directory path to transfer to.</param>
+        /// <param name="options">RoboSharp configuration options for the transfer.</param>
+        /// <param name="progress">Optional progress reporter for tracking transfer status.</param>
+        /// <param name="cancellationToken">Token to cancel the ongoing transfer operation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<RoboSharpTransferResult> TransferFolderAsync(
             string sourcePath,
@@ -84,6 +84,12 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Transfers specific files from source root to destination.
         /// </summary>
+        /// <param name="filePaths">Array of file paths to transfer.</param>
+        /// <param name="sourceRoot">The source directory root path.</param>
+        /// <param name="destinationPath">The destination directory path to transfer to.</param>
+        /// <param name="options">RoboSharp configuration options for the transfer.</param>
+        /// <param name="progress">Optional progress reporter for tracking transfer status.</param>
+        /// <param name="cancellationToken">Token to cancel the ongoing transfer operation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<RoboSharpTransferResult> TransferFilesAsync(
             string[] filePaths,
@@ -138,6 +144,9 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Estimates transfer size and file count without actually copying.
         /// </summary>
+        /// <param name="sourcePath">The source directory path to estimate.</param>
+        /// <param name="options">RoboSharp configuration options for the estimation.</param>
+        /// <param name="cancellationToken">Token to cancel the ongoing estimation operation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<RoboSharpTransferResult> EstimateTransferAsync(
             string sourcePath,

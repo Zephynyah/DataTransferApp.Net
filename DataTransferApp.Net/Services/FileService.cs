@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using DataTransferApp.Net.Helpers;
 using DataTransferApp.Net.Models;
 
@@ -10,14 +6,6 @@ namespace DataTransferApp.Net.Services
 {
     public class FileService
     {
-        private static readonly string[] ViewableExtensions =
-        {
-            ".txt", ".log", ".csv", ".xml", ".json", ".ps1", ".psm1", ".psd1",
-            ".md", ".html", ".htm", ".css", ".js", ".ini", ".conf", ".config",
-            ".sql", ".bat", ".cmd", ".sh", ".py", ".java", ".c", ".cpp", ".h",
-            ".cs", ".vb", ".php", ".rb", ".pl", ".yml", ".yaml", ".cfg"
-        };
-
         public FileService()
         {
         }
@@ -48,7 +36,9 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Enhanced file viewability check that combines extension filtering with content analysis.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="filePath">The full path to the file to check.</param>
+        /// <param name="extension">The file extension to check.</param>
+        /// <returns>True if the file can be viewed; otherwise, false.</returns>
         public static bool IsFileViewable(string filePath, string extension)
         {
             // Archives are always "viewable" because we can show their contents
@@ -58,7 +48,7 @@ namespace DataTransferApp.Net.Services
             }
 
             // For known text extensions, verify content is actually text
-            if (ViewableExtensions.Contains(extension.ToLowerInvariant()))
+            if (AppConstants.ViewableExtensions.Contains(extension.ToLowerInvariant()))
             {
                 return FileEncodingHelper.IsTextFile(filePath);
             }
@@ -212,7 +202,7 @@ namespace DataTransferApp.Net.Services
 
         private static bool IsFileViewable(string extension)
         {
-            return ViewableExtensions.Contains(extension.ToLowerInvariant()) || ArchiveService.IsArchive(extension);
+            return AppConstants.ViewableExtensions.Contains(extension.ToLowerInvariant()) || ArchiveService.IsArchive(extension);
         }
     }
 }

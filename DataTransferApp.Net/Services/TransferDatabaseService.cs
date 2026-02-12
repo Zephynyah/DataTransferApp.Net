@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using DataTransferApp.Net.Models;
 using LiteDB;
 
@@ -42,7 +38,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Adds a new transfer record to the database.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="transfer">The transfer record to add to the database.</param>
+        /// <returns>True if the transfer was successfully added; otherwise false.</returns>
         public bool AddTransfer(TransferLog transfer)
         {
             try
@@ -71,7 +68,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Adds multiple transfer records in a batch operation.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="transfers">The collection of transfer records to add to the database.</param>
+        /// <returns>True if all transfers were successfully added; otherwise false.</returns>
         public bool AddTransfers(IEnumerable<TransferLog> transfers)
         {
             try
@@ -92,7 +90,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves all transfer records.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of all transfer records in the database.</returns>
         public IList<TransferLog> GetAllTransfers()
         {
             const int maxRetries = 3;
@@ -133,7 +131,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves a transfer record by its ID.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="id">The ObjectId of the transfer record to retrieve.</param>
+        /// <returns>The transfer record if found; otherwise null.</returns>
         public TransferLog? GetTransferById(ObjectId id)
         {
             try
@@ -152,7 +151,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Searches for transfers matching the search term.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="searchTerm">The search term to match against folder name, employee, DTA, origin, and destination.</param>
+        /// <returns>A list of transfer records matching the search criteria.</returns>
         public IList<TransferLog> SearchTransfers(string searchTerm)
         {
             try
@@ -184,7 +184,9 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves transfers within a date range.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="startDate">The start date of the range to retrieve transfers from.</param>
+        /// <param name="endDate">The end date of the range to retrieve transfers from.</param>
+        /// <returns>A list of transfer records within the specified date range.</returns>
         public IList<TransferLog> GetTransfersByDateRange(DateTime startDate, DateTime endDate)
         {
             try
@@ -206,7 +208,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves the most recent transfers.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="count">The maximum number of recent transfers to retrieve. Default is 10.</param>
+        /// <returns>A list of the most recent transfer records.</returns>
         public IList<TransferLog> GetRecentTransfers(int count = 10)
         {
             try
@@ -229,7 +232,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves transfers by employee ID.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="employeeId">The employee ID to filter transfers by.</param>
+        /// <returns>A list of transfer records for the specified employee.</returns>
         public IList<TransferLog> GetTransfersByEmployee(string employeeId)
         {
             try
@@ -250,7 +254,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Retrieves transfers by Data Transfer Agent.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="dta">The Data Transfer Agent name to filter transfers by.</param>
+        /// <returns>A list of transfer records for the specified Data Transfer Agent.</returns>
         public IList<TransferLog> GetTransfersByDTA(string dta)
         {
             try
@@ -271,7 +276,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets transfer statistics.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A dictionary containing transfer statistics including total, today, this week, and this month transfers.</returns>
         public IDictionary<string, int> GetTransferStatistics()
         {
             try
@@ -307,7 +312,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Updates an existing transfer record.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="transfer">The transfer record to update in the database.</param>
+        /// <returns>True if the transfer was successfully updated; otherwise false.</returns>
         public bool UpdateTransfer(TransferLog transfer)
         {
             try
@@ -326,7 +332,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Deletes a transfer record by ID.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="id">The ObjectId of the transfer record to delete.</param>
+        /// <returns>True if the transfer was successfully deleted; otherwise false.</returns>
         public bool DeleteTransfer(ObjectId id)
         {
             const int maxRetries = 3;
@@ -366,7 +373,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Deletes old transfer records based on retention period.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="retentionDays">The number of days to retain transfer records. Records older than this will be deleted.</param>
+        /// <returns>The number of transfer records that were deleted.</returns>
         public int CleanupOldTransfers(int retentionDays)
         {
             try
@@ -394,7 +402,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the total count of transfer records.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The total number of transfer records in the database.</returns>
         public int GetTotalCount()
         {
             try
@@ -413,7 +421,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the database file path.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The full path to the database file.</returns>
         public string GetDatabasePath() => _databasePath;
 
         /// <summary>

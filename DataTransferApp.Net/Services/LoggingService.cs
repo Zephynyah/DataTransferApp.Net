@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Threading;
 using Serilog;
 using Serilog.Events;
 

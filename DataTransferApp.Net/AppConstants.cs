@@ -53,5 +53,17 @@ namespace DataTransferApp.Net
             ".tar.bz2",
             ".tbz2"
         };
+
+        /// <summary>
+        /// File extensions that are considered viewable in the application.
+        /// These files can be opened and displayed in the file viewer.
+        /// </summary>
+        public static readonly string[] ViewableExtensions =
+        {
+            ".txt", ".log", ".csv", ".xml", ".json", ".ps1", ".psm1", ".psd1",
+            ".md", ".html", ".htm", ".css", ".js", ".ini", ".conf", ".config",
+            ".sql", ".bat", ".cmd", ".sh", ".py", ".java", ".c", ".cpp", ".h",
+            ".cs", ".vb", ".php", ".rb", ".pl", ".yml", ".yaml", ".cfg"
+        };
     }
 }

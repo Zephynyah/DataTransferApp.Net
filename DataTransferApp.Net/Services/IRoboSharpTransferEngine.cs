@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using DataTransferApp.Net.Models;
 
 namespace DataTransferApp.Net.Services

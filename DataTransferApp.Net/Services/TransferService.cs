@@ -434,7 +434,6 @@ namespace DataTransferApp.Net.Services
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "MA0051:Method is too long", Justification = "Retries and logging kept together for clarity.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used by retention cleanup flow")]
         private static void DeleteRetentionFolder(DirectoryInfo folder)
         {
             const int maxRetries = 3;

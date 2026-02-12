@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using DataTransferApp.Net.Models;
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1518:File may not end with a newline character", Justification = "File does end with newline", Scope = "namespace", Target = "DataTransferApp.Net.Services")]
@@ -36,6 +32,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Searches for transfers matching the search term.
         /// </summary>
+        /// <param name="searchTerm">The search term to filter transfers by.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IList<TransferLog>> SearchTransfersAsync(string searchTerm)
         {
@@ -65,6 +62,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets transfers within a date range.
         /// </summary>
+        /// <param name="startDate">The start date of the range.</param>
+        /// <param name="endDate">The end date of the range.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IList<TransferLog>> GetTransfersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
@@ -74,6 +73,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the most recent transfers.
         /// </summary>
+        /// <param name="count">The number of recent transfers to retrieve. Default is 10.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IList<TransferLog>> GetRecentTransfersAsync(int count = 10)
         {
@@ -92,6 +92,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Deletes a transfer by its ID.
         /// </summary>
+        /// <param name="id">The ID of the transfer to delete.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<bool> DeleteTransferAsync(string id)
         {
@@ -112,6 +113,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Migrates existing JSON transfer logs to the database.
         /// </summary>
+        /// <param name="transferRecordsDirectory">The directory path containing JSON transfer log files to migrate.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<int> MigrateJsonLogsToDatabase(string transferRecordsDirectory)
         {
@@ -169,7 +171,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Gets the database file path.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The file path of the transfer history database.</returns>
         public string GetDatabasePath()
         {
             return _databaseService.GetDatabasePath();
@@ -178,6 +180,7 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Cleans up old transfer records from database.
         /// </summary>
+        /// <param name="retentionDays">The number of days to retain transfer records. Records older than this will be deleted.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<int> CleanupOldRecordsAsync(int retentionDays)
         {

@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using SharpCompress.Archives;
-using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 

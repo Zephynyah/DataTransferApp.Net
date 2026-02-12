@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using DataTransferApp.Net.Models;
 using RoboSharp;
 using RoboSharp.EventArgObjects;
 using RoboSharp.Interfaces;
@@ -65,6 +63,8 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Sets the total statistics for the transfer.
         /// </summary>
+        /// <param name="totalFiles">Total number of files to transfer.</param>
+        /// <param name="totalBytes">Total number of bytes to transfer.</param>
         public void SetTotals(int totalFiles, long totalBytes)
         {
             _totalFiles = totalFiles;
@@ -76,6 +76,8 @@ namespace DataTransferApp.Net.Services
         /// Handles RoboSharp OnFileProcessed event.
         /// Tracks file completion and updates completed bytes counter.
         /// </summary>
+        /// <param name="sender">The RoboCommand instance that raised the event.</param>
+        /// <param name="e">Event arguments containing processed file information.</param>
         public void OnFileProcessed(IRoboCommand sender, FileProcessedEventArgs e)
         {
             var fileName = e.ProcessedFile?.Name ?? string.Empty;
@@ -101,6 +103,8 @@ namespace DataTransferApp.Net.Services
         /// Handles RoboSharp OnProgressEstimatorCreated event.
         /// This is the correct way to get accurate progress per RoboSharp wiki.
         /// </summary>
+        /// <param name="sender">The RoboCommand instance that raised the event.</param>
+        /// <param name="e">Event arguments containing the progress estimator.</param>
         public void OnProgressEstimatorCreated(IRoboCommand sender, ProgressEstimatorCreatedEventArgs e)
         {
             if (e.ResultsEstimate != null)
@@ -145,6 +149,8 @@ namespace DataTransferApp.Net.Services
         /// Handles RoboSharp OnCopyProgressChanged event.
         /// This provides per-file copy progress for fine-grained incremental updates (0%, 1%, 2%...100%).
         /// </summary>
+        /// <param name="sender">The RoboCommand instance that raised the event.</param>
+        /// <param name="e">Event arguments containing copy progress information.</param>
         public void OnCopyProgressChanged(IRoboCommand sender, CopyProgressEventArgs e)
         {
             // Update current file name if available
@@ -172,6 +178,9 @@ namespace DataTransferApp.Net.Services
         /// <summary>
         /// Manually updates progress (for scenarios without file events).
         /// </summary>
+        /// <param name="completedFiles">The number of files that have been completed.</param>
+        /// <param name="copiedBytes">The number of bytes that have been transferred.</param>
+        /// <param name="currentFile">The name of the file currently being transferred, if available.</param>
         public void UpdateProgress(int completedFiles, long copiedBytes, string? currentFile = null)
         {
             _copiedFiles = completedFiles;
