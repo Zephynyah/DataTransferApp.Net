@@ -1228,7 +1228,12 @@ namespace DataTransferApp.Net.ViewModels
             {
                 var settingsWindow = new SettingsWindow(
                     App.SettingsService!,
-                    App.Settings!);
+                    App.Settings!,
+                    onSettingsSaved: () =>
+                    {
+                        // Show snackbar notification immediately when settings are saved
+                        _ = ShowSnackbar("Settings saved successfully!", "success");
+                    });
 
                 if (settingsWindow.ShowDialog() == true || settingsWindow.SettingsWereSaved)
                 {
@@ -1248,7 +1253,6 @@ namespace DataTransferApp.Net.ViewModels
                     TransferEngine = _settings.UseRoboSharp ? "Robocopy" : "Legacy";
 
                     StatusMessage = "Settings updated successfully";
-                    _ = ShowSnackbar("Settings saved successfully!", "success");
                     LoggingService.Info("Settings updated successfully");
                 }
             }

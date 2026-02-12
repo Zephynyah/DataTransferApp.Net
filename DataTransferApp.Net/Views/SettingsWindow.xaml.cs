@@ -12,6 +12,7 @@ namespace DataTransferApp.Net.Views
     {
         private readonly SettingsService _settingsService;
         private readonly AppSettings _settings;
+        private readonly Action? _onSettingsSaved;
 
         /// <summary>
         /// Gets a value indicating whether settings were successfully saved.
@@ -19,11 +20,12 @@ namespace DataTransferApp.Net.Views
         /// </summary>
         public bool SettingsWereSaved { get; private set; } = false;
 
-        public SettingsWindow(SettingsService settingsService, AppSettings settings)
+        public SettingsWindow(SettingsService settingsService, AppSettings settings, Action? onSettingsSaved = null)
         {
             InitializeComponent();
             _settingsService = settingsService;
             _settings = settings;
+            _onSettingsSaved = onSettingsSaved;
             DataContext = settings;
 
             // Trigger initial validation
@@ -44,6 +46,9 @@ namespace DataTransferApp.Net.Views
                 LoggingService.Info("Settings saved by user");
 
                 SettingsWereSaved = true;
+
+                // Invoke callback immediately when settings are saved
+                _onSettingsSaved?.Invoke();
 
                 // Close window only if the user has enabled auto-close
                 if (_settings.CloseSettingsOnSave)
