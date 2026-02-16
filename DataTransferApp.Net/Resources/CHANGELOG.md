@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Moved application icon images to Assets directory
+- Moved application icons/images to Assets directory
 - Enhance settings saving logic: allow settings reload on save confirmation or dialog closure
 - Refactor constants in services and helpers: replace hardcoded values with AppConstants for improved maintainability and consistency
 - Update snackbar properties: adjust background color and opacity for improved visibility
