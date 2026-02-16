@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="DataTransferApp.Net/app.png" alt="Data Transfer Application Logo" width="30" style="vertical-align: middle; margin-right: 10px;"/>
+  <img src="DataTransferApp.Net/Assets/app.png" alt="Data Transfer Application Logo" width="30" style="vertical-align: middle; margin-right: 10px;"/>
   <span style="font-size: 2em; font-weight: bold; vertical-align: middle;">Data Transfer Application (.NET)</span>
 </p>
 
 A secure, user-friendly application for transferring data between air-gapped systems with comprehensive audit trails and compliance documentation.
 
 <p align="center">
-  <img src="DataTransferApp.Net/Screenshot.png" alt="Application Screenshot" width="800"/>
+  <img src="DataTransferApp.Net/Assets/app_main.png" alt="Application Screenshot" width="800"/>
 </p>
 
 ## ✨ Key Features
