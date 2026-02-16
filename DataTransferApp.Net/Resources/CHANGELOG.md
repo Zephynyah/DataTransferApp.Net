@@ -7,9 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.1] - 2026-02-12
 
+### Added
+
+- Enhance SettingsWindow: add callback for settings saved notification and clean up ComboBox bindings
+- Add CloseSettingsOnSave option and update settings save behavior
+- Add XML documentation for filePath parameter in IsAsciiFileDotNet6 method
+- Add XML documentation for filePath parameter in IsTextFile method
+- Add application icon for DataTransferApp
+- Add XML documentation for GetTransferByIdAsync method parameter
+- Add viewable file extensions to AppConstants; clean up unused usings in services
+- Add HashAlgorithm and ConflictResolution options to AppSettings; update SettingsWindow for improved compliance record handling
+- Add IconToVisibilityConverter and update SettingsItem to support icons in the UI
+- Add AwesomeLabelTooltip control and update SettingsWindow for improved tooltip integration
+
 ### Fixed
 
+- Enhance logging in RoboSharpProgressAdapter for better debugging; adjust UI layout in MainWindow for improved visibility
 - Fixed settings save notification appearing only after settings window closes instead of immediately when saved
+
+### Changed
+
+- Moved application icon images to Assets directory
+- Enhance settings saving logic: allow settings reload on save confirmation or dialog closure
+- Refactor constants in services and helpers: replace hardcoded values with AppConstants for improved maintainability and consistency
+- Update snackbar properties: adjust background color and opacity for improved visibility
+- Refactor MainViewModel and ViewModelBase: remove unused properties and enhance snackbar functionality with error handling and loading state management
+- Remove unused using directives in ChangesViewModel and TransferHistoryViewModel
+- Refactor comments for clarity in RoboSharpTransferEngine and TransferProgress classes
+- Remove ShowFolderAuditDetailsIcon property and related bindings from MainViewModel for cleaner code
+- Remove ShowFolderAuditDetailsIcon property and related UI elements from SettingsWindow for cleaner interface
+- Refactor UI components and remove unused controls; update SettingsWindow for improved layout and functionality
+- Update RetentionDays binding in SettingsWindow and ensure property change notification in AppSettings
 
 ## [1.4.0] - 2026-02-09
 
